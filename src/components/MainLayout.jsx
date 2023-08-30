@@ -9,6 +9,7 @@ import Image from 'next/image'
 const navigation = [
   { name: 'Inicio', href: '/home' },
   { name: 'Cursos', href: '/courses' },
+  { name: 'Profesor', href: '/admin'}
 ]
 
 function classNames(...classes) {
