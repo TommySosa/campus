@@ -38,9 +38,7 @@ const handler = NextAuth({
           return userFound;
         } catch (error) {
           throw error;
-        } finally {
-          pool.end();
-        }
+        } 
       },
     }),
   ],
