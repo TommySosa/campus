@@ -15,6 +15,7 @@ const handler = NextAuth({
       async authorize(credentials) {
 
         try {
+          // pool.connect();
           const [rows] = await pool.query(
             "SELECT * FROM students WHERE email = ?",
             [credentials.email]
@@ -44,7 +45,7 @@ const handler = NextAuth({
     }),
   ],
   pages: {
-    signIn: "/login",
+    signIn: "/auth/login",
   },
   session: {
     strategy: "jwt",
