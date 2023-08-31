@@ -6,10 +6,11 @@ export default function Home() {
             <div className="h-[93.1vh] flex flex-col justify-center text-white relative">
                 <Image
                     src={hero}
-                    layout="fill"
-                    objectFit="cover"
+                    fill="responsive"
+                    
                     quality={100}
-                    alt="Background Image"
+                    priority
+                    alt="Background Image"                
                 />
                 <div className="absolute top-0 left-0 w-full h-full bg-black opacity-40"></div>
                 <div className="max-w-3xl mx-auto text-center relative z-10 px-4">

@@ -18,7 +18,6 @@ export default function Home() {
     if (res.status === 200) {
       router.push("/home");
     }
-    console.log('res' + res);
   };
   return (
     <main className='flex items-center justify-center ' style={{ height: '80vh' }}>
