@@ -10,7 +10,7 @@ import { useSession } from 'next-auth/react'
 const navigation = [
   { name: 'Inicio', href: '/home' },
   { name: 'Cursos', href: '/courses' },
-  { name: 'Profesor', href: '/admin' }
+  { name: 'Profesor', href: '/teacher' }
 ]
 
 function classNames(...classes) {
