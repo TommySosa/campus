@@ -4,7 +4,7 @@ import { pool } from '../../../../db.js'
 
 export async function POST(request) {
     try {
-        const { name, surname, email, password } = await request.json();
+        const { name, surname, email, password, id_rol } = await request.json();
 
         if (password < 6)
             return NextResponse.json(
@@ -19,7 +19,7 @@ export async function POST(request) {
             );
         }
 
-        const [rows] = await pool.query("SELECT * FROM students WHERE email = ?", [email]);
+        const [rows] = await pool.query("SELECT * FROM users WHERE email = ?", [email]);
 
         if (rows.length > 0) {
             return NextResponse.json(
@@ -34,20 +34,22 @@ export async function POST(request) {
 
         const hashedPassword = await bcrypt.hash(password, 12);
 
-        await pool.query("INSERT INTO students (name, surname, email, password) VALUES (?, ?, ?, ?)", [
+        await pool.query("INSERT INTO users (name, surname, email, password, id_rol) VALUES (?, ?, ?, ?, ?)", [
             name,
             surname,
             email,
             hashedPassword,
+            id_rol
         ]);
 
-        pool.end();
+        // pool.end();
 
         return NextResponse.json(
             {
                 name,
                 surname,
-                email
+                email,
+                id_rol
             },
             { status: 201 }
         );
