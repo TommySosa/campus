@@ -17,7 +17,7 @@ const handler = NextAuth({
         try {
           // pool.connect();
           const [rows] = await pool.query(
-            "SELECT * FROM students WHERE email = ?",
+            "SELECT * FROM users WHERE email = ?",
             [credentials.email]
           );
 

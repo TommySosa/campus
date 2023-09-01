@@ -13,7 +13,7 @@ export default function ProfileData() {
                 <p className="font-light text-gray-600 mt-3">Bucharest, Romania</p>
 
                 <p className="mt-8 text-gray-500">Solution Manager - Creative Tim Officer</p>
-                <p className="mt-2 text-gray-500">University of Computer Science</p>
+                <p className="mt-2 text-gray-500">University of Computer Science {session.user.id_rol}</p>
             </div>
 
             <div className="mt-12 flex flex-col justify-center">
