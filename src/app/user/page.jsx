@@ -1,15 +1,18 @@
-'use client'
+import ProfileData from "@/components/ProfileData";
 import axios from "axios"
+
 export default function Home() {
     // const response = await axios.get('/api/profile')
     // const data = await response.json()
     // console.log(data);
+    // const { data: session, status } = useSession();
 
-    const handleClick = async () => {
-        const response = await axios.get('/api/profile')
-        // const data = await response.json()
-        console.log(response.data);
-    }
+
+    // const handleClick = async () => {
+    //     const response = await axios.get('/api/profile')
+    //     // const data = await response.json()
+    //     console.log(response.data);
+    // }
 
     return (
         <div className="p-16">
@@ -40,7 +43,8 @@ export default function Home() {
                     <div className="space-x-8 flex justify-between mt-32 md:mt-0 md:justify-center">
                         <button
                             className="text-white py-2 px-4 uppercase rounded bg-blue-400 hover:bg-blue-500 shadow hover:shadow-lg font-medium transition transform hover:-translate-y-0.5"
-                        onClick={handleClick}>
+                        // onClick={handleClick}>
+                        >
                             Connect
                         </button>
                         <button
@@ -51,22 +55,7 @@ export default function Home() {
                     </div>
                 </div>
 
-                <div className="mt-20 text-center border-b pb-12">
-                    <h1 className="text-4xl font-medium text-gray-700">Jessica Jones, <span className="font-light text-gray-500">27</span></h1>
-                    <p className="font-light text-gray-600 mt-3">Bucharest, Romania</p>
-
-                    <p className="mt-8 text-gray-500">Solution Manager - Creative Tim Officer</p>
-                    <p className="mt-2 text-gray-500">University of Computer Science</p>
-                </div>
-
-                <div className="mt-12 flex flex-col justify-center">
-                    <p className="text-gray-600 text-center font-light lg:px-16">An artist of considerable range, Ryan — the name taken by Melbourne-raised, Brooklyn-based Nick Murphy — writes, performs and records all of his own music, giving it a warm, intimate feel with a solid groove structure. An artist of considerable range.</p>
-                    <button
-                        className="text-indigo-500 py-2 px-4  font-medium mt-4"
-                    >
-                        Show more
-                    </button>
-                </div>
+                <ProfileData />
 
             </div>
         </div>
