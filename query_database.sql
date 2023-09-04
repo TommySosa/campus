@@ -1,5 +1,3 @@
-create database campus;
-
 use campus;
 
 create table categories(
@@ -196,18 +194,17 @@ CREATE TABLE student_courses (
     foreign key(id_course) references courses(id_course)
 );
 
--- Crear la tabla intermedia para profesores y cursos
-CREATE TABLE teacher_courses (
-    id_teacher_course int not null unique auto_increment,
-    id_teacher int not null,
-    id_course int not null,
-    
-    primary key(id_teacher_course),
-    foreign key(id_teacher) references teachers(id_user),
-    foreign key(id_course) references courses(id_course)
-);
 
-select * from courses;
 
-SELECT * FROM teacher_courses WHERE id_course = 1;
+
+
+
+
+
+
+
+
+
+
+
 
