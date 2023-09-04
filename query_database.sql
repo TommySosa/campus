@@ -1,14 +1,4 @@
-create database campus;
-
 use campus;
-
-create table roles(
-	id_rol int not null unique auto_increment,
-    name varchar(30) not null,
-    
-    primary key(id_rol)
-);
-
 
 create table categories(
 	id_category int not null unique auto_increment,
@@ -36,10 +26,8 @@ create table users(
     password varchar(250) not null,
     profile_url varchar(300),
     description varchar(250),
-    id_rol int not null,
     
-    primary key(id_user),
-    foreign key (id_rol) references roles(id_rol)
+    primary key(id_user)
 );
 
 create table progress(
@@ -136,11 +124,6 @@ create table drag_options(
 -- INSERT INTO drag_options (exercise_id, text) VALUES (1, 'Opción 3');
 -- Puedes agregar más opciones aquí
 
--- Agregar roles
-
-insert into roles(name) values ('student');
-insert into roles(name) values ('teacher');
-insert into roles(name) values ('admin');
 
 select * from users;
 insert into categories(name) values ('English');
@@ -185,23 +168,40 @@ LEFT JOIN drag_and_drop ON exercises.id_exercise = drag_and_drop.id_exercise
 LEFT JOIN drag_options ON drag_and_drop.id_exercise = drag_options.id_exercise
 GROUP BY exercises.id_exercise;
 
+-- Crea las tablas students y teachers
+CREATE TABLE students (
+    id_user int not null unique,
+    
+    primary key(id_user),
+    foreign key (id_user) references users(id_user)
+);
 
+CREATE TABLE teachers (
+    id_user int not null unique,
+    
+    primary key(id_user),
+    foreign key (id_user) references users(id_user)
+);
 
+-- Crear la tabla intermedia para estudiantes y cursos
+CREATE TABLE student_courses (
+    id_student_course int not null unique auto_increment,
+    id_student int not null,
+    id_course int not null,
+    
+    primary key(id_student_course),
+    foreign key(id_student) references students(id_user),
+    foreign key(id_course) references courses(id_course)
+);
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+-- Crear la tabla intermedia para profesores y cursos
+CREATE TABLE teacher_courses (
+    id_teacher_course int not null unique auto_increment,
+    id_teacher int not null,
+    id_course int not null,
+    
+    primary key(id_teacher_course),
+    foreign key(id_teacher) references teachers(id_user),
+    foreign key(id_course) references courses(id_course)
+);
 
