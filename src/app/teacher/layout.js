@@ -11,9 +11,9 @@ export default function TeacherLayout({ children }) {
         setSidebarOpen(!sidebarOpen);
     };
     return (
-        <div className="lg:flex h-screen">
+        <div className="lg:flex h-[90vh]">
             {/* Sidebar (visible en pantallas grandes) */}
-            <aside className={`bg-gray-800 text-white w-64 flex-shrink-0 ${sidebarOpen ? 'block' : 'hidden'} lg:block`}>
+            <aside className={`text-white w-64 flex-shrink-0 ${sidebarOpen ? 'block' : 'hidden'} lg:block`}>
                 {/* Contenido del sidebar aquí */}
                 <Sidebar />
             </aside>
@@ -21,25 +21,17 @@ export default function TeacherLayout({ children }) {
             {/* Contenido Principal */}
             <div className="flex-1 bg-gray-100 p-8">
                 {/* Contenido principal aquí */}
-                {children}
+                {
+                    !sidebarOpen ? <>{children}</> : null
+                }
+                {/* {children} */}
             </div>
 
             {/* Botón desplegable del sidebar (visible en pantallas pequeñas) */}
-            <button onClick={toggleSidebar} className="lg:hidden bg-gray-800 text-white w-12 h-12 fixed bottom-4 right-4 z-10">
-                {/* Icono de botón desplegable (por ejemplo, un ícono de hamburguesa) */}
-                <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    className="w-6 h-6"
-                >
-                    <line x1="3" y1="12" x2="21" y2="12" />
-                    <line x1="3" y1="6" x2="21" y2="6" />
-                    <line x1="3" y1="18" x2="21" y2="18" />
+            <button onClick={toggleSidebar} className="lg:hidden bg-elf-green-600 rounded-lg text-white w-12 h-12 fixed bottom-4 right-4 z-100">
+                {/* Icono de botón desplegable*/}
+                <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M7 14.5L12 9.5L17 14.5" stroke="#000000" strokeLinecap="round" strokeLinejoin="round" />
                 </svg>
             </button>
         </div>

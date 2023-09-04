@@ -136,9 +136,54 @@ create table drag_options(
 -- INSERT INTO drag_options (exercise_id, text) VALUES (1, 'Opción 3');
 -- Puedes agregar más opciones aquí
 
+-- Agregar roles
+
+insert into roles(name) values ('student');
+insert into roles(name) values ('teacher');
+insert into roles(name) values ('admin');
+
+select * from users;
+insert into categories(name) values ('English');
+insert into courses(name,description,id_category) values ('Curso 1','Descripcion del curso 1', 1);
+insert into progress(correct_exercises, incorrect_exercises, total_exercises, id_course, id_user) values(23,7, 30, 1, 1);
+insert into modules(name,id_course) values('Modulo de prueba', 1);
+insert into exercise_types(name) values('Verdadero o falso');
+insert into exercises(name,instruction,id_module,id_type) values("Verb to be 1", "Realiza el sig. ejercicio", 1, 1);
+insert into exercises(name,instruction,id_module,id_type) values("He-She-It", "Como se dice él", 1, 2);
+select * from exercises;
+INSERT INTO multiple_choise (id_exercise, options) VALUES (1, '[{"text": "Opción A", "correct": true}, {"text": "Opción B", "correct": false}, {"text": "Opción C", "correct": false}]');
+INSERT INTO multiple_choise (id_exercise, options) VALUES (3, '[{"text": "Opción A", "correct": false}, {"text": "Opción B", "correct": true}, {"text": "Opción C", "correct": false}]');
+
+select * from categories;
+select * from courses;
+select * from progress;
+select * from modules;
+select * from exercise_types;
+select * from exercises;
+select * from multiple_choise;
+select * from true_or_false;
+insert into true_or_false(id_exercise,true_option, false_option) values(4,'He', 'She');
+
+SELECT exercises.*, exercise_types.name AS exercise_type
+FROM exercises
+INNER JOIN exercise_types ON exercises.id_type = exercise_types.id_type;
 
 
-
+SELECT 
+    exercises.*, 
+    exercise_types.name AS exercise_type,
+    multiple_choise.options AS multiple_choice_options,
+    true_or_false.true_option,
+    true_or_false.false_option,
+    drag_and_drop.instruction AS drag_and_drop_instruction,
+    GROUP_CONCAT(drag_options.text) AS drag_options_texts
+FROM exercises
+INNER JOIN exercise_types ON exercises.id_type = exercise_types.id_type
+LEFT JOIN multiple_choise ON exercises.id_exercise = multiple_choise.id_exercise
+LEFT JOIN true_or_false ON exercises.id_exercise = true_or_false.id_exercise
+LEFT JOIN drag_and_drop ON exercises.id_exercise = drag_and_drop.id_exercise
+LEFT JOIN drag_options ON drag_and_drop.id_exercise = drag_options.id_exercise
+GROUP BY exercises.id_exercise;
 
 
 
