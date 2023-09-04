@@ -7,6 +7,10 @@ export default function Home() {
       <Link href="/teacher/create-exercises">
         Crear ejercicios
       </Link>
+
+      <Link href="/teacher/create-course">
+        Crear curso
+      </Link>
       
     </>
   )
