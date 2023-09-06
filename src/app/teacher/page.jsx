@@ -1,8 +1,13 @@
+"use client"
 import ButtonsCard from "@/components/ButtonsCard"
-
+import { useSession } from "next-auth/react"
 export default function Home() {
-  return (
-    <>
+  const { data: session, status } = useSession();
+
+  if(session && session.user.id_rol === 2){
+    console.log(session.user.id_rol);
+    return(
+      <>
       <ButtonsCard title="Cursos" firstButton={{color: "blue", label: "Crear", href:"/teacher/create-course"}}
       secondButton={{color: "green", label: "Editar", href:"/teacher/edit-course"}}
       thirdButton={{color: "red", label: "Borrar", href:"/teacher/delete-course"}}
@@ -24,5 +29,10 @@ export default function Home() {
       fourthButton={{color: "yellow", label: "Ver", href: "/teacher/view-teacher"}}
       />
     </>
-  )
+    )
+  }else{
+    return(
+      <h1>Acceso denegado</h1>
+    )
+  }
 }
