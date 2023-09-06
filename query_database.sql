@@ -1,5 +1,12 @@
 use campus;
 
+create table roles(
+	id_rol int not null unique auto_increment,
+    name varchar(15),
+    
+    primary key(id_rol)
+);
+
 create table categories(
 	id_category int not null unique auto_increment,
     name varchar(50) not null,
@@ -26,8 +33,10 @@ create table users(
     password varchar(250) not null,
     profile_url varchar(300),
     description varchar(250),
+    id_rol int not null,
     
-    primary key(id_user)
+    primary key(id_user),
+    foreign key(id_rol) references roles(id_rol)
 );
 
 create table progress(
@@ -205,3 +214,13 @@ CREATE TABLE teacher_courses (
     foreign key(id_course) references courses(id_course)
 );
 
+ALTER TABLE users
+ADD COLUMN id_rol INT,
+ADD CONSTRAINT fk_users_roles
+FOREIGN KEY (id_rol)
+REFERENCES roles(id_rol);
+
+insert into roles(name) values ("teacher");
+select * from roles;
+
+UPDATE users SET id_rol = (2) WHERE id_user = 1;
