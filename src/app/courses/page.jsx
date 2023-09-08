@@ -1,10 +1,17 @@
 import CourseCard from "@/components/Card";
-export default function Home() {
+export default async function Home() {
+    const response = await fetch("http://localhost:3000/api/courses");
+    const data = await response.json();
+    const courses = data.data;
+
     return (
         <section className="flex justify-center mt-12 flex-wrap">
-            <CourseCard profe="Prof. Tomás Sosa" curso="English Course Level Basic" />
-            <CourseCard profe="Prof. Yamila Lescano" curso="English Course Level Medium" />
-            <CourseCard profe="Prof. Yamila Lescano" curso="English Course Level High" />
+            {
+                courses.length > 0 ?
+                courses.map((course) => (
+                    <CourseCard key={course.id_course} profe={course.professor} curso={course.name} />
+                )) : null
+            }
         </section>
     )
 }

@@ -177,6 +177,7 @@ LEFT JOIN drag_and_drop ON exercises.id_exercise = drag_and_drop.id_exercise
 LEFT JOIN drag_options ON drag_and_drop.id_exercise = drag_options.id_exercise
 GROUP BY exercises.id_exercise;
 
+
 -- Crea las tablas students y teachers
 CREATE TABLE students (
     id_user int not null unique,
@@ -204,19 +205,6 @@ CREATE TABLE student_courses (
 );
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
 ALTER TABLE users
 ADD COLUMN id_rol INT,
 ADD CONSTRAINT fk_users_roles
@@ -227,3 +215,26 @@ insert into roles(name) values ("teacher");
 select * from roles;
 
 UPDATE users SET id_rol = (2) WHERE id_user = 1;
+UPDATE courses set id_teacher = (1) WHERE id_course = 2;
+
+ALTER TABLE courses
+ADD COLUMN id_teacher int;
+
+ALTER TABLE courses
+ADD CONSTRAINT fk_teacher
+FOREIGN KEY (id_teacher)
+REFERENCES teachers(id_user);
+
+SELECT
+    c.name AS course_name,
+    CONCAT(u.name, ' ', u.surname) AS teacher_name,
+    cat.name AS category_name
+FROM
+    courses AS c
+INNER JOIN
+    users AS u ON c.id_teacher = u.id_user
+INNER JOIN
+    categories AS cat ON c.id_category = cat.id_category
+WHERE
+    c.id_course = 1;
+

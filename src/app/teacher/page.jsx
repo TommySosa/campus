@@ -5,7 +5,6 @@ export default function Home() {
   const { data: session, status } = useSession();
 
   if(session && session.user.id_rol === 2){
-    console.log(session.user.id_rol);
     return(
       <>
       <ButtonsCard title="Cursos" firstButton={{color: "blue", label: "Crear", href:"/teacher/create-course"}}
