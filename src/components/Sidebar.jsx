@@ -12,7 +12,6 @@ export default function Sidebar() {
                     />
                 </div>
                 <CollapsableButton />
-                <CollapsableButton />
             </nav>
         </aside>
     )

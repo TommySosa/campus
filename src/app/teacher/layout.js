@@ -10,6 +10,7 @@ export default function TeacherLayout({ children }) {
     const toggleSidebar = () => {
         setSidebarOpen(!sidebarOpen);
     };
+
     return (
         <div className="lg:flex h-[90vh]">
             {/* Sidebar (visible en pantallas grandes) */}
