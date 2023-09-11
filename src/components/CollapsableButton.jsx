@@ -3,8 +3,9 @@ import { useState } from 'react';
 import useSWR from 'swr';
 import Spinner from './Spinner';
 
+const fetcher = (...args) => fetch(...args).then(res => res.json())
+
 const CollapsableButton = () => {
-    const fetcher = (...args) => fetch(...args).then(res => res.json())
     const { data, error, isLoading } = useSWR('/api/modules', fetcher);
 
     if (error) return <div>failed to load</div>
@@ -13,7 +14,7 @@ const CollapsableButton = () => {
     return (
         <div>
             {data.data.map((module) => (
-                <ModuleButton key={module.id_module} module={module} />
+                <ModuleButton key={module.id_module} module={module}/>
             ))}
         </div>
     );
@@ -22,6 +23,10 @@ const CollapsableButton = () => {
 
 const ModuleButton = ({ module }) => {
     const [isOpen, setIsOpen] = useState(false);
+    const { data, error, isLoading } = useSWR(`/api/module_exercises/${module.id_module}`, fetcher);
+    if (error) return <div>failed to load</div>
+    if (isLoading) return <Spinner />
+
 
     const toggleCollapsible = () => {
         setIsOpen(!isOpen);
@@ -41,16 +46,14 @@ const ModuleButton = ({ module }) => {
 
                 {isOpen && (
                     <div className="bg-gray-200 p-3">
-                        {/* Aquí puedes colocar tus opciones o contenido */}
-                        <button className="bg-elf-green-400 w-full px-2 py-1 rounded mb-1">
-                            Ejercicio 1
-                        </button>
-                        <button className="bg-elf-green-400 w-full px-2 py-1 rounded mb-1">
-                            Ejercicio 2
-                        </button>
-                        <button className="bg-elf-green-400 w-full px-2 py-1 rounded mb-1">
-                            Ejercicio 3
-                        </button>
+                        {
+                            data.data.length > 0 ? (
+                            data.data.map(exercise => 
+                                <button className="bg-elf-green-400 w-full px-2 py-1 rounded mb-1" key={exercise.id_exercise}>
+                                    {exercise.name}
+                                </button>
+                            )) : <div>No hay ejercicios</div>
+                        }
                     </div>
                 )}
             </div>
