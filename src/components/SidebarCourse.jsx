@@ -1,6 +1,6 @@
 /* eslint-disable @next/next/no-img-element */
-import CollapsableButton from "./CollapsableButton";
-export default function Sidebar() {
+import CollapsableButtonCourse from "./CollapsableButtonCourse";
+export default function SidebarCourse({id_params}) {
     return (
         <aside className="h-[90vh] w-64 text-black">
             <nav className="h-full flex flex-col bg-white border-r shadow-sm">
@@ -11,7 +11,7 @@ export default function Sidebar() {
                         alt="Logo"
                     />
                 </div>
-                <CollapsableButton/>
+                <CollapsableButtonCourse id_params={id_params}/>
             </nav>
         </aside>
     )
