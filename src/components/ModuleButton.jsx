@@ -1,6 +1,7 @@
 import Spinner from './Spinner';
 import useSWR from 'swr';
 import { useState } from 'react';
+import Link from 'next/link';
 
 const fetcher = (...args) => fetch(...args).then(res => res.json())
 
@@ -33,7 +34,9 @@ export default function  ModuleButton ({ module }){
                             data.data.length > 0 ? (
                             data.data.map(exercise => 
                                 <button className="bg-elf-green-400 w-full px-2 py-1 rounded mb-1" key={exercise.id_exercise}>
-                                    {exercise.name}
+                                    <Link href={`/courses/${module.id_course}/exercises/${exercise.id_exercise}`}>
+                                        {exercise.name}
+                                    </Link>
                                 </button>
                             )) : <div>No hay ejercicios</div>
                         }
