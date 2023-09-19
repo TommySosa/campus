@@ -1,7 +1,8 @@
 "use client"
 
 import axios from "axios"
-import { useState } from "react"
+import { useState, useEffect } from "react"
+import Select from 'react-select';
 export default function CreateExerciseForm() {
     const [formData, setFormData] = useState({
         name: "",
@@ -15,6 +16,13 @@ export default function CreateExerciseForm() {
         correct1: false,
         correct2: false,
     });
+    const [modules, setModules] = useState([]);
+    const exercise_types = [
+        { id: 1, name: "Multiple choise" },
+        { id: 2, name: "Verdadero o falso" },
+        { id: 3, name: "Completa la frase" },
+        { id: 4, name: "Arrastra las palabras" },
+    ];
 
     const handleInputChange = (event) => {
         const { name, value, type, checked } = event.target;
@@ -27,18 +35,45 @@ export default function CreateExerciseForm() {
     };
 
     const handleChangeType = (e) => {
-        const selectedType = e.target.value;
         setFormData((prevData) => ({
             ...prevData,
-            id_type: selectedType,
+            id_type: e.value,
+        }));
+        console.log("e", e.value);
+        console.log("id", formData.id_type);
+    };
+    const handleChangeModule = (e) => {
+        const modulos = [
+            { id: e.value, name: e.label },
+        ]
+        console.log("modulos", modulos);
+        setFormData((prevData) => ({
+            ...prevData,
+            id_module: e.value,
         }));
     };
+
+    useEffect(() => {
+        async function fetchData() {
+            const response = await fetch('/api/modules');
+            const data = await response.json();
+            setModules(data.data);
+        }
+
+        fetchData();
+    }, []);
 
     const handleSubmit = async (event) => {
         event.preventDefault();
 
-        const body = {
-            ...formData,
+        const exerciseBody = {
+            name: formData.name,
+            instruction: formData.instruction,
+            id_module: formData.id_module,
+            id_type: formData.id_type,
+        };
+
+        const multipleBody = {
             options: [
                 { text: formData.option1, correct: formData.correct1 },
                 { text: formData.option2, correct: formData.correct2 },
@@ -46,17 +81,18 @@ export default function CreateExerciseForm() {
                 { text: formData.option4, correct: false },
             ],
         };
+        console.log("exerciseBody", exerciseBody);
+        console.log("multipleBody", multipleBody);
+        console.log("modules", modules);
 
         try {
-            const createExerciseResponse = await axios.post("http://localhost:3001/api/exercises", body);
-            console.log(createExerciseResponse.data);
-            console.log('BODY OPTIONS', body.options);
+            const createExerciseResponse = await axios.post("http://localhost:3001/api/exercises", exerciseBody);
 
-            if (createExerciseResponse.data.id_type === "1") {
+            if (createExerciseResponse.data.id_type === 1) {
                 try {
                     const multipleResponse = await axios.post("http://localhost:3001/api/multiple", {
                         id_exercise: await createExerciseResponse.data.id_exercise,
-                        options: body.options,
+                        options: multipleBody.options,
                     });
                     console.log("Multiple response", multipleResponse.data);
                 } catch (error) {
@@ -82,24 +118,18 @@ export default function CreateExerciseForm() {
                 className="w-2/3 p-1 max-sm:w-full"
                 placeholder="Elija el sustantivo correcto según la frase." onChange={handleInputChange} value={formData.instruction} />
             <label htmlFor="id_module">Módulo</label>
-            <select id="id_module" name="id_module"
-                className="w-2/3 p-1 max-sm:w-full" onChange={handleInputChange} value={formData.id_module}>
-                <option disabled selected>Selecciona el módulo</option>
-                <option value="1">Módulo 1</option>
-                <option value="2">Módulo 2</option>
-                <option value="3">Módulo 3</option>
-            </select>
+            <Select id="id_module" name="id_module"
+                className="w-2/3 p-1 max-sm:w-full" onChange={handleChangeModule}
+                options={modules.map(mod => ({ label: mod.name, value: mod.id_module }))}>
+
+            </Select>
             <label htmlFor="id_type">Tipo</label>
-            <select id="id_type" name="id_type"
-                className="w-2/3 p-1 max-sm:w-full" onChange={handleChangeType} value={formData.id_type}>
-                <option disabled selected>Selecciona un tipo</option>
-                <option value="1">Multiple choise</option>
-                <option value="2">Verdadero o falso</option>
-                <option value="3">Completa la frase</option>
-                <option value="4">Arrastra las palabras</option>
-            </select>
+            <Select id="id_type" name="id_type"
+                className="w-2/3 p-1 max-sm:w-full" onChange={handleChangeType}
+                options={exercise_types.map(type => ({ label: type.name, value: type.id }))}>
+            </Select>
             <br />
-            {formData.id_type === "1" ? (
+            {formData.id_type === 1 ? (
                 <>
                     <div className="flex-row">
                         <div className="flex-col">
@@ -142,7 +172,6 @@ export default function CreateExerciseForm() {
                         <div className="flex-col">
                             <input type="text" id="option3" name="option3"
                                 className="w-2/3 p-1 my-2 max-sm:w-full" onChange={handleInputChange} value={formData.option3} /><br />
-
                         </div>
                     </div>
 
@@ -160,7 +189,7 @@ export default function CreateExerciseForm() {
 
                 </>
             ) : null}
-            {formData.id_type === "2" ? (
+            {formData.id_type === 2 ? (
                 <>
                     <div className="flex-row">
                         <div className="flex-col">

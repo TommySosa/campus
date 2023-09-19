@@ -9,7 +9,8 @@ export default async function Home() {
             {
                 courses.length > 0 ?
                 courses.map((course) => (
-                    <CourseCard key={course.id_course} profe={course.professor} curso={course.name} />
+                    // <CourseCard key={course.id_course} profe={course.id_teacher} curso={course.name} description={course.description}/>
+                    <CourseCard key={course.id_course} course={course}/>
                 )) : null
             }
         </section>
