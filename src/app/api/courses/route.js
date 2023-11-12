@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 
 export async function GET(req){
-    const res = await fetch("http://localhost:3001/api/courses",{
+    const res = await fetch("http://localhost:4001/api/courses",{
         method: "GET",
         headers: {
             "Content-Type": "application/json",

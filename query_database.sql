@@ -138,7 +138,7 @@ select * from users;
 insert into categories(name) values ('English');
 insert into courses(name,description,id_category) values ('Curso 1','Descripcion del curso 1', 1);
 insert into progress(correct_exercises, incorrect_exercises, total_exercises, id_course, id_user) values(23,7, 30, 1, 1);
-insert into modules(name,id_course) values('Modulo de prueba', 1);
+insert into modules(name,id_course) values('Modulo del curso 2', 2);
 insert into exercise_types(name) values('Verdadero o falso');
 insert into exercises(name,instruction,id_module,id_type) values("Verb to be 1", "Realiza el sig. ejercicio", 1, 1);
 insert into exercises(name,instruction,id_module,id_type) values("He-She-It", "Como se dice él", 1, 2);
@@ -237,4 +237,15 @@ INNER JOIN
     categories AS cat ON c.id_category = cat.id_category
 WHERE
     c.id_course = 1;
+    
+select * from modules;
+
+SELECT modules.*, courses.name as course_name 
+FROM modules 
+JOIN courses ON modules.id_course = courses.id_course where id_course = 1;
+
+SELECT * FROM exercises WHERE id_course = 2 AND id_exercise = 1;
+
+SELECT * FROM multiple_choise WHERE id_exercise = 2;
+
 

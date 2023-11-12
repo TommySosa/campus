@@ -1,9 +1,12 @@
 "use client"
 
 import axios from "axios"
+import { redirect } from "next/navigation";
 import { useState, useEffect } from "react"
 import Select from 'react-select';
+import { useRouter } from "next/navigation";
 export default function CreateExerciseForm() {
+    const router = useRouter();
     const [formData, setFormData] = useState({
         name: "",
         instruction: "",
@@ -15,6 +18,8 @@ export default function CreateExerciseForm() {
         option4: "",
         correct1: false,
         correct2: false,
+        verdadera: "",
+        falsa: "",
     });
     const [modules, setModules] = useState([]);
     const exercise_types = [
@@ -81,16 +86,14 @@ export default function CreateExerciseForm() {
                 { text: formData.option4, correct: false },
             ],
         };
-        console.log("exerciseBody", exerciseBody);
-        console.log("multipleBody", multipleBody);
-        console.log("modules", modules);
+
 
         try {
-            const createExerciseResponse = await axios.post("http://localhost:3001/api/exercises", exerciseBody);
+            const createExerciseResponse = await axios.post("http://localhost:4001/api/exercises", exerciseBody);
 
             if (createExerciseResponse.data.id_type === 1) {
                 try {
-                    const multipleResponse = await axios.post("http://localhost:3001/api/multiple", {
+                    const multipleResponse = await axios.post("http://localhost:4001/api/multiple", {
                         id_exercise: await createExerciseResponse.data.id_exercise,
                         options: multipleBody.options,
                     });
@@ -98,11 +101,24 @@ export default function CreateExerciseForm() {
                 } catch (error) {
                     console.log('IF MULTIPLE ERROR', error);
                 }
-            } else if (formData.id_type === "2") {
+            } else if (createExerciseResponse.data.id_type === 2) {
                 // hacer lo mismo para verdadero o falso
+                try {
+                    const trueFalseResponse = await axios.post("http://localhost:4000/api/trueFalse", {
+                        id_exercise: await createExerciseResponse.data.id_exercise,
+                        true_option: formData.verdadera,
+                        false_option: formData.falsa,
+                    });
+                    router.refresh();                   
+                    router.push('/teacher/create-exercise')
+                    console.log("True false response", trueFalseResponse.data);
+                } catch (error) {
+                    console.log("falsa", formData.falsa);
+                    console.log("verdadera", formData.verdadera);
+                    console.log('IF TRUE FALSE ERROR', error);
+                }
             }
-
-            console.log("Creación exitosa");
+            alert("Creación exitosa");
         } catch (error) {
             console.error("Error al enviar la solicitud POST:", error);
         }
@@ -199,7 +215,7 @@ export default function CreateExerciseForm() {
                     <div className="flex-row">
                         <div className="flex-col">
                             <input type="text" id="verdadera" name="verdadera"
-                                className="w-2/3 p-1 my-2 max-sm:w-full" /><br />
+                                className="w-2/3 p-1 my-2 max-sm:w-full" onChange={handleInputChange} value={formData.verdadera}/><br />
                         </div>
                     </div>
                     <div className="flex-row">
@@ -210,7 +226,7 @@ export default function CreateExerciseForm() {
                     <div className="flex-row">
                         <div className="flex-col">
                             <input type="text" id="falsa" name="falsa"
-                                className="w-2/3 p-1 my-2 max-sm:w-full" /><br />
+                                className="w-2/3 p-1 my-2 max-sm:w-full" onChange={handleInputChange} value={formData.falsa}/><br />
                         </div>
                     </div>
                 </>
