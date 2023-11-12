@@ -4,7 +4,7 @@ import { revalidateTag } from "next/cache";
 export async function GET(req){
     const tag = req.nextUrl.searchParams.get('tag')
     revalidateTag(tag)
-    const res = await fetch("http://localhost:3001/api/modules",{
+    const res = await fetch("http://localhost:4001/api/modules",{
         method: "GET",
         headers: {
             "Content-Type": "application/json",

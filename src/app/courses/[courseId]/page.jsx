@@ -1,5 +1,5 @@
 export default async function Home({ params }) {
-    const response = await fetch(`http://localhost:3000/api/courses/${params.courseId}`);
+    const response = await fetch(`http://localhost:4000/api/courses/${params.courseId}`);
     
     if (!response.ok) {
       return (

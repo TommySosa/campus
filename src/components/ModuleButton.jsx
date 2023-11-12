@@ -1,20 +1,15 @@
-// import Spinner from './Spinner';
-// import useSWR from 'swr';
+"use client"
+
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 
-// const fetcher = (...args) => fetch(...args).then(res => res.json())
-
 export default function ModuleButton({ module }) {
     const [isOpen, setIsOpen] = useState(false);
-    // const { data, error, isLoading } = useSWR(`/api/module_exercises/${module.id_module}`, fetcher);
-    // if (error) return <div>failed to load</div>
-    // if (isLoading) return <Spinner />
     const [modules_exercises, setModules_exercises] = useState([]);
 
     useEffect(() => {
         async function fetchData() {
-            const response = await fetch(`/api/module_exercises/${module.id_module}`);
+            const response = await fetch(`http://localhost:4000/api/module_exercises/${module.id_module}`);
             const data = await response.json();
             setModules_exercises(data.data);
         }
