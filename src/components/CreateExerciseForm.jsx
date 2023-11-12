@@ -109,8 +109,6 @@ export default function CreateExerciseForm() {
                         true_option: formData.verdadera,
                         false_option: formData.falsa,
                     });
-                    router.refresh();                   
-                    router.push('/teacher/create-exercise')
                     console.log("True false response", trueFalseResponse.data);
                 } catch (error) {
                     console.log("falsa", formData.falsa);
