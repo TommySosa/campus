@@ -1,7 +1,8 @@
 "use client"
 
 import { useState, useEffect } from "react";
-
+import axios from "axios";
+import { useSession } from "next-auth/react";
 export default function Multiple({ id, name, instruction }) {
     const [multiple, setMultiples] = useState([]);
     const [first, setFirst] = useState(false);
@@ -10,8 +11,23 @@ export default function Multiple({ id, name, instruction }) {
     const [fourth, setFourth] = useState(false);
     const [opciones, setOpciones] = useState([]);
     const [feedbackMessage, setFeedbackMessage] = useState("");
-
+    const { data: session, status } = useSession()
+    const [realizado, setRealizado] = useState(false)
+    
     useEffect(() => {
+        async function check() {
+            const response = await axios.post('http://localhost:4001/api/exercises/check',{
+                id_user: session.user.id_user,
+                id_exercise: id
+            })
+            const result = await response.data[0].total
+            console.log(result);
+            if(result > "0"){
+                setRealizado(true);
+            }else{
+                fetchData()
+            }
+        }
         async function fetchData() {
             const response = await fetch(`/api/multiple/${id}`);
             const data = await response.json();
@@ -23,7 +39,8 @@ export default function Multiple({ id, name, instruction }) {
             }
         }
 
-        fetchData();
+        check()
+        // fetchData();
     }, [id]);
 
     // funcion para ordenar aleatoriamente el array
@@ -55,8 +72,24 @@ export default function Multiple({ id, name, instruction }) {
         //Esto es temporal
         if (incorrectAnswers.length > 0) {
             setFeedbackMessage("Respuesta incorrecta");
+            try {
+                axios.post('http://localhost:4001/api/exercises/incorrect',{
+                    id_exercise: id,
+                    id_user: session.user.id_user
+                })
+            } catch (error) {
+                console.log(error);
+            }
         } else if (correctAnswers.length === opciones.filter((opcion) => opcion.correct).length) {
             setFeedbackMessage("Respuesta correcta");
+            try {
+                axios.post('http://localhost:4001/api/exercises/correct',{
+                    id_exercise: id,
+                    id_user: session.user.id_user
+                })
+            } catch (error) {
+                console.log(error);
+            }
         } else {
             setFeedbackMessage("Aún no has seleccionado todas las respuestas correctas.");
         }
@@ -75,8 +108,8 @@ export default function Multiple({ id, name, instruction }) {
                     <div className="flex-col">
                         <div className="flex-row min-w-[250px]">
                             {
-                                multiple.options ? (
-                                    multiple.options.map((opcion, index) => <p key={index}>{opcion.text}</p>)) : <div>No hay opciones</div>
+                                realizado && multiple.options ? (
+                                    multiple.options.map((opcion, index) => <p key={index}>{opcion.text}</p>)) : <div>Ejercicio ya realizado.</div>
                             }
                         </div>
                     </div>
