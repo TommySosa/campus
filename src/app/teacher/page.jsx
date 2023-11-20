@@ -12,6 +12,6 @@ export default function Home() {
       </>
     );
   } else {
-    return <h1>Acceso denegado</h1>;
+    return <h1>Acceso denegado asd</h1>;
   }
 }

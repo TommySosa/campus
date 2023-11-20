@@ -11,13 +11,11 @@ import {
   Checkbox,
 } from "@mui/material";
 
-
-
 const ListarCursos = (
-  cursoSeleccionado,
+  {cursoSeleccionado,
   setCursoSeleccionado,
   cursos,
-  actualizarCurso
+  actualizarCurso}
 ) => {
   const manejarCambioCheckbox = (id_course) => {
     if (cursoSeleccionado === id_course) {

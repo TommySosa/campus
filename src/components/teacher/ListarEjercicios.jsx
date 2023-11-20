@@ -11,7 +11,7 @@ import {
   Checkbox,
 } from "@mui/material";
 
-const ListarEjercicios = (ejercicioSeleccionado, setEjercicioSeleccionado, ejercicios, actualizarEjercicio) => {
+const ListarEjercicios = ({ejercicioSeleccionado, setEjercicioSeleccionado, ejercicios, actualizarEjercicio}) => {
 
   const manejarCambioCheckbox = (id_exercise) => {
     if (ejercicioSeleccionado === id_exercise) {

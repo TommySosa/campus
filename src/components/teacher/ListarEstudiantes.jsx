@@ -11,7 +11,7 @@ import {
   Checkbox,
 } from "@mui/material";
 
-const ListarEstudiantes = (estudianteSeleccionado,setEstudianteSeleccionado, estudiantes, actualizarEstudiante) => {
+const ListarEstudiantes = ({estudianteSeleccionado,setEstudianteSeleccionado, estudiantes, actualizarEstudiante}) => {
 
   const manejarCambioCheckbox = (id_student) => {
     if (estudianteSeleccionado === id_student){

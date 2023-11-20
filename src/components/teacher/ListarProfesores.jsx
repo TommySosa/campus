@@ -13,7 +13,7 @@ import {
 
 
 
-const ListarProfesores = (profesorSeleccionado, setProfesorSeleccionado, profesores, actualizarProfesor) => {
+const ListarProfesores = ({profesorSeleccionado, setProfesorSeleccionado, profesores, actualizarProfesor}) => {
 
   const manejarCambioCheckbox = (id_teacher) => {
     if (profesorSeleccionado === id_teacher) {
