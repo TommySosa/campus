@@ -1,23 +1,23 @@
 "use client";
-import React, { useEffect } from "react";
 import axios from "axios";
 import { TextField, Button, Box, Typography, Grid, Paper } from "@mui/material";
-
+import { useState, useEffect } from "react";
 
 
 const CRUDCursos = (
-  cursoSeleccionado,
+  {cursoSeleccionado,
   setCursoSeleccionado,
   cargarCursos,
-  cursoActualizado
+  cursoActualizado}
 ) => {
-  const baseURL = "http://localhost:4000/api/courses/";
+  const baseURL = "http://localhost:4001/api/courses/";
 
   const [nuevoCurso, setNuevoCurso] = useState({
     name: "",
     description: "",
     url_image: "",
-    id_category: "",
+    id_category: null,
+    id_teacher: null
   });
 
   useEffect(() => {
@@ -27,13 +27,15 @@ const CRUDCursos = (
         description: cursoActualizado.description,
         url_image: cursoActualizado.url_image,
         id_category: cursoActualizado.id_category,
+        id_teacher: cursoActualizado.id_teacher
       });
     } else {
       setNuevoCurso({
         name: "",
         description: "",
         url_image: "",
-        id_category: "",
+        id_category: null,
+        id_teacher: null
       });
     }
   }, [cursoActualizado]);
@@ -44,7 +46,8 @@ const CRUDCursos = (
         nuevoCurso.name &&
         nuevoCurso.description &&
         nuevoCurso.url_image &&
-        nuevoCurso.id_category
+        nuevoCurso.id_category &&
+        nuevoCurso.id_teacher
       ) {
         const response = axios.post(baseURL, nuevoCurso);
 
@@ -64,7 +67,7 @@ const CRUDCursos = (
   const eliminarCurso = () => {
     if (cursoSeleccionado) {
       try {
-        const response = axios.delete(`${baseURL}${cursoSeleccionado}`);
+        const response = axios.delete(`${baseURL}${parseInt(cursoSeleccionado)}`);
 
         if (response.status === 204) {
           setCursoSeleccionado(null);
@@ -81,7 +84,8 @@ const CRUDCursos = (
   const actualizarCurso = () => {
     if (cursoSeleccionado) {
       try {
-        axios.put(`${baseURL}${cursoSeleccionado}`, nuevoCurso);
+        axios.patch(`${baseURL}${cursoSeleccionado}`, nuevoCurso);
+        console.log('ASDASD',`${baseURL}${cursoSeleccionado}` );
 
         cargarCursos();
         limpiarCampos();
@@ -98,7 +102,8 @@ const CRUDCursos = (
       name: "",
       description: "",
       url_image: "",
-      id_category: "",
+      id_category: null,
+      id_teacher: null
     });
   };
 
@@ -149,7 +154,17 @@ const CRUDCursos = (
             label="Categoria"
             value={nuevoCurso.id_category}
             onChange={(e) =>
-              setNuevoCurso({ ...nuevoCurso, id_category: e.target.value })
+              setNuevoCurso({ ...nuevoCurso, id_category: parseInt(e.target.value) })
+            }
+          />
+        </Grid>
+        <Grid item xs={12}>
+          <TextField
+            fullWidth
+            label="Profesor"
+            value={nuevoCurso.id_teacher}
+            onChange={(e) =>
+              setNuevoCurso({ ...nuevoCurso, id_teacher: parseInt(e.target.value) })
             }
           />
         </Grid>

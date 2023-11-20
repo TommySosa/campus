@@ -18,7 +18,7 @@ function Signin() {
 
     if (res?.error) setError(res.error);
 
-    if (res?.ok) return router.push("/home");
+    // if (res?.ok) return router.push("/home");
   };
 
   return (

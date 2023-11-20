@@ -1,12 +1,12 @@
 "use client"
-import React, { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import axios from 'axios'
 import ListarEstudiantes from '@/components/teacher/ListarEstudiantes'
 import CRUDEstudiantes from '@/components/teacher/CRUDEstudiantes'
 
-const page = () => {
+export default function Page(){
 
-  const baseURL = "http://localhost:4000/api/students"
+  const baseURL = "http://localhost:4001/api/students"
 
   const [estudianteSeleccionado, setEstudianteSeleccionado] = useState(null)
   const [estudiantes, setEstudiantes] = useState([])
@@ -19,6 +19,8 @@ const page = () => {
   const cargarEstudiantes = async () => {
     try {
       const response = await axios.get(baseURL)
+      const result = await response.data.data
+      setEstudiantes(result)
     } catch (error) {
       console.error("Error al obtener los estudiantes:", error);
     }
@@ -49,5 +51,3 @@ const page = () => {
     </>
   )
 }
-
-export default page

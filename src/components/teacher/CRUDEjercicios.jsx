@@ -7,7 +7,7 @@ import { TextField, Button, Box, Typography, Grid, Paper } from "@mui/material";
 
 const CRUDEjercicios = (ejercicioSeleccionado, setEjercicioSeleccionado, cargarEjercicios, ejercicioActualizado) => {
 
-  const baseURL = "http://localhost:4000/api/exercises"
+  const baseURL = "http://localhost:4001/api/exercises"
 
   const [nuevoEjercicio, setNuevoEjercicio] = useState({
     name:"",

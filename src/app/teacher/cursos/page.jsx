@@ -1,12 +1,11 @@
 "use client"
+
 import CRUDCursos from "@/components/teacher/CRUDCursos";
 import ListarCursos from "@/components/teacher/ListarCursos";
 import axios from "axios";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from 'react';
 
-
-
-const page = () => {
+export default function Page() {
 
   const baseURL = "http://localhost:4000/api/courses"
 
@@ -22,9 +21,9 @@ const page = () => {
   const cargarCursos = async () => {
     try {
       const response = await axios.get(baseURL)
-      const result = await response.json()
-      console.log("response.data: "+result)
-      setCursos(result.data)
+      const result = await response.data.data
+      // console.log("response.data: " + JSON.stringify(response.data.data))
+      setCursos(result)
     } catch (error) {
       console.error("Error al obtener los cursos:", error);
     }
@@ -34,8 +33,6 @@ const page = () => {
     setCursoActualizado(curso)
   }
 
-  console.log("cursos: "+cursos)
-
   return (
     <>
       <div className="lista">
@@ -44,10 +41,10 @@ const page = () => {
           setCursoSeleccionado={setCursoSeleccionado}
           cursos={cursos}
           actualizarCurso={actualizarCurso}
-         />
+        />
       </div>
       <div className="CRUD">
-        <CRUDCursos 
+        <CRUDCursos
           cursoSeleccionado={cursoSeleccionado}
           setCursoSeleccionado={setCursoSeleccionado}
           cargarCursos={cargarCursos}
@@ -57,5 +54,3 @@ const page = () => {
     </>
   );
 };
-
-export default page;

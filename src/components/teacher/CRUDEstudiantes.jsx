@@ -1,11 +1,11 @@
 "use client"
-import React, { useEffect } from 'react'
+import { useEffect, useState } from "react";
 import axios from "axios";
 import { TextField, Button, Box, Typography, Grid, Paper } from "@mui/material";
 
-const CRUDEstudiantes = (estudianteSeleccionado, setEstudianteSeleccionado, cargarEstudiantes, estudianteActualizado) => {
+export default function CRUDEstudiantes(estudianteSeleccionado, setEstudianteSeleccionado, cargarEstudiantes, estudianteActualizado){
 
-  const baseURL = "http://localhost:4000/api/students"
+  const baseURL = "http://localhost:4001/api/students"
 
   const [nuevoEstudiante, setNuevoEstudiante] = useState({
     id_student_course:"",
@@ -165,5 +165,3 @@ const CRUDEstudiantes = (estudianteSeleccionado, setEstudianteSeleccionado, carg
     </Paper>
   );
 }
-
-export default CRUDEstudiantes

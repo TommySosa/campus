@@ -1,10 +1,10 @@
 "use client"
-import React, { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import axios from 'axios'
 import ListarProfesores from '@/components/teacher/ListarProfesores'
 import CRUDProfesores from '@/components/teacher/CRUDProfesores'
-const page = () => {
 
+export default function Page() {
   const baseURL = "http://localhost:4000/api/teachers"
 
   const [profesorSeleccionado, setProfesorSeleccionado] = useState(null)
@@ -27,7 +27,7 @@ const page = () => {
   const actualizarProfesor = (profesor) => {
     setProfesorActualizado(profesor)
   }
- 
+
   return (
     <>
       <div className="lista">
@@ -49,5 +49,3 @@ const page = () => {
     </>
   )
 }
-
-export default page
