@@ -11,7 +11,6 @@ const CollapsableButton  = async() => {
     // if (isLoading) return <Spinner />
     const res = await fetch('http://localhost:4000/api/modules', { next: { tags: ['collection'] } })
     const data = await res.json()
-    console.log(data);
 
     return (
         <div>

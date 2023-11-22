@@ -1,11 +1,12 @@
 "use client"
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 
 export default function ModuleButton({ module }) {
     const [isOpen, setIsOpen] = useState(false);
     const [modules_exercises, setModules_exercises] = useState([]);
+    const prevModuleId = useRef(null)
 
     useEffect(() => {
         async function fetchData() {
@@ -14,7 +15,11 @@ export default function ModuleButton({ module }) {
             setModules_exercises(data.data);
         }
 
-        fetchData();
+        // if (module.id_module !== prevModuleId.current) {
+        //     fetchData();
+        //     prevModuleId.current = module.id_module;
+        // }
+        fetchData()
     }, [module.id_module]);
 
     const toggleCollapsible = () => {
