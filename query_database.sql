@@ -116,21 +116,27 @@ create table drag_options(
     primary key(id_option),
     foreign key(id_exercise) references drag_and_drop(id_exercise)
 );
-
--- CREATE TABLE students (
---     id_user int not null unique,
+create table correct_exercises(
+	id_correct int auto_increment primary key,
+    id_exercise int,
+    id_user int,
+    id_course int,
     
---     primary key(id_user),
---     foreign key (id_user) references users(id_user)
--- );
+    foreign key(id_exercise) references exercises(id_exercise),
+    foreign key(id_user) references users(id_user),
+    foreign key(id_course) references courses(id_course)
+);
 
--- CREATE TABLE teachers (
---     id_user int not null unique,
+create table incorrect_exercises(
+	id_incorrect int auto_increment primary key,
+    id_exercise int,
+    id_user int,
+    id_course int,
     
---     primary key(id_user),
---     foreign key (id_user) references users(id_user)
--- );
-
+    foreign key(id_exercise) references exercises(id_exercise),
+    foreign key(id_user) references users(id_user),
+    foreign key(id_course) references courses(id_course)
+);
 CREATE TABLE student_courses (
     id_student_course int not null unique auto_increment,
     id_user int not null,
@@ -158,6 +164,8 @@ create table incorrect_exercises(
     foreign key(id_exercise) references exercises(id_exercise),
     foreign key(id_user) references users(id_user)
 );
+
+alter table users add column dni int unique;
 
 insert into roles(name) values ("student");
 insert into roles(name) values ("teacher");
