@@ -16,7 +16,7 @@ export default async function Home({ params }) {
     }
 
     return (
-        <main>
+        <main className="flex justify-center items-center w-full h-full">
             <div>
                 {
                     //Si es multiple choise

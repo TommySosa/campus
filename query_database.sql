@@ -116,21 +116,27 @@ create table drag_options(
     primary key(id_option),
     foreign key(id_exercise) references drag_and_drop(id_exercise)
 );
-
--- CREATE TABLE students (
---     id_user int not null unique,
+create table correct_exercises(
+	id_correct int auto_increment primary key,
+    id_exercise int,
+    id_user int,
+    id_course int,
     
---     primary key(id_user),
---     foreign key (id_user) references users(id_user)
--- );
+    foreign key(id_exercise) references exercises(id_exercise),
+    foreign key(id_user) references users(id_user),
+    foreign key(id_course) references courses(id_course)
+);
 
--- CREATE TABLE teachers (
---     id_user int not null unique,
+create table incorrect_exercises(
+	id_incorrect int auto_increment primary key,
+    id_exercise int,
+    id_user int,
+    id_course int,
     
---     primary key(id_user),
---     foreign key (id_user) references users(id_user)
--- );
-
+    foreign key(id_exercise) references exercises(id_exercise),
+    foreign key(id_user) references users(id_user),
+    foreign key(id_course) references courses(id_course)
+);
 CREATE TABLE student_courses (
     id_student_course int not null unique auto_increment,
     id_user int not null,
@@ -140,6 +146,26 @@ CREATE TABLE student_courses (
     foreign key(id_user) references users(id_user),
     foreign key(id_course) references courses(id_course)
 );
+
+create table correct_exercises(
+	id_correct int auto_increment primary key,
+    id_exercise int,
+    id_user int,
+    
+    foreign key(id_exercise) references exercises(id_exercise),
+    foreign key(id_user) references users(id_user)
+);
+
+create table incorrect_exercises(
+	id_incorrect int auto_increment primary key,
+    id_exercise int,
+    id_user int,
+    
+    foreign key(id_exercise) references exercises(id_exercise),
+    foreign key(id_user) references users(id_user)
+);
+
+alter table users add column dni int unique;
 
 insert into roles(name) values ("student");
 insert into roles(name) values ("teacher");
@@ -153,6 +179,7 @@ insert into exercises(name,instruction,id_module,id_type) values("He-She-It", "C
 INSERT INTO multiple_choise (id_exercise, options) VALUES (2, '[{"text": "Opción A", "correct": true}, {"text": "Opción B", "correct": false}, {"text": "Opción C", "correct": false}]');
 INSERT INTO multiple_choise (id_exercise, options) VALUES (3, '[{"text": "Opción A", "correct": false}, {"text": "Opción B", "correct": true}, {"text": "Opción C", "correct": false}]');
 insert into true_or_false(id_exercise,true_option, false_option) values(4,'He', 'She');
+insert into correct_exercises(id_exercise, id_user) values(2, 1);
 UPDATE users SET id_rol = (2) WHERE id_user = 1;
 
 
