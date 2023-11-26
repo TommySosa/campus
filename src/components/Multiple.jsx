@@ -17,7 +17,7 @@ export default function Multiple({ id, name, instruction }) {
     useEffect(() => {
         async function check() {
             const response = await axios.post('http://localhost:4001/api/exercises/check', {
-                id_user: session.user.id_user,
+                id_user: await session.user.id_user,
                 id_exercise: id
             })
             const result = await response.data[0].total
