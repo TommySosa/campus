@@ -167,7 +167,7 @@ export default function Home() {
                   className="p-2 border border-gray-300 rounded-md w-full"
                 />
               </div>
-  
+                 {/* hola */}
               {/* Botón redondo para guardar la contraseña */}
               <button
                 type="button"
