@@ -42,20 +42,20 @@ export default function Home() {
 
   return (
     <>
-      <div className="p-16 flex justify-center items-center min-h-screen bg-gray-100">
+      <div className="p-8 flex justify-center items-center min-h-screen bg-gray-100">
         <div className="max-w-3xl mx-auto flex space-x-8">
-          {/* Contenedor existente (izquierda) */}
+          {/* Contenedor de Perfil (Izquierda) */}
           <div className="p-8 bg-white shadow flex-1 rounded-md overflow-hidden">
             <label htmlFor="profileImageInput" className="cursor-pointer block mb-6">
               <div
-                className="w-64 h-64 bg-indigo-100 mx-auto rounded-full shadow-2xl relative flex items-center justify-center text-indigo-500"
+                className="w-64 h-64 bg-indigo-100 mx-auto rounded-full shadow-2xl relative flex items-center justify-center overflow-hidden"
                 onClick={() => setShowChangeImage(!showChangeImage)}
               >
                 {profileImageUrl ? (
                   <img
                     src={profileImageUrl}
                     alt="Profile"
-                    className="w-64 h-64 rounded-full"
+                    className="w-full h-full object-cover rounded-full"
                   />
                 ) : (
                   <ProfileImage />
@@ -95,7 +95,7 @@ export default function Home() {
                 name="description"
                 rows="3"
                 maxLength="255"
-                className="p-2 border border-gray-300 rounded-md w-full"
+                className="p-2 border border-gray-300 rounded-md w-full resize-none"
                 placeholder="Ingresa tu descripción"
                 value={description}
                 onChange={handleDescriptionChange}
@@ -104,13 +104,13 @@ export default function Home() {
   
             <div className="flex justify-between">
               <button
-                className="text-white py-2 px-3 uppercase rounded bg-blue-500 hover:bg-blue-600 font-medium transition transform hover:-translate-y-0.5"
+                className="text-white py-2 px-4 uppercase rounded-full bg-blue-500 hover:bg-blue-600 font-medium transition transform hover:-translate-y-0.5"
                 onClick={handleModifyClick}
               >
                 Modificar
               </button>
               <button
-                className="text-white py-2 px-3 uppercase rounded bg-red-500 hover:bg-red-600 font-medium transition transform hover:-translate-y-0.5"
+                className="text-white py-2 px-4 uppercase rounded-full bg-red-500 hover:bg-red-600 font-medium transition transform hover:-translate-y-0.5"
                 onClick={handleSaveClick}
               >
                 Guardar
@@ -118,13 +118,20 @@ export default function Home() {
             </div>
           </div>
   
-          {/* Nuevo contenedor (derecha) */}
+          {/* Contenedor de Contraseña y Seguridad (Derecha) */}
           <div className="p-8 bg-white shadow flex-1 rounded-md overflow-hidden">
-            {/* Contenido del nuevo contenedor */}
-            <h2 className="text-2xl font-semibold mb-4">Contraseña y Seguridad</h2>
+            <h2 className="text-lg font-semibold mb-2">Contraseña y Seguridad</h2>
+  
+            {/* Descripción */}
+            <p className="text-xs text-gray-500 mb-2">
+              Se cerrarán todas las sesiones, excepto esta, para proteger tu cuenta si alguien intenta acceder a ella.
+            </p>
+            <p className="text-xs text-gray-500 mb-4">
+              La contraseña debe tener al menos seis caracteres e incluir una combinación de números, letras y caracteres especiales (!$@%).
+            </p>
   
             {/* Formulario de cambio de contraseña */}
-            <form className="space-y-4">
+            <form className="space-y-4 flex-1 flex flex-col justify-between">
               <div className="mb-4">
                 <label htmlFor="currentPassword" className="block text-sm font-medium text-gray-700 mb-1">
                   Contraseña actual
@@ -164,7 +171,7 @@ export default function Home() {
               {/* Botón redondo para guardar la contraseña */}
               <button
                 type="button"
-                className="text-white py-2 px-3 uppercase rounded-full bg-blue-500 hover:bg-blue-600 font-medium transition transform hover:-translate-y-0.5 rounded-md"
+                className="text-white py-2 px-4 uppercase rounded-full bg-blue-500 hover:bg-blue-600 font-medium transition transform hover:-translate-y-0.5 self-center"
               >
                 Guardar contraseña
               </button>
