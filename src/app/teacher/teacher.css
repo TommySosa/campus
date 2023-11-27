@@ -1,0 +1,41 @@
+.contenedor {
+    display: flex;
+}
+
+.lista{
+    width: 65%;
+}
+
+.CRUD{
+    /* margin-left: .5%; */
+    width: 35%;
+}
+
+.table-header {
+    color: #149696 !important;
+    font-size: 1.1em !important;
+}
+
+.Contenedor-CRUD-Button {
+    display: flex;
+    justify-content: space-between;
+}
+
+.CRUD-Button {
+    width: 40% !important;
+}
+
+.titulo-crud {
+    margin-bottom: 3% !important;
+}
+
+.boton-navbar {
+    width: 100% !important;
+    color: rgb(221, 221, 221) !important;
+}
+
+.selected {
+    background-color: #138080 !important;
+    border: 1px solid #127070 !important;  
+    color: white !important;
+}

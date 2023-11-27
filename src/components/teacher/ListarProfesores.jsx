@@ -1,5 +1,5 @@
-"use client"
-import React from 'react'
+"use client";
+import React from "react";
 import {
   Table,
   TableBody,
@@ -13,18 +13,28 @@ import {
 
 
 
-const ListarProfesores = ({profesorSeleccionado, setProfesorSeleccionado, profesores, actualizarProfesor}) => {
-
-  const manejarCambioCheckbox = (id_teacher) => {
-    if (profesorSeleccionado === id_teacher) {
-      setProfesorSeleccionado(null)
-      actualizarProfesor(null)
+const ListarProfesores = ({
+  profesorSeleccionado,
+  setProfesorSeleccionado,
+  profesores,
+  actualizarProfesor,
+}) => {
+  const manejarCambioCheckbox = (id_user) => {
+    if (profesorSeleccionado === id_user) {
+      setProfesorSeleccionado(null);
+      actualizarProfesor(null);
     } else {
-      setProfesorSeleccionado(id_teacher)
-      const profesor = profesores.find((profesor) => profesor.id_teacher === id_teacher)
-      actualizarProfesor(profesor)
+      setProfesorSeleccionado(id_user);
+      const profesor = profesores.find(
+        (profesor) => profesor.id_user === id_user
+      );
+      actualizarProfesor(profesor);
     }
-  }
+  };
+
+  const obtenerRol = (id_rol) => {
+    return id_rol === 1 ? 'Estudiante' : id_rol === 2 ? 'Profesor' : 'Otro Rol';
+  };
 
   return (
     <>
@@ -37,31 +47,31 @@ const ListarProfesores = ({profesorSeleccionado, setProfesorSeleccionado, profes
           <TableHead>
             <TableRow>
               <TableCell className="table-header"></TableCell>
-              <TableCell className="table-header">Curso del Profesor</TableCell>
-              <TableCell className="table-header">Profesor</TableCell>
-              <TableCell className="table-header">Curso</TableCell>
+              <TableCell className="table-header">Nombre</TableCell>
+              <TableCell className="table-header">Apellido</TableCell>
+              <TableCell className="table-header">Rol</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
             {profesores.map((profesor) => (
-              <TableRow key={profesor.id_teacher}>
+              <TableRow key={profesor.id_user}>
                 <TableCell>
                   <Checkbox
                     className="checkbox"
-                    checked={profesorSeleccionado === profesor.id_teacher}
-                    onChange={() => manejarCambioCheckbox(profesor.id_teacher)}
+                    checked={profesorSeleccionado === profesor.id_user}
+                    onChange={() => manejarCambioCheckbox(profesor.id_user)}
                   />
                 </TableCell>
-                <TableCell>{profesor.id_teacher_course}</TableCell>
-                <TableCell>{profesor.id_teacher}</TableCell>
-                <TableCell>{profesor.id_course}</TableCell>
+                <TableCell>{profesor.name}</TableCell>
+                <TableCell>{profesor.surname}</TableCell>
+                <TableCell>{obtenerRol(profesor.id_rol)}</TableCell>
               </TableRow>
             ))}
           </TableBody>
         </Table>
       </TableContainer>
     </>
-  )
-}
+  );
+};
 
-export default ListarProfesores
+export default ListarProfesores;

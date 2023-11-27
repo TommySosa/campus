@@ -2,7 +2,9 @@
 "use client";
 
 import { useState } from "react";
+import Navbar from "@/components/teacher/Navbar";
 import Sidebar from "@/components/Sidebar";
+import "@/app/teacher/teacher.css"
 
 export default function TeacherLayout({ children }) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -27,7 +29,14 @@ export default function TeacherLayout({ children }) {
       {/* Contenido Principal */}
       <div className="flex-1 bg-gray-100 p-8">
         {/* Contenido principal aquí */}
-        {!sidebarOpen ? <>{children}</> : null}
+        {!sidebarOpen ? (
+          <>
+            <Navbar />
+            <div className="contenedor">
+              {children}
+            </div>
+          </>
+        ) : null}
         {/* {children} */}
       </div>
 
