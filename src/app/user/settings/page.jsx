@@ -1,16 +1,35 @@
 'use client'
+import { UserConfig } from "next-auth/react";
 import { useState, useRef } from 'react';
 import ProfileImage from "@/components/ProfileImage";
 
-export default function Home() {
+
+export default function Settings() {
   const [profileImageUrl, setProfileImageUrl] = useState(null);
   const [description, setDescription] = useState('');
-
+  const [currentPassword, setCurrentPassword] = useState('');
   const [showChangeImage, setShowChangeImage] = useState(false);
   const fileInputRef = useRef(null);
+  const [error, setError] = useState("");
+  // const router = useRouter();
+  const handleSubmit = async (event) => {
+    event.preventDefault();
+    const formData = new FormData(event.currentTarget);
+    const res = await UserConfig("credentials", {
+      email: formData.get("email"),
+      password: formData.get("password"),
+      redirect: false,
+    });
 
-  const handleChangeClick = () => {
-    fileInputRef.current.click();
+    if (res?.error) setError(res.error)
+    else{ return alert("Contraseña correcta")}
+
+
+    //if (res?.ok) return router.push("/home");
+  };
+      const handleChangeClick = () => {
+      fileInputRef.current.click();
+
   };
 
   const handleFileChange = (event) => {
@@ -30,15 +49,34 @@ export default function Home() {
     setDescription(limitedDescription);
   };
 
-  const handleModifyClick = () => {
-    console.log('Modificar descripción');
-    // Lógica para la acción "Modificar"
-  };
+  // const handleSaveClick = async () => {
+  //   try {
+  //     const userId = 2; // Cambiar esto con la lógica para obtener el ID del usuario autenticado
 
-  const handleSaveClick = () => {
-    console.log('Guardar cambios');
-    // Lógica para la acción "Guardar"
-  };
+  //     // Realizar la verificación de la contraseña actual
+  //     const response = await fetch('/api/auth/userconfig/verify-password', {
+  //       method: 'POST',
+  //       headers: {
+  //         'Content-Type': 'application/json',
+  //       },
+  //       body: JSON.stringify({ userId, currentPassword }),
+  //     });
+
+  //     const result = await response.json();
+
+  //     if (result.success) {
+  //       // Contraseña correcta
+  //       alert('Contraseña correcta. ¡Guardando cambios!');
+  //       // Aquí debes agregar la lógica para guardar la nueva contraseña en la base de datos
+  //     } else {
+  //       // Contraseña incorrecta
+  //       alert('Contraseña incorrecta. No se pueden realizar cambios.');
+  //     }
+  //   } catch (error) {
+  //     console.error('Error al verificar la contraseña:', error);
+  //     alert('Error al verificar la contraseña. Por favor, inténtalo de nuevo.');
+  //   }
+  // };
 
   return (
     <>
@@ -105,7 +143,7 @@ export default function Home() {
             <div className="flex justify-between">
               <button
                 className="text-white py-2 px-4 uppercase rounded-full bg-blue-500 hover:bg-blue-600 font-medium transition transform hover:-translate-y-0.5"
-                onClick={handleSaveClick}
+               // onClick={handleSaveClick}
               >
                 Guardar
               </button>
@@ -126,6 +164,7 @@ export default function Home() {
   
             {/* Formulario de cambio de contraseña */}
             <form className="space-y-4 flex-1 flex flex-col justify-between">
+              {error && <div className="bg-red-500 text-white p-2 mb-2">{error}</div>}
               <div className="mb-4">
                 <label htmlFor="currentPassword" className="block text-sm font-medium text-gray-700 mb-1">
                   Contraseña actual
@@ -162,13 +201,14 @@ export default function Home() {
                 />
               </div>
   
-              {/* Botón redondo para guardar la contraseña */}
-              <button
-                type="button"
-                className="text-white py-2 px-4 uppercase rounded-full bg-blue-500 hover:bg-blue-600 font-medium transition transform hover:-translate-y-0.5 self-center"
-              >
-                Guardar contraseña
-              </button>
+              <div className="flex justify-between">
+                <button
+                   className="text-white py-2 px-4 uppercase rounded-full bg-blue-500 hover:bg-blue-600 font-medium transition transform hover:-translate-y-0.5"
+                 //  onClick={handleSaveClick}
+                 >
+                    Guardar contraseña
+                </button>
+              </div>
             </form>
           </div>
         </div>
