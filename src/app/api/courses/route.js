@@ -6,6 +6,7 @@ export async function GET(req){
         headers: {
             "Content-Type": "application/json",
         },
+        cache: 'no-store'
     });
     const data = await res.json();
 
@@ -14,3 +15,4 @@ export async function GET(req){
         data: data,
     })
 }
+

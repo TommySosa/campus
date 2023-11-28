@@ -22,6 +22,7 @@ export default function MainLayout() {
   const loginRoute = pathname === '/auth/login'
   const registerRoute = pathname === '/auth/register'
   const teacherRoute = pathname === '/teacher'
+  const attendanceRoute = pathname === '/attendance'
 
   return (
     <Disclosure as="nav" className="bg-elf-green-600">
@@ -79,6 +80,12 @@ export default function MainLayout() {
                                   'block rounded-md px-3 py-2 text-base font-medium'
                                 )}>
                                   Profesor
+                                </Link>
+                                <Link href={'/attendance'} className={classNames(
+                                  attendanceRoute ? 'bg-elf-green-800 text-white' : 'text-gray-300 hover:bg-elf-green-700 hover:text-white',
+                                  'block rounded-md px-3 py-2 text-base font-medium'
+                                )}>
+                                  Asistencia
                                 </Link>
 
                               </>

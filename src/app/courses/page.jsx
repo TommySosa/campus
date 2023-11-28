@@ -1,6 +1,12 @@
 import CourseCard from "@/components/Card";
 export default async function Home() {
-    const response = await fetch("http://localhost:4000/api/courses");
+    const response = await fetch("http://localhost:4000/api/courses",{
+        method: "GET",
+        headers: {
+            "Content-Type": "application/json",
+        },
+        cache: 'no-store'
+    });
     const data = await response.json();
     const courses = data.data;
 

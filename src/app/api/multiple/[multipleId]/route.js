@@ -9,6 +9,8 @@ export async function GET(req, {params}){
         headers: {
             "Content-Type": "application/json",
         },
+        cache: 'no-store'
+        // next: { revalidate: 15 } 
     });
     
     const data = await res.json();

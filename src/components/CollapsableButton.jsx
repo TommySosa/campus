@@ -9,9 +9,14 @@ const CollapsableButton  = async() => {
 
     // if (error) return <div>failed to load</div>
     // if (isLoading) return <Spinner />
-    const res = await fetch('http://localhost:4000/api/modules', { next: { tags: ['collection'] } })
+    const res = await fetch('http://localhost:4000/api/modules', { 
+        method: "GET",
+        headers: {
+            "Content-Type": "application/json",
+            cache: 'no-store'
+        }
+    })
     const data = await res.json()
-    console.log(data);
 
     return (
         <div>
