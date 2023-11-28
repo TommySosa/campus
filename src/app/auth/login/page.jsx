@@ -16,9 +16,11 @@ function Signin() {
       redirect: false,
     });
 
-    if (res?.error) setError(res.error);
+    if (res?.error) setError(res.error)
+    else{ return router.push("/courses")}
 
-    // if (res?.ok) return router.push("/home");
+
+    //if (res?.ok) return router.push("/home");
   };
 
   return (

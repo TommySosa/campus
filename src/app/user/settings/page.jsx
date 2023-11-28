@@ -105,12 +105,6 @@ export default function Home() {
             <div className="flex justify-between">
               <button
                 className="text-white py-2 px-4 uppercase rounded-full bg-blue-500 hover:bg-blue-600 font-medium transition transform hover:-translate-y-0.5"
-                onClick={handleModifyClick}
-              >
-                Modificar
-              </button>
-              <button
-                className="text-white py-2 px-4 uppercase rounded-full bg-red-500 hover:bg-red-600 font-medium transition transform hover:-translate-y-0.5"
                 onClick={handleSaveClick}
               >
                 Guardar
@@ -167,7 +161,7 @@ export default function Home() {
                   className="p-2 border border-gray-300 rounded-md w-full"
                 />
               </div>
-                 {/* hola */}
+  
               {/* Botón redondo para guardar la contraseña */}
               <button
                 type="button"
@@ -181,4 +175,4 @@ export default function Home() {
       </div>
     </>
   );
- }
+}  

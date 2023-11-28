@@ -11,12 +11,12 @@ import {
   Checkbox,
 } from "@mui/material";
 
-const ListarCursos = (
-  {cursoSeleccionado,
+const ListarCursos = ({
+  cursoSeleccionado,
   setCursoSeleccionado,
   cursos,
-  actualizarCurso}
-) => {
+  actualizarCurso,
+}) => {
   const manejarCambioCheckbox = (id_course) => {
     if (cursoSeleccionado === id_course) {
       setCursoSeleccionado(null);
@@ -27,8 +27,6 @@ const ListarCursos = (
       actualizarCurso(curso);
     }
   };
-
-  console.log("Cursos: " + cursos);
 
   return (
     <TableContainer
@@ -42,6 +40,7 @@ const ListarCursos = (
             <TableCell className="table-header">Nombre</TableCell>
             <TableCell className="table-header">Descripcion</TableCell>
             <TableCell className="table-header">Categoria</TableCell>
+            <TableCell className="table-header">Profesores</TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
@@ -57,6 +56,7 @@ const ListarCursos = (
               <TableCell>{curso.name}</TableCell>
               <TableCell>{curso.description}</TableCell>
               <TableCell>{curso.id_category}</TableCell>
+              <TableCell>{curso.id_user}</TableCell>
             </TableRow>
           ))}
         </TableBody>

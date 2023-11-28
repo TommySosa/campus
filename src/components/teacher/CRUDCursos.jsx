@@ -1,23 +1,31 @@
 "use client";
 import axios from "axios";
-import { TextField, Button, Box, Typography, Grid, Paper } from "@mui/material";
+import {
+  TextField,
+  Button,
+  Box,
+  Typography,
+  Grid,
+  Paper,
+  MenuItem,
+} from "@mui/material";
 import { useState, useEffect } from "react";
 
-
-const CRUDCursos = (
-  {cursoSeleccionado,
+const CRUDCursos = ({
+  cursoSeleccionado,
   setCursoSeleccionado,
   cargarCursos,
-  cursoActualizado}
-) => {
+  cursoActualizado,
+  profesores,
+}) => {
   const baseURL = "http://localhost:4001/api/courses/";
 
   const [nuevoCurso, setNuevoCurso] = useState({
     name: "",
     description: "",
     url_image: "",
-    id_category: null,
-    id_teacher: null
+    id_category: "",
+    id_user: "",
   });
 
   useEffect(() => {
@@ -27,15 +35,15 @@ const CRUDCursos = (
         description: cursoActualizado.description,
         url_image: cursoActualizado.url_image,
         id_category: cursoActualizado.id_category,
-        id_teacher: cursoActualizado.id_teacher
+        id_user: cursoActualizado.id_user,
       });
     } else {
       setNuevoCurso({
         name: "",
         description: "",
         url_image: "",
-        id_category: null,
-        id_teacher: null
+        id_category: "",
+        id_user: "",
       });
     }
   }, [cursoActualizado]);
@@ -47,7 +55,7 @@ const CRUDCursos = (
         nuevoCurso.description &&
         nuevoCurso.url_image &&
         nuevoCurso.id_category &&
-        nuevoCurso.id_teacher
+        nuevoCurso.id_user
       ) {
         const response = axios.post(baseURL, nuevoCurso);
 
@@ -67,7 +75,9 @@ const CRUDCursos = (
   const eliminarCurso = () => {
     if (cursoSeleccionado) {
       try {
-        const response = axios.delete(`${baseURL}${parseInt(cursoSeleccionado)}`);
+        const response = axios.delete(
+          `${baseURL}${parseInt(cursoSeleccionado)}`
+        );
 
         if (response.status === 204) {
           setCursoSeleccionado(null);
@@ -85,7 +95,6 @@ const CRUDCursos = (
     if (cursoSeleccionado) {
       try {
         axios.patch(`${baseURL}${cursoSeleccionado}`, nuevoCurso);
-        console.log('ASDASD',`${baseURL}${cursoSeleccionado}` );
 
         cargarCursos();
         limpiarCampos();
@@ -102,8 +111,8 @@ const CRUDCursos = (
       name: "",
       description: "",
       url_image: "",
-      id_category: null,
-      id_teacher: null
+      id_category: "",
+      id_user: "",
     });
   };
 
@@ -121,6 +130,7 @@ const CRUDCursos = (
         <Grid item xs={12}>
           <TextField
             fullWidth
+            size="small"
             label="Nombre"
             value={nuevoCurso.name}
             onChange={(e) =>
@@ -131,6 +141,7 @@ const CRUDCursos = (
         <Grid item xs={12}>
           <TextField
             fullWidth
+            size="small"
             label="Descripcion"
             value={nuevoCurso.description}
             onChange={(e) =>
@@ -141,6 +152,7 @@ const CRUDCursos = (
         <Grid item xs={12}>
           <TextField
             fullWidth
+            size="small"
             label="URL Image"
             value={nuevoCurso.url_image}
             onChange={(e) =>
@@ -151,22 +163,42 @@ const CRUDCursos = (
         <Grid item xs={12}>
           <TextField
             fullWidth
-            label="Categoria"
+            size="small"
+            select
+            label="Categorias"
             value={nuevoCurso.id_category}
             onChange={(e) =>
-              setNuevoCurso({ ...nuevoCurso, id_category: parseInt(e.target.value) })
+              setNuevoCurso({
+                ...nuevoCurso,
+                id_category: parseInt(e.target.value),
+              })
             }
-          />
+          >
+            <MenuItem key="1" value="1">
+              English
+            </MenuItem>
+          </TextField>
         </Grid>
         <Grid item xs={12}>
           <TextField
             fullWidth
-            label="Profesor"
-            value={nuevoCurso.id_teacher}
+            size="small"
+            select
+            label="Profesores"
+            value={nuevoCurso.id_user}
             onChange={(e) =>
-              setNuevoCurso({ ...nuevoCurso, id_teacher: parseInt(e.target.value) })
+              setNuevoCurso({
+                ...nuevoCurso,
+                id_user: parseInt(e.target.value),
+              })
             }
-          />
+          >
+            {profesores.map((profesor) => (
+              <MenuItem key={profesor.id_user} value={profesor.id_user}>
+                {profesor.name}
+              </MenuItem>
+            ))}
+          </TextField>
         </Grid>
       </Grid>
       <Box mt={2} className="Contenedor-CRUD-Button">

@@ -26,14 +26,17 @@ function Signup() {
                 password: formData.get("password"),
                 redirect: false,
             });
+            // if (res?.error) setError(res.error)
+            // else{ return router.push("/courses")}
 
-            // if (res.ok) return router.push("/home");
+             if (res.ok) return router.push("/courses");
         } catch (error) {
             console.log(error);
             if (error instanceof AxiosError) {
                 const errorMessage = error.response?.data.message;
                 setError(errorMessage);
-            }
+            } 
+            
         }
     };
 

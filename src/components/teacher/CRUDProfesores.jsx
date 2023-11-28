@@ -1,98 +1,86 @@
-"use client"
-import React, { useEffect, useState } from 'react'
+"use client";
+import React, { useEffect, useState } from "react";
 import axios from "axios";
-import { TextField, Button, Box, Typography, Grid, Paper } from "@mui/material";
+import {
+  TextField,
+  Button,
+  Box,
+  Typography,
+  Grid,
+  Paper,
+  MenuItem,
+} from "@mui/material";
 
-const CRUDProfesores = (profesorSeleccionado, setProfesorSeleccionado, cargarProfresores, profesorActualizado) => {
 
-  const baseURL = "http://localhost:4000/api/teachers"
+
+const CRUDProfesores = ({
+  profesorSeleccionado,
+  setProfesorSeleccionado,
+  cargarProfesores,
+  profesorActualizado,
+}) => {
+  const baseURL = "http://localhost:4001/api/users";
 
   const [nuevoProfesor, setNuevoProfesor] = useState({
-    id_teacher_course:"",
-    id_teacher:"",
-    id_course:"",
-  })
+    name: "",
+    surname: "",
+    id_rol: "",
+  });
 
   useEffect(() => {
-    if(profesorSeleccionado){
+    if (profesorSeleccionado) {
       setNuevoProfesor({
-        id_teacher_course: profesorActualizado.id_teacher_course,
-        id_teacher: profesorActualizado.id_teacher,
-        id_course: profesorActualizado.id_course
-      })
+        name: profesorActualizado.name,
+        surname: profesorActualizado.surname,
+        id_rol: profesorActualizado.id_rol,
+      });
     } else {
       setNuevoProfesor({
-        id_teacher_course:"",
-    id_teacher:"",
-    id_course:"",
-      })
+        name: "",
+        surname: "",
+        id_rol: "",
+      });
     }
-  }, [profesorActualizado])
+  }, [profesorActualizado]);
 
-  const agregarProfesor = async () => {
-    try {
-      if(nuevoProfesor.id_teacher_course && nuevoProfesor.id_teacher && nuevoProfesor.id_course){
-        const response = await axios.post(baseURL,nuevoProfesor)
-
-        if (response.status === 200){
-          limpiarCampos()
-          cargarProfresores()
-          alert("Profesor agregado correctamente")
-        }
-      } else {
-        alert("Por favor, complete todos los campos")
-      }
-    } catch (error) {
-      console.error("Error al agregar el profesor:", error);
-      
-    }
-  }
-
-  const eliminarProfesor = async () => {
-    if(profesorSeleccionado){
+  const cambiarRol = async () => {
+    if (profesorSeleccionado) {
       try {
-        const response = await axios.delete(`${baseURL}${profesorSeleccionado}`)
+        if (
+          nuevoProfesor.name &&
+          nuevoProfesor.surname &&
+          nuevoProfesor.id_rol
+        ) {
+          // Obtén el ID del profesor seleccionado
+          const idProfesor = profesorSeleccionado; // Asegúrate de usar la propiedad correcta para obtener el ID
 
-        if (response.status === 204){
-          setProfesorSeleccionado(null)
-          limpiarCampos()
-          cargarProfresores()
-          alert("Profesor eliminado correctamente")
+          // Realiza una solicitud PUT a tu endpoint de cambio de roles en la API
+          await axios.patch(`${baseURL}/${idProfesor}`, {
+            id_rol: nuevoProfesor.id_rol, // Envia el nuevo rol del profesor
+          });
+
+          // Vuelve a cargar la lista de profesores después de cambiar el rol
+          setProfesorSeleccionado(null);
+          limpiarCampos();
+          alert("Rol actualizado correctamente");
+          cargarProfesores();
+        } else {
+          alert("Por favor, complete todos los campos");
         }
       } catch (error) {
-        console.error("Error al eliminar el profesor:", error);
-        
+        console.error("Error al actualizar el rol del profesor:", error);
+        // Maneja el error en caso de que la solicitud falle
       }
     }
-
-
-  }
-
-  const actualizarProfesor = async () => {
-    if(profesorSeleccionado){
-      try {
-        await axios.put(`${baseURL}${profesorSeleccionado}`,nuevoProfesor)
-
-        await cargarProfresores()
-        limpiarCampos()
-        setProfesorSeleccionado(null)
-        alert("Profesor actualizado correctamente")
-      } catch (error) {
-        console.error("Error al actualizar el libro:", error);
-        
-      }
-    }
-
-
-  }
+  };
 
   const limpiarCampos = () => {
     setNuevoProfesor({
-      id_teacher_course:"",
-      id_teacher:"",
-      id_course:"",
-    })
-  }
+      name: "",
+      surname: "",
+      id_rol: "",
+    });
+  };
 
   return (
     <Paper elevation={3} sx={{ p: 2, bgcolor: "background.paper" }}>
@@ -102,38 +90,48 @@ const CRUDProfesores = (profesorSeleccionado, setProfesorSeleccionado, cargarPro
         component="div"
         sx={{ color: "text.primary" }}
       >
-        Agregar Profesor
+        Cambiar Rol
       </Typography>
       <Grid container spacing={2}>
         <Grid item xs={12}>
           <TextField
             fullWidth
-            label="Curso del Profesor"
-            value={nuevoProfesor.id_teacher_course}
+            label="Nombre"
+            value={nuevoProfesor.name}
             onChange={(e) =>
-              setNuevoProfesor({ ...nuevoProfesor, id_teacher_course: e.target.value })
+              setNuevoProfesor({
+                ...nuevoProfesor,
+                name: e.target.value,
+              })
             }
           />
         </Grid>
         <Grid item xs={12}>
           <TextField
             fullWidth
-            label="Profesor"
-            value={nuevoProfesor.id_teacher}
+            label="Apellido"
+            value={nuevoProfesor.surname}
             onChange={(e) =>
-              setNuevoProfesor({ ...nuevoProfesor, id_teacher: e.target.value })
+              setNuevoProfesor({ ...nuevoProfesor, surname: e.target.value })
             }
           />
         </Grid>
         <Grid item xs={12}>
           <TextField
             fullWidth
-            label="Curso"
-            value={nuevoProfesor.id_course}
+            select
+            label="Rol"
+            value={nuevoProfesor.id_rol}
             onChange={(e) =>
-              setNuevoProfesor({ ...nuevoProfesor, id_course: e.target.value })
+              setNuevoProfesor({
+                ...nuevoProfesor,
+                id_rol: parseInt(e.target.value),
+              })
             }
-          />
+          >
+            <MenuItem value={1}>Estudiante</MenuItem>
+            <MenuItem value={2}>Profesor</MenuItem>
+          </TextField>
         </Grid>
       </Grid>
       <Box mt={2} className="Contenedor-CRUD-Button">
@@ -141,32 +139,13 @@ const CRUDProfesores = (profesorSeleccionado, setProfesorSeleccionado, cargarPro
           className="CRUD-Button"
           variant="contained"
           color="secondary"
-          onClick={agregarProfesor}
-          style={{ display: profesorSeleccionado ? "none" : "block" }}
+          onClick={cambiarRol}
         >
-          Agregar
-        </Button>
-        <Button
-          className="CRUD-Button"
-          variant="contained"
-          color="primary"
-          onClick={actualizarProfesor}
-          style={{ display: profesorSeleccionado ? "block" : "none" }}
-        >
-          Actualizar
-        </Button>
-        <Button
-          className="CRUD-Button"
-          variant="contained"
-          color="error"
-          onClick={eliminarProfesor}
-          style={{ display: profesorSeleccionado ? "block" : "none" }}
-        >
-          Eliminar
+          Cambiar Rol
         </Button>
       </Box>
     </Paper>
   );
-}
+};
 
-export default CRUDProfesores
+export default CRUDProfesores;

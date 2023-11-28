@@ -1,4 +1,4 @@
-"use client"
+"use client";
 import React from "react";
 import {
   Table,
@@ -11,19 +11,24 @@ import {
   Checkbox,
 } from "@mui/material";
 
-const ListarEjercicios = ({ejercicioSeleccionado, setEjercicioSeleccionado, ejercicios, actualizarEjercicio}) => {
-
+const ListarEjercicios = ({
+  ejercicioSeleccionado,
+  setEjercicioSeleccionado,
+  ejercicios,
+  actualizarEjercicio,
+}) => {
   const manejarCambioCheckbox = (id_exercise) => {
     if (ejercicioSeleccionado === id_exercise) {
-      setEjercicioSeleccionado(null)
-      actualizarEjercicio(null)
+      setEjercicioSeleccionado(null);
+      actualizarEjercicio(null);
+    } else {
+      setEjercicioSeleccionado(id_exercise);
+      const ejercicio = ejercicios.find(
+        (ejercicio) => ejercicio.id_exercise === id_exercise
+      );
+      actualizarEjercicio(ejercicio);
     }
-    else{
-      setEjercicioSeleccionado(id_exercise)
-      const ejercicio = ejercicios.find((ejercicio) => ejercicio.id_exercise === id_exercise)
-      actualizarEjercicio(ejercicio)
-    }
-  }
+  };
 
   return (
     <>
@@ -49,7 +54,9 @@ const ListarEjercicios = ({ejercicioSeleccionado, setEjercicioSeleccionado, ejer
                   <Checkbox
                     className="checkbox"
                     checked={ejercicioSeleccionado === ejercicio.id_exercise}
-                    onChange={() => manejarCambioCheckbox(ejercicio.id_exercise)}
+                    onChange={() =>
+                      manejarCambioCheckbox(ejercicio.id_exercise)
+                    }
                   />
                 </TableCell>
                 <TableCell>{ejercicio.name}</TableCell>
@@ -62,7 +69,7 @@ const ListarEjercicios = ({ejercicioSeleccionado, setEjercicioSeleccionado, ejer
         </Table>
       </TableContainer>
     </>
-  )
-}
+  );
+};
 
-export default ListarEjercicios
+export default ListarEjercicios;

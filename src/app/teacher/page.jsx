@@ -1,6 +1,5 @@
 "use client";
 import ButtonsCard from "@/components/ButtonsCard";
-import Navbar from "@/components/teacher/Navbar";
 import { useSession } from "next-auth/react";
 export default function Home() {
   const { data: session, status } = useSession();
@@ -8,7 +7,6 @@ export default function Home() {
   if (session && session.user.id_rol === 2) {
     return (
       <>
-        <Navbar />
       </>
     );
   } else {
