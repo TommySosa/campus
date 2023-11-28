@@ -59,11 +59,11 @@ const CRUDCursos = ({
       ) {
         const response = axios.post(baseURL, nuevoCurso);
 
-        if (response.status === 200) {
+        
           limpiarCampos();
           cargarCursos();
           alert("Curso agregado correctamente");
-        }
+        
       } else {
         alert("Por favor, complete todos los campos");
       }
