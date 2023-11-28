@@ -4,8 +4,8 @@ export default async function Home() {
         method: "GET",
         headers: {
             "Content-Type": "application/json",
-            cache: 'no-store'
         },
+        cache: 'no-store'
     });
     const data = await response.json();
     const courses = data.data;
