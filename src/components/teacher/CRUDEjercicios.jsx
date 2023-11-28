@@ -9,6 +9,7 @@ import {
   Grid,
   Paper,
   MenuItem,
+  Checkbox,
 } from "@mui/material";
 
 const CRUDEjercicios = ({
@@ -20,6 +21,8 @@ const CRUDEjercicios = ({
   tipos,
 }) => {
   const baseURL = "http://localhost:4001/api/exercises";
+  const multipleURL = "http://localhost:4001/api/multiple"
+  const trueOrFalseURL = "http://localhost:4001/api/true_false"
 
   const [nuevoEjercicio, setNuevoEjercicio] = useState({
     name: "",
@@ -27,6 +30,22 @@ const CRUDEjercicios = ({
     id_module: "",
     id_type: "",
   });
+
+  const [formData, setFormData] = useState({
+    option1: "",
+    option2: "",
+    option3: "",
+    option4: "",
+    correctOption1: false,
+    correctOption2: false,
+  });
+
+  const [formData2, setFormData2] = useState({
+    true_option: "",
+    false_option: ""
+  })
+
+  const [idTipo, setTipo] = useState()
 
   useEffect(() => {
     if (ejercicioActualizado) {
@@ -44,6 +63,7 @@ const CRUDEjercicios = ({
         id_type: "",
       });
     }
+
   }, [ejercicioActualizado]);
 
   const agregarEjercicio = async () => {
@@ -54,9 +74,47 @@ const CRUDEjercicios = ({
         nuevoEjercicio.id_module &&
         nuevoEjercicio.id_type
       ) {
-        const response = await axios.post(baseURL, nuevoEjercicio);
 
-        if (response.status === 200) {
+        const multipleBody = {
+          options: [
+            { text: formData.option1, correct: formData.correctOption1 },
+            { text: formData.option2, correct: formData.correctOption2 },
+            { text: formData.option3, correct: false },
+            { text: formData.option4, correct: false },
+          ],
+        };
+        const createExerciseResponse = await axios.post(baseURL, nuevoEjercicio);
+
+        if (createExerciseResponse.status === 200) {
+          if (createExerciseResponse.data.id_type === 1) {
+            try {
+              const multipleResponse = await axios.post(multipleURL, {
+                id_exercise: await createExerciseResponse.data.id_exercise,
+                options: multipleBody.options
+              })
+              limpiarCampos()
+              cargarEjercicios()
+              alert('Ejercicio multiple choise agregado correctamente')
+              console.log('Multiple response', multipleResponse.data);
+            } catch (error) {
+              console.log('MULTIPLE ERROR', error);
+            }
+          }
+          else if (createExerciseResponse.data.id_type === 2) {
+            try {
+              const trueOrFalseResponse = await axios.post(trueOrFalseURL, {
+                id_exercise: await createExerciseResponse.data.id_exercise,
+                true_option: formData2.true_option,
+                false_option: formData2.false_option
+              })
+              limpiarCampos()
+              cargarEjercicios()
+              alert('Ejercicio verdadero o falso agregado correctamente')
+              console.log('Verdadero o falso response', trueOrFalseResponse.data);
+            } catch (error) {
+              console.log('TRUE OR FALSE', error);
+            }
+          }
           limpiarCampos();
           cargarEjercicios();
           alert("Ejercicio agregado correctamente");
@@ -67,6 +125,7 @@ const CRUDEjercicios = ({
     } catch (error) {
       console.error("Error al agregar el ejercicio: ", error);
     }
+
   };
 
   const eliminarEjercicio = async () => {
@@ -108,6 +167,34 @@ const CRUDEjercicios = ({
       instruction: "",
       id_module: "",
       id_type: "",
+    });
+    setFormData({
+      option1: "",
+      option2: "",
+      option3: "",
+      option4: "",
+      correctOption1: false,
+      correctOption2: false,
+    })
+  };
+
+  const handleChangeType = (e) => {
+    setTipo(e.target.value)
+    console.log('VALOR TIPO', idTipo)
+    setNuevoEjercicio({
+      ...nuevoEjercicio,
+      id_type: parseInt(e.target.value),
+    })
+    console.log('aqui');
+
+  }
+
+  const handleInputChange = (event, optionType) => {
+    const isChecked = event.target.checked;
+
+    setFormData({
+      ...formData,
+      [optionType]: isChecked,
     });
   };
 
@@ -172,11 +259,7 @@ const CRUDEjercicios = ({
             select
             label="Tipo"
             value={nuevoEjercicio.id_type}
-            onChange={(e) =>
-              setNuevoEjercicio({
-                ...nuevoEjercicio,
-                id_type: parseInt(e.target.value),
-              })
+            onChange={handleChangeType
             }
           >
             {tipos.map((tipo) => (
@@ -186,6 +269,95 @@ const CRUDEjercicios = ({
             ))}
           </TextField>
         </Grid>
+
+        {
+          idTipo === 1 ? (
+            <>
+              <Grid item xs={12}>
+                <TextField
+                  size="small"
+                  sx={{ width: '70%' }}
+                  label="Opcion 1"
+                  value={formData.option1}
+                  onChange={(e) => setFormData({ ...formData, option1: e.target.value })}
+                />
+                <Checkbox
+                  className="checkbox"
+                  checked={formData.correctOption1}
+                  onChange={(e) => handleInputChange(e, 'correctOption1')}
+                />
+              </Grid>
+
+              <Grid item xs={12}>
+                <TextField
+                  size="small"
+                  sx={{ width: '70%' }}
+                  label="Opcion 2"
+                  value={formData.option2}
+                  onChange={(e) => setFormData({ ...formData, option2: e.target.value })}
+                />
+                <Checkbox
+                  className="checkbox"
+                  checked={formData.correctOption2}
+                  onChange={(e) => handleInputChange(e, 'correctOption2')}
+                />
+              </Grid>
+              <Grid item xs={12}>
+                <TextField
+                  size="small"
+                  sx={{ width: '70%' }}
+                  label="Opcion 3"
+                  value={formData.option3}
+                  onChange={(e) =>
+                    setFormData({
+                      ...formData,
+                      option3: e.target.value,
+                    })
+                  }
+                />
+              </Grid>
+              <Grid item xs={12}>
+                <TextField
+                  size="small"
+                  sx={{ width: '70%' }}
+                  label="Opcion 4"
+                  value={formData.option4}
+                  onChange={(e) =>
+                    setFormData({
+                      ...formData,
+                      option4: e.target.value,
+                    })
+                  }
+                />
+              </Grid></>
+          ) : null
+        }
+        {
+          idTipo === 2 ? (
+            <>
+              <Grid item xs={12}>
+                <TextField
+                  size="small"
+                  sx={{ width: '70%' }}
+                  label="Verdadera: "
+                  value={formData2.true_option}
+                  onChange={(e) => setFormData2({ ...formData2, true_option: e.target.value })}
+                />
+              </Grid>
+              <Grid item xs={12}>
+                <TextField
+                  size="small"
+                  sx={{ width: '70%' }}
+                  label="Falsa: "
+                  value={formData2.false_option}
+                  onChange={(e) => setFormData2({ ...formData2, false_option: e.target.value })}
+                />
+              </Grid>
+            </>
+          ) : null
+        }
+
+
       </Grid>
       <Box mt={2} className="Contenedor-CRUD-Button">
         <Button
