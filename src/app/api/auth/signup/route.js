@@ -1,17 +1,14 @@
-import { NextResponse } from "next/server";
+// import { PrismaClient } from "@prisma/client";
+import prisma from '../../../../prisma/client';
 import bcrypt from "bcryptjs";
-import { pool } from "../../../../db.js";
+import { NextResponse } from "next/server";
+
+// const prisma = new PrismaClient();
 
 export async function POST(request) {
   try {
     const { name, surname, email, password, id_rol, dni } =
       await request.json();
-
-    if (password < 6)
-      return NextResponse.json(
-        { message: "Password must be at least 6 characters" },
-        { status: 400 }
-      );
 
     if (password.length < 6) {
       return NextResponse.json(
@@ -20,42 +17,46 @@ export async function POST(request) {
       );
     }
 
-    const [rows] = await pool.query("SELECT * FROM users WHERE email = ?", [
-      email,
-    ]);
+    const existingUser = await prisma.user.findUnique({
+      where: {
+        email: email,
+      },
+    });
 
-    if (rows.length > 0) {
+    if (existingUser) {
       return NextResponse.json(
-        {
-          message: "Email already exists",
-        },
-        {
-          status: 409,
-        }
+        { message: "Email already exists" },
+        { status: 409 }
       );
     }
 
     const hashedPassword = await bcrypt.hash(password, 12);
 
-    await pool.query(
-      "INSERT INTO users (name, surname, email, password, id_rol, dni) VALUES (?, ?, ?, ?, ?, ?)",
-      [name, surname, email, hashedPassword, id_rol, dni]
-    );
-
-    // pool.end();
+    const newUser = await prisma.user.create({
+      data: {
+        name: name,
+        surname: surname,
+        email: email,
+        password: hashedPassword,
+        id_rol: 1,
+        dni: parseInt(dni),
+      },
+    });
 
     return NextResponse.json(
       {
-        name,
-        surname,
-        email,
-        id_rol,
-        dni,
+        name: newUser.name,
+        surname: newUser.surname,
+        email: newUser.email,
+        id_rol: newUser.id_rol,
+        dni: parseInt(newUser.dni),
       },
       { status: 201 }
     );
   } catch (error) {
     console.error(error);
     return NextResponse.error();
+  } finally {
+    await prisma.$disconnect();
   }
 }

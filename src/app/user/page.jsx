@@ -1,6 +1,5 @@
 import ProfileData from "@/components/ProfileData";
 import ProfileImage from "@/components/ProfileImage";
-import axios from "axios"
 
 export default function Home() {
     // const response = await axios.get('/api/profile')
