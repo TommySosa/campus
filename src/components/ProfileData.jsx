@@ -3,6 +3,7 @@ import { useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
 import dynamic from "next/dynamic";
 import Spinner from "./Spinner";
+
 const Chart = dynamic(() => import("react-apexcharts"), { ssr: false });
 
 export default function ProfileData() {
@@ -16,24 +17,32 @@ export default function ProfileData() {
     });
 
     useEffect(() => {
-        if(status === "loading"){
-          return
-        } 
+        // if(status === "loading"){
+        //     return
+        // }
         async function fetchData() {
             const responseCorrect = await fetch(`http://localhost:4001/api/correct/${session.user.id_user}`);
             const correctsdata = await responseCorrect.json()
             setCorrects(correctsdata.length)
+            console.log('C DATA', correctsdata);
 
             const responseIncorrect = await fetch(`http://localhost:4001/api/incorrect/${session.user.id_user}`);
             const incorrectsdata = await responseIncorrect.json()
             setIncorrects(incorrectsdata.length)
+            // console.log('INC DATA', incorrectsdata);
+
         }
         fetchData()
-    }, [session, status])
+    }, [])
 
     useEffect(() => {
         setChartSeries([corrects, incorrects]);
     }, [corrects, incorrects]);
+
+    if(!corrects && !incorrects){
+        return <p>ASDASD</p>
+    }
+    
 
     return (
         <>
@@ -83,7 +92,9 @@ export default function ProfileData() {
                     </div>
                 </div>
                 <div className="flex justify-center w-full items-center">
-                    <Chart options={chartOptions} series={chartSeries} type="donut" width="380" />
+                    {
+                        status === "authenticated" ? <Chart options={chartOptions} series={chartSeries} type="donut" width="380" /> : null
+                    }
                 </div>
                 <button
                     className="text-indigo-500 py-2 px-4  font-medium mt-4"

@@ -20,6 +20,7 @@ model Category {
   id_category Int      @id @default(autoincrement())
   name        String
   courses     Course[]
+  active      Boolean  @default(true)
 }
 
 model User {
@@ -50,8 +51,9 @@ model Course {
   category       Category        @relation(fields: [id_category], references: [id_category])
   user           User            @relation(fields: [id_user], references: [id_user])
   modules        Module[]
-  exercises      Exercise[]
+  // exercises      Exercise[]
   studentCourses StudentCourse[]
+  active         Boolean         @default(true)
 }
 
 model Module {
@@ -60,6 +62,7 @@ model Module {
   id_course Int
   course    Course     @relation(fields: [id_course], references: [id_course])
   exercises Exercise[]
+  active    Boolean    @default(true)
 }
 
 model ExerciseType {
@@ -81,14 +84,16 @@ model Exercise {
   dragAndDrop        DragAndDrop?
   correctExercises   CorrectExercise[]
   incorrectExercises IncorrectExercise[]
-  Course             Course?             @relation(fields: [courseId_course], references: [id_course])
-  courseId_course    Int?
+  // Course             Course?             @relation(fields: [courseId_course], references: [id_course])
+  // courseId_course    Int?
+  active             Boolean             @default(true)
 }
 
 model MultipleChoise {
   id_exercise Int      @id
   options     Json
   exercise    Exercise @relation(fields: [id_exercise], references: [id_exercise])
+  active      Boolean  @default(true)
 }
 
 model TrueOrFalse {
@@ -96,6 +101,7 @@ model TrueOrFalse {
   true_option  String
   false_option String
   exercise     Exercise @relation(fields: [id_exercise], references: [id_exercise])
+  active       Boolean  @default(true)
 }
 
 model DragAndDrop {
@@ -103,6 +109,7 @@ model DragAndDrop {
   instruction String
   exercise    Exercise     @relation(fields: [id_exercise], references: [id_exercise])
   dragOptions DragOption[]
+  active      Boolean      @default(true)
 }
 
 model DragOption {
@@ -110,6 +117,7 @@ model DragOption {
   id_exercise Int
   text        String
   dragAndDrop DragAndDrop @relation(fields: [id_exercise], references: [id_exercise])
+  active      Boolean     @default(true)
 }
 
 model StudentCourse {
@@ -122,7 +130,7 @@ model StudentCourse {
 
 model CorrectExercise {
   id_correct  Int      @id @default(autoincrement())
-  id_exercise Int      
+  id_exercise Int
   id_user     Int
   exercise    Exercise @relation(fields: [id_exercise], references: [id_exercise])
   user        User     @relation(fields: [id_user], references: [id_user])
