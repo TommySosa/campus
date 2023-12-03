@@ -1,0 +1,149 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model Role {
+  id_rol Int    @id @default(autoincrement())
+  name   String
+  users  User[]
+}
+
+model Category {
+  id_category Int      @id @default(autoincrement())
+  name        String
+  courses     Course[]
+  active      Boolean  @default(true)
+}
+
+model User {
+  id_user            Int                 @id @default(autoincrement())
+  name               String
+  surname            String
+  email              String              @unique
+  password           String
+  profile_url        String?
+  description        String?
+  dni                Int                 @unique
+  id_rol             Int
+  role               Role                @relation(fields: [id_rol], references: [id_rol])
+  courses            Course[]
+  studentCourses     StudentCourse[]
+  correctExercises   CorrectExercise[]
+  incorrectExercises IncorrectExercise[]
+  attendances        Attendance[]
+}
+
+model Course {
+  id_course      Int             @id @default(autoincrement())
+  name           String
+  description    String
+  url_image      String
+  id_category    Int
+  id_user        Int
+  category       Category        @relation(fields: [id_category], references: [id_category])
+  user           User            @relation(fields: [id_user], references: [id_user])
+  modules        Module[]
+  studentCourses StudentCourse[]
+  active         Boolean         @default(true)
+}
+
+model Module {
+  id_module Int        @id @default(autoincrement())
+  name      String
+  id_course Int
+  course    Course     @relation(fields: [id_course], references: [id_course])
+  exercises Exercise[]
+  active    Boolean    @default(true)
+}
+
+model ExerciseType {
+  id_type   Int        @id @default(autoincrement())
+  name      String
+  exercises Exercise[]
+}
+
+model Exercise {
+  id_exercise        Int                 @id @default(autoincrement())
+  name               String
+  instruction        String
+  id_module          Int
+  id_type            Int
+  module             Module              @relation(fields: [id_module], references: [id_module])
+  type               ExerciseType        @relation(fields: [id_type], references: [id_type])
+  multipleChoise     MultipleChoise?
+  trueOrFalse        TrueOrFalse?
+  dragAndDrop        DragAndDrop?
+  correctExercises   CorrectExercise[]
+  incorrectExercises IncorrectExercise[]
+  active             Boolean             @default(true)
+}
+
+model MultipleChoise {
+  id_exercise Int      @id
+  options     Json
+  exercise    Exercise @relation(fields: [id_exercise], references: [id_exercise])
+  active      Boolean  @default(true)
+}
+
+model TrueOrFalse {
+  id_exercise  Int      @id
+  true_option  String
+  false_option String
+  exercise     Exercise @relation(fields: [id_exercise], references: [id_exercise])
+  active       Boolean  @default(true)
+}
+
+model DragAndDrop {
+  id_exercise Int          @id
+  instruction String
+  exercise    Exercise     @relation(fields: [id_exercise], references: [id_exercise])
+  dragOptions DragOption[]
+  active      Boolean      @default(true)
+}
+
+model DragOption {
+  id_option   Int         @id @default(autoincrement())
+  id_exercise Int
+  text        String
+  dragAndDrop DragAndDrop @relation(fields: [id_exercise], references: [id_exercise])
+  active      Boolean     @default(true)
+}
+
+model StudentCourse {
+  id_student_course Int    @id @default(autoincrement())
+  id_user           Int
+  id_course         Int
+  user              User   @relation(fields: [id_user], references: [id_user])
+  course            Course @relation(fields: [id_course], references: [id_course])
+}
+
+model CorrectExercise {
+  id_correct  Int      @id @default(autoincrement())
+  id_exercise Int
+  id_user     Int
+  exercise    Exercise @relation(fields: [id_exercise], references: [id_exercise])
+  user        User     @relation(fields: [id_user], references: [id_user])
+}
+
+model IncorrectExercise {
+  id_incorrect Int      @id @default(autoincrement())
+  id_exercise  Int
+  id_user      Int
+  exercise     Exercise @relation(fields: [id_exercise], references: [id_exercise])
+  user         User     @relation(fields: [id_user], references: [id_user])
+}
+
+model Attendance {
+  id      Int      @id @default(autoincrement())
+  id_user Int
+  date    DateTime @default(now())
+  user    User     @relation(fields: [id_user], references: [id_user])
+}

@@ -31,10 +31,10 @@ export default function TeacherLayout({ children }) {
         {/* Contenido principal aquí */}
         {!sidebarOpen ? (
           <>
-            <Navbar />
-            <div className="contenedor">
+            {/* <Navbar /> */}
+            {/* <div className="contenedor"> */}
               {children}
-            </div>
+            {/* </div> */}
           </>
         ) : null}
         {/* {children} */}

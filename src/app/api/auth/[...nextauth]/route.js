@@ -1,7 +1,7 @@
 import NextAuth from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import bcrypt from "bcryptjs";
-import {pool} from "../../../../db.js"
+import prisma from "../../../../prisma/client"; // Ajusta la ruta según la ubicación de tu archivo PrismaClient
 
 const handler = NextAuth({
   providers: [
@@ -13,19 +13,17 @@ const handler = NextAuth({
         password: { label: "Password", type: "password" },
       },
       async authorize(credentials) {
-
         try {
-          // pool.connect();
-          const [rows] = await pool.query(
-            "SELECT * FROM users WHERE email = ?",
-            [credentials.email]
-          );
+          const userFound = await prisma.user.findUnique({
+            where: {
+              email: credentials.email,
+            },
+          });
 
-          if (rows.length === 0) {
+          if (!userFound) {
             throw new Error("Invalid credentials");
           }
 
-          const userFound = rows[0];
           const passwordMatch = await bcrypt.compare(
             credentials.password,
             userFound.password
@@ -38,7 +36,7 @@ const handler = NextAuth({
           return userFound;
         } catch (error) {
           throw error;
-        } 
+        }
       },
     }),
   ],

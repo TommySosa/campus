@@ -7,6 +7,8 @@ import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import Image from 'next/image'
 import { useSession } from 'next-auth/react'
+import { useState, useEffect } from 'react'
+import AccesibilityButtons from './AccesibilityButtons'
 const navigation = [
   { name: 'Inicio', href: '/home' },
   { name: 'Cursos', href: '/courses' }
@@ -23,6 +25,25 @@ export default function MainLayout() {
   const registerRoute = pathname === '/auth/register'
   const teacherRoute = pathname === '/teacher'
   const attendanceRoute = pathname === '/attendance'
+  const [enableAccesibility, setEnableAccesibility] = useState(false)
+  const [disabled, setDisabled] = useState(false);
+  const [sizes, setSizes] = useState(false)
+
+  const handleEnableAccesibility = () => {
+    setEnableAccesibility(!enableAccesibility)
+
+    localStorage.setItem("disabled", enableAccesibility)
+  }
+
+  useEffect(() => {
+    const disabledValue = localStorage.getItem("disabled");
+    const isDisabled = disabledValue === "true";
+    setDisabled(isDisabled);
+    const savedSizes = localStorage.getItem("tamaños");
+    setSizes(savedSizes)
+    console.log('saved' , savedSizes);
+  }, [enableAccesibility]);
+
 
   return (
     <Disclosure as="nav" className="bg-elf-green-600">
@@ -116,12 +137,13 @@ export default function MainLayout() {
                 </div>
               </div>
               <div className="absolute inset-y-0 right-0 flex items-center pr-2 sm:static sm:inset-auto sm:ml-6 sm:pr-0">
-
-
                 {/* Profile dropdown */}
 
                 {
                   session ? (<>
+                    {
+                      disabled !== true  ? <AccesibilityButtons sizes={sizes}/> : null
+                    }
                     <button
                       type="button"
                       className="relative rounded-full bg-elf-green-800 p-1 text-gray-400 hover:text-white focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800"
@@ -130,16 +152,27 @@ export default function MainLayout() {
                       <span className="sr-only">View notifications</span>
                       <BellIcon className="h-6 w-6" aria-hidden="true" />
                     </button>
+
                     <Menu as="div" className="relative ml-3">
                       <div>
                         <Menu.Button className="relative flex rounded-full bg-gray-800 text-sm focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800">
                           <span className="absolute -inset-1.5" />
                           <span className="sr-only">Open user menu</span>
-                          <Image
-                            className="h-8 w-8 rounded-full"
-                            src={defaultImage}
-                            alt=""
-                          />
+                          <div className='w-8 h-8 rounded-full overflow-hidden'>
+                            {
+                              session.user.profile_url ? <Image
+                                className="h-full w-full object-cover"
+                                src={session.user.profile_url}
+                                width={100}
+                                height={100}
+                                alt=""
+                              /> : <Image
+                                className="h-full w-full object-cover"
+                                src={defaultImage}
+                                alt=""
+                              />
+                            }
+                          </div>
                         </Menu.Button>
                       </div>
                       <Menu.Items className="absolute right-0 z-10 mt-2 w-48 origin-top-right rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
@@ -151,6 +184,16 @@ export default function MainLayout() {
                             >
                               Mi perfil
                             </Link>
+                          )}
+                        </Menu.Item>
+                        <Menu.Item>
+                          {({ active }) => (
+                            <button
+                              onClick={handleEnableAccesibility}
+                              className={classNames(active ? 'bg-gray-100' : '', 'block px-4 py-2 text-sm text-gray-700')}
+                            >
+                              Activar accesibilidad
+                            </button>
                           )}
                         </Menu.Item>
                         <Menu.Item>

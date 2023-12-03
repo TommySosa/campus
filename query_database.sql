@@ -143,8 +143,8 @@ create table attendance (
 
 -- alter table users add column dni int unique;
 
-insert into roles(name) values ("student");
-insert into roles(name) values ("teacher");
+insert into role(name) values ("student");
+insert into role(name) values ("teacher");
 insert into categories(name) values ('English');
 insert into courses(name,description,id_category, id_user) values ('Curso 1','Descripcion del curso 1', 1, 1);
 insert into modules(name,id_course) values('Modulo del curso 1', 2);
@@ -157,6 +157,43 @@ INSERT INTO multiple_choise (id_exercise, options) VALUES (3, '[{"text": "Opció
 insert into true_or_false(id_exercise,true_option, false_option) values(4,'He', 'She');
 insert into correct_exercises(id_exercise, id_user) values(2, 1);
 UPDATE users SET id_rol = (2) WHERE id_user = 1;
+
+
+DELIMITER //
+
+CREATE PROCEDURE DesactivarEjercicio(IN id_exercise INT)
+BEGIN
+    DECLARE activo_actual BOOLEAN;
+
+    -- Obtener el estado actual del ejercicio
+    SELECT active INTO activo_actual
+    FROM exercise
+    WHERE exercise.id_exercise = id_exercise;
+
+    -- Verificar si el ejercicio está activo
+    IF activo_actual = TRUE THEN
+        -- Actualizar el estado en la tabla exercises
+        UPDATE exercise
+        SET active = FALSE
+        WHERE exercise.id_exercise = id_exercise;
+
+        -- Actualizar el estado en la tabla trueorfalse
+        UPDATE trueorfalse
+        SET active = FALSE
+        WHERE trueorfalse.id_exercise = id_exercise;
+
+        -- Actualizar el estado en la tabla multiplechoise
+        UPDATE multiplechoise
+        SET active = FALSE
+        WHERE multiplechoise.id_exercise = id_exercise;
+
+        SELECT 'Ejercicio desactivado exitosamente.' AS mensaje;
+    ELSE
+        SELECT 'El ejercicio ya está desactivado.' AS mensaje;
+    END IF;
+END //
+
+DELIMITER ;
 
 
 

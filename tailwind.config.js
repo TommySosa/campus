@@ -39,6 +39,14 @@ module.exports = {
           '900': '#82271a',
           '950': '#471008',
         },
+        primary: { "50": "#eff6ff", "100": "#dbeafe", "200": "#bfdbfe", "300": "#93c5fd", "400": "#60a5fa", "500": "#3b82f6", "600": "#2563eb", "700": "#1d4ed8", "800": "#1e40af", "900": "#1e3a8a", "950": "#172554" }
+      },
+      extend: {
+        fontSize: {
+          sm: '0.875rem', // ejemplo de tamaño de fuente pequeño
+          base: '1rem',   // tamaño de fuente base
+          lg: '1.125rem', // ejemplo de tamaño de fuente grande
+        },
       },
     }
   },
