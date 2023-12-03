@@ -1,7 +1,7 @@
 "use client"
 import UpdateModal from "./UpdateStudentModal"
 import CreateModal from "./CreateStudentModal"
-import DeleteModal from "./DeleteModuleModal"
+import DeleteModal from "./DeleteStudentModal"
 import { useEffect, useState } from "react"
 import axios from "axios"
 export default function StudentTable({inscriptions, openCreate, handleOpenCreate, handleRefresh}) {
@@ -185,7 +185,7 @@ export default function StudentTable({inscriptions, openCreate, handleOpenCreate
                             <DeleteModal
                                 isOpen={selectedDeleteCourseId !== null}
                                 onClose={() => setSelectedDeleteCourseId(null)}
-                                id_module={selectedDeleteCourseId}
+                                id_student_course={selectedDeleteCourseId}
                                 handleRefresh={handleRefresh}
                             />
                         </div>

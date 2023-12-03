@@ -43,18 +43,27 @@ export default function CreateStudentModal({ isOpen, onClose, handleRefresh }) {
     }, [])
 
     const handleSubmit = async (e) => {
-        e.preventDefault()
+        e.preventDefault();
         try {
-            const createCourseResponse = await axios.post(baseURL, studentData);
-            if (createCourseResponse.status === 200) {
-                handleRefresh()
-                onClose()
+            let selectedUserId = 0;
+    
+            if (filteredUsers && filteredUsers.length > 0) {
+                selectedUserId = filteredUsers[0].id_user;
             }
-
+    
+            setStudentData({ ...studentData, id_user: selectedUserId });
+    
+            const createCourseResponse = await axios.post(baseURL, studentData);
+    
+            if (createCourseResponse.status === 200) {
+                handleRefresh();
+                onClose();
+            }
         } catch (error) {
             console.error("Error al inscribir el estudiante: ", error);
         }
-    }
+    };
+    
     const handleSearch = async (event) => {
         const { value } = event.target;
 
@@ -66,6 +75,10 @@ export default function CreateStudentModal({ isOpen, onClose, handleRefresh }) {
 
         setFilteredUsers(filtered);
     };
+
+    useEffect(()=> {
+        console.log(studentData);
+    },[studentData])
 
     return (
         <div className={`${isOpen ? '' : 'hidden'} overflow-y-auto overflow-x-hidden fixed inset-0 flex  z-50 justify-center items-center w-full md:inset-0 h-[calc(100%-1rem)] max-h-full`}
