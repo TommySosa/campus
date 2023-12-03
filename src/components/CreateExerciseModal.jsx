@@ -120,8 +120,12 @@ export default function UpdateModal({ isOpen, onClose, handleRefresh }) {
                             false_option: formData2.false_option
                         })
                         console.log(formData2);
-                        alert('Ejercicio verdadero o falso agregado correctamente')
-                        handleRefresh()
+                        console.log(trueOrFalseResponse);
+                        if(trueOrFalseResponse.status === 200){
+                            alert('Ejercicio verdadero o falso agregado correctamente')
+                            handleRefresh()
+                            onClose()
+                        }
                     } catch (error) {
                         console.log('TRUE OR FALSE', error);
                     }

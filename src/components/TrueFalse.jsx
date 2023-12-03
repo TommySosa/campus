@@ -1,5 +1,4 @@
 "use client"
-
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { useSession } from "next-auth/react";
@@ -7,71 +6,80 @@ import { useSession } from "next-auth/react";
 export default function TrueFalse({ trueFalseId, name, instruction }) {
     const [realizado, setRealizado] = useState(false);
     const [exercises, setExercises] = useState(null);
-    const { data: session, status } = useSession();
+    const { data: session } = useSession();
     const [feedbackMessage, setFeedbackMessage] = useState("");
-    const [selectedOptions, setSelectedOptions] = useState({
-        true_option: { answer: "", correct: false },
-        false_option: { answer: "", correct: false },
-    });
+    const [selectedOption, setSelectedOption] = useState(null);
 
     useEffect(() => {
         async function check() {
             const response = await axios.post(
                 "http://localhost:4001/api/exercises/check",
                 {
-                    id_user: await session.user.id_user,
+                    id_user: session.user.id_user,
                     id_exercise: trueFalseId,
                 }
             );
             const result = await response.data[0].total;
             console.log("CHECK", result);
             if (result == 0) {
-                setRealizado(true);
-                fetchData();
-            } else {
                 setRealizado(false);
+                // fetchData();
+            } else {
+                setRealizado(true);
             }
         }
-
-        async function fetchData() {
-            const response = await fetch(`/api/trueFalse/${trueFalseId}`);
-            const data = await response.json();
-            setExercises(data.data);
-        }
-
         check();
     }, [realizado]);
 
+    useEffect(() => {
+        async function fetchData() {
+            const response = await axios.get(
+                `http://localhost:4001/api/true_false/${trueFalseId}`
+            );
+            const data = await response.data;
+            setExercises(data);
+        }
+
+        fetchData();
+    }, [trueFalseId, session.user.id_user]);
 
     const handleCheckboxChange = (option) => {
-        setSelectedOptions((prevOptions) => ({
-            ...prevOptions,
-            [option]: {
-                ...prevOptions[option],
-                correct: !prevOptions[option].correct,
-            },
-        }));
+        setSelectedOption(option);
     };
 
-    const handleSubmit = (e) => {
-        console.log("Selected Options: ", selectedOptions);
-        console.log('Exercises', exercises);
-    
-        const isOption1Correct =
-            selectedOptions.true_option.answer === exercises.true_option &&
-            selectedOptions.true_option.correct;
-    
-        const isOption2Correct =
-            selectedOptions.false_option.answer === exercises.false_option &&
-            selectedOptions.false_option.correct;
-    
-        // Comprobar si todas las opciones son correctas
-        if (isOption1Correct && isOption2Correct) {
-            console.log("¡Ejercicio realizado correctamente!");
-            setFeedbackMessage("¡Ejercicio realizado correctamente!");
-        } else {
-            console.log("Respuestas incorrectas. Intenta de nuevo.");
-            setFeedbackMessage("Respuestas incorrectas. Intenta de nuevo.");
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+
+        if (!selectedOption) {
+            setFeedbackMessage("Por favor, selecciona una opción.");
+            return;
+        }
+
+        const isCorrect = selectedOption === "true_option";
+
+        try {
+            // Si la respuesta es correcta, realiza la acción correspondiente
+            if (isCorrect) {
+                setFeedbackMessage("Respuesta correcta");
+
+                // Envía una solicitud POST a la ruta de respuesta correcta
+                await axios.post("http://localhost:4001/api/exercises/correct", {
+                    id_exercise: trueFalseId,
+                    id_user: session.user.id_user,
+                });
+            } else {
+                setFeedbackMessage("Respuesta incorrecta");
+
+                // Envía una solicitud POST a la ruta de respuesta incorrecta
+                await axios.post("http://localhost:4001/api/exercises/incorrect", {
+                    id_exercise: trueFalseId,
+                    id_user: session.user.id_user,
+                });
+            }
+
+            setRealizado(true);
+        } catch (error) {
+            console.error("Error al enviar la respuesta:", error);
         }
     };
 
@@ -86,7 +94,8 @@ export default function TrueFalse({ trueFalseId, name, instruction }) {
                 </div>
                 <div>
                     <div className="">
-                        {exercises ? (
+                        {exercises && !realizado ? (
+                            // Renderizar el contenido solo si exercises no es null
                             <>
                                 <div className="flex">
                                     <div className="flex-col">
@@ -103,21 +112,17 @@ export default function TrueFalse({ trueFalseId, name, instruction }) {
                                     <div className="flex-col">
                                         <div className="flex-row">
                                             <input
-                                                type="checkbox"
-                                                checked={selectedOptions.option1}
-                                                onChange={() =>
-                                                    handleCheckboxChange("option1")
-                                                }
+                                                type="radio"
+                                                checked={selectedOption === "true_option"}
+                                                onChange={() => handleCheckboxChange("true_option")}
                                             />
                                         </div>
                                         <br />
                                         <div className="flex-row">
                                             <input
-                                                type="checkbox"
-                                                checked={selectedOptions.option2}
-                                                onChange={() =>
-                                                    handleCheckboxChange("option2")
-                                                }
+                                                type="radio"
+                                                checked={selectedOption === "false_option"}
+                                                onChange={() => handleCheckboxChange("false_option")}
                                             />
                                         </div>
                                     </div>
@@ -130,16 +135,16 @@ export default function TrueFalse({ trueFalseId, name, instruction }) {
                                         Enviar
                                     </button>
                                 </div>
-                                <div className="mt-4 text-center">
-                                    {feedbackMessage}
-                                </div>
+                                <div className="mt-4 text-center">{feedbackMessage}</div>
                             </>
                         ) : (
+                            // Si exercises es null o realizado es true, mostrar otro contenido
                             <>
                                 <h1>{feedbackMessage}</h1>
                                 <p>Ya realizado</p>
                             </>
                         )}
+
                     </div>
                 </div>
             </div>

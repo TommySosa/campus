@@ -11,21 +11,10 @@ export default  function Home() {
         async function fetchData(){
             const response = await axios.get(`http://localhost:4001/api/user-courses/${session.user.id_user}`)
             const data = await response.data
-            console.log(data);
             setCourses(data)
         }
         fetchData()
     },[session.user.id_user])
-    // const courseResponse = await fetch("http://localhost:4001/api/user-courses/4",{
-    //     method: "GET",
-    //     headers: {
-    //         "Content-Type": "application/json",
-    //     },
-    //     cache: 'no-store'
-    // });
-    // const data = await courseResponse.json();
-    // console.log('DATA',data);
-    // const courses = data;
 
     return (
         <section className="flex justify-center mt-12 flex-wrap">

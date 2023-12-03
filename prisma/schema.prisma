@@ -53,6 +53,17 @@ model Course {
   modules        Module[]
   studentCourses StudentCourse[]
   active         Boolean         @default(true)
+  contents       CourseContent[]
+}
+
+model CourseContent {
+  id_content     Int             @id @default(autoincrement())
+  title          String
+  description    String
+  pdf_url        String
+  course         Course          @relation(fields: [course_id], references: [id_course])
+  course_id      Int
+  active         Boolean         @default(true)
 }
 
 model Module {

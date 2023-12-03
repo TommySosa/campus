@@ -11,7 +11,7 @@ import { useState, useEffect } from 'react'
 import AccesibilityButtons from './AccesibilityButtons'
 const navigation = [
   { name: 'Inicio', href: '/home' },
-  { name: 'Cursos', href: '/courses' }
+  // { name: 'Cursos', href: '/courses' }
 ]
 
 function classNames(...classes) {
@@ -25,6 +25,8 @@ export default function MainLayout() {
   const registerRoute = pathname === '/auth/register'
   const teacherRoute = pathname === '/teacher'
   const attendanceRoute = pathname === '/attendance'
+  const courseRoute = pathname === '/courses'
+  const homeRoute = pathname === '/home'
   const [enableAccesibility, setEnableAccesibility] = useState(false)
   const [disabled, setDisabled] = useState(false);
   const [sizes, setSizes] = useState(false)
@@ -41,7 +43,6 @@ export default function MainLayout() {
     setDisabled(isDisabled);
     const savedSizes = localStorage.getItem("tamaños");
     setSizes(savedSizes)
-    console.log('saved' , savedSizes);
   }, [enableAccesibility]);
 
 
@@ -73,29 +74,24 @@ export default function MainLayout() {
                 </div>
                 <div className="hidden sm:ml-6 sm:block">
                   <div className="flex space-x-4">
-                    {navigation.map((item) => {
-                      const isActive = pathname === item.href
-                      return (
-                        <Link
-                          key={item.name}
-                          href={item.href}
-                          className={classNames(
-                            isActive ? 'bg-elf-green-800 text-white' : 'text-gray-300 hover:bg-elf-green-700 hover:text-white',
-                            'rounded-md px-3 py-2 text-sm font-medium'
-                          )}
-                          aria-current={item.current ? 'page' : undefined}
-                        >
-                          {item.name}
-                        </Link>
-                      )
-                    }
-                    )}
+                    <Link href={'/home'} className={classNames(
+                      homeRoute ? 'bg-elf-green-800 text-white' : 'text-gray-300 hover:bg-elf-green-700 hover:text-white',
+                      'block rounded-md px-3 py-2 text-base font-medium'
+                    )}>
+                      Inicio
+                    </Link>
                     {
                       session ? (
                         <>
                           {
                             session.user.id_rol === 2 ? (
                               <>
+                                <Link href={'/courses'} className={classNames(
+                                  courseRoute ? 'bg-elf-green-800 text-white' : 'text-gray-300 hover:bg-elf-green-700 hover:text-white',
+                                  'block rounded-md px-3 py-2 text-base font-medium'
+                                )}>
+                                  Cursos
+                                </Link>
                                 <Link href={'/teacher'} className={classNames(
                                   teacherRoute ? 'bg-elf-green-800 text-white' : 'text-gray-300 hover:bg-elf-green-700 hover:text-white',
                                   'block rounded-md px-3 py-2 text-base font-medium'
@@ -108,8 +104,17 @@ export default function MainLayout() {
                                 )}>
                                   Asistencia
                                 </Link>
-
                               </>
+                            ) : null
+                          }
+                          {
+                            session.user.id_rol === 1 ? (
+                              <Link href={'/courses'} className={classNames(
+                                courseRoute ? 'bg-elf-green-800 text-white' : 'text-gray-300 hover:bg-elf-green-700 hover:text-white',
+                                'block rounded-md px-3 py-2 text-base font-medium'
+                              )}>
+                                Cursos
+                              </Link>
                             ) : null
                           }
                         </>) : null
@@ -142,7 +147,7 @@ export default function MainLayout() {
                 {
                   session ? (<>
                     {
-                      disabled !== true  ? <AccesibilityButtons sizes={sizes}/> : null
+                      disabled !== true ? <AccesibilityButtons sizes={sizes} /> : null
                     }
                     <button
                       type="button"
@@ -263,6 +268,24 @@ export default function MainLayout() {
                       ) : null
                     }
                   </>) : null
+              }
+              {
+                session ? (
+                  <>
+                    {
+                      session.user.id_rol === 1 ? (
+                        <>
+                          <Link href={'/teacher'} className={classNames(
+                            courseRoute ? 'bg-elf-green-800 text-white' : 'text-gray-300 hover:bg-elf-green-700 hover:text-white',
+                            'block rounded-md px-3 py-2 text-base font-medium'
+                          )}>
+                            Cursos
+                          </Link>
+                        </>
+                      ) : null
+                    }
+                  </>
+                ) : null
               }
               {
                 !session ? (
