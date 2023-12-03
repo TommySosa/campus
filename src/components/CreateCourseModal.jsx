@@ -6,7 +6,7 @@ import { storage } from "@/firebase";
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage'
 
 const baseURL = "http://localhost:4001/api/courses";
-export default function UpdateCourseModal({ isOpen, onClose }) {
+export default function UpdateCourseModal({ isOpen, onClose, handleRefresh }) {
     const [categories, setCategories] = useState([])
     const [teachers, setTeachers] = useState([])
     const [selectedFile, setSelectedFile] = useState(null)
@@ -74,6 +74,9 @@ export default function UpdateCourseModal({ isOpen, onClose }) {
         try {
             const createCourseResponse = await axios.post(baseURL, courseData);
             console.log(createCourseResponse);
+            if(createCourseResponse.status === 200){
+                handleRefresh()
+            }
 
         } catch (error) {
             console.error("Error al agregar el ejercicio: ", error);

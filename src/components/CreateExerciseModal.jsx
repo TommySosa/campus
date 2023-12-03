@@ -5,7 +5,7 @@ import { useEffect, useState } from "react"
 const baseURL = "http://localhost:4001/api/exercises";
 const multipleURL = "http://localhost:4001/api/multiple"
 const trueOrFalseURL = "http://localhost:4001/api/true_false"
-export default function UpdateModal({ isOpen, onClose }) {
+export default function UpdateModal({ isOpen, onClose, handleRefresh }) {
     const [modules, setModules] = useState([])
     const [exerciseType, setExerciseType] = useState([])
     const [courses, setCourses] = useState([])
@@ -101,11 +101,11 @@ export default function UpdateModal({ isOpen, onClose }) {
                         })
                         alert('Ejercicio multiple choise agregado correctamente')
                         console.log('Multiple response', multipleResponse.data);
+                        handleRefresh()
                     } catch (error) {
                         console.log('MULTIPLE ERROR', error);
                     }
                 }
-                alert("Ejercicio agregado correctamente");
 
             } 
             else {
@@ -121,7 +121,7 @@ export default function UpdateModal({ isOpen, onClose }) {
                         })
                         console.log(formData2);
                         alert('Ejercicio verdadero o falso agregado correctamente')
-                        console.log('Verdadero o falso response', trueOrFalseResponse.data);
+                        handleRefresh()
                     } catch (error) {
                         console.log('TRUE OR FALSE', error);
                     }
@@ -251,13 +251,8 @@ export default function UpdateModal({ isOpen, onClose }) {
 
                         </div>
                         <div className="flex items-center space-x-4">
-                            <button type="submit" className="text-white bg-primary-700 hover:bg-primary-800 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800">Actualizar ejercicio</button>
-                            <button type="button" className="text-red-600 inline-flex items-center hover:text-white border border-red-600 hover:bg-red-600 focus:ring-4 focus:outline-none focus:ring-red-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:border-red-500 dark:text-red-500 dark:hover:text-white dark:hover:bg-red-600 dark:focus:ring-red-900">
-                                <svg className="mr-1 -ml-1 w-5 h-5" fill="currentColor" viewbox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-                                    <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clipRule="evenodd" />
-                                </svg>
-                                Borrar
-                            </button>
+                            <button type="submit" className="text-white bg-primary-700 hover:bg-primary-800 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800">Agregar ejercicio</button>
+                            
                         </div>
                     </form>
                 </div>

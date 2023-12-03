@@ -1,17 +1,16 @@
 "use client"
 
 import axios from "axios";
-export default function DeleteCourseModal({ isOpen, onClose, id_exercise, onExerciseDeleted  }) {
+export default function DeleteModuleModal({ isOpen, onClose, id_module, handleRefresh }) {
 
     const handleDelete = async (confirmDelete) => {
         if (confirmDelete) {
-            const response = await axios.post(`http://localhost:4001/api/delete-exercise/${id_exercise}`);
+            const response = await axios.post(`http://localhost:4001/api/delete-module/${id_module}`);
             const data = response.data;
 
             console.log('data', data);
-            // Llama a la función de devolución de llamada para recargar la tabla
-            if (onExerciseDeleted) {
-                onExerciseDeleted();
+            if(response.status === 200){
+                handleRefresh()
             }
 
             onClose();

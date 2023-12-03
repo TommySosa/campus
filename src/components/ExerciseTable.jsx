@@ -17,8 +17,8 @@ export default function ExerciseTable({exercises, openCreate, handleOpenCreate, 
         setSelectedDeleteExerciseId(exerciseId);
     };
     return (
-        <table className="w-full text-sm text-left text-gray-500 dark:text-gray-400">
-            <thead className="text-xs text-gray-700 uppercase bg-gray-50   dark:text-gray-400">
+        <table className="w-full text-left text-gray-500 dark:text-gray-400">
+            <thead className="text-gray-700 uppercase bg-gray-50 dark:text-gray-400">
                 <tr>
                     <th scope="col" className="px-4 py-4">Nombre</th>
                     <th scope="col" className="px-4 py-3">Consigna</th>
@@ -92,6 +92,7 @@ export default function ExerciseTable({exercises, openCreate, handleOpenCreate, 
                                 isOpen={selectedUpdateExerciseId !== null}
                                 onClose={() => setSelectedUpdateExerciseId(null)}
                                 id_exercise={selectedUpdateExerciseId}
+                                handleRefresh={handleRefresh}
                             />
                         </div>
                     )
@@ -102,6 +103,7 @@ export default function ExerciseTable({exercises, openCreate, handleOpenCreate, 
                         <CreateModal
                             isOpen={openCreate}
                             onClose={handleOpenCreate}
+                            handleRefresh={handleRefresh}
                         />
                     </div> : null
                 }

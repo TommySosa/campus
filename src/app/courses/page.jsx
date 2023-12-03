@@ -1,14 +1,15 @@
 import CourseCard from "@/components/Card";
 export default async function Home() {
-    const response = await fetch("http://localhost:4000/api/courses",{
+    const courseResponse = await fetch("http://localhost:4001/api/user-courses/4",{
         method: "GET",
         headers: {
             "Content-Type": "application/json",
         },
         cache: 'no-store'
     });
-    const data = await response.json();
-    const courses = data.data;
+    const data = await courseResponse.json();
+    // console.log('DATA',data);
+    const courses = data;
 
     return (
         <section className="flex justify-center mt-12 flex-wrap">

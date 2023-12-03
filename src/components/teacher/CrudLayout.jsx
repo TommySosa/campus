@@ -2,31 +2,31 @@
 
 import { useEffect, useState } from "react"
 import axios from "axios"
-import UpdateModal from "../UpdateExerciseModal"
-import CreateModal from "../CreateExerciseModal"
-import DeleteModal from "../DeleteExerciseModal"
 import ExerciseTable from "../ExerciseTable"
 import CourseTable from "../CourseTable"
 import ModuleTable from "../ModuleTable"
+import StudentTable from "../StudentTable"
 
 export default function CrudLayout() {
     const [exercises, setExercises] = useState([])
     const [modules, setModules] = useState([])
-    const [openUpdate, setOpenUpdate] = useState(false)
     const [openCreate, setOpenCreate] = useState(false)
     const [openCreateModule, setOpenCreateModule] = useState(false)
     const [openCreateCourse, setOpenCreateCourse] = useState(false)
+    const [openCreateStudent, setOpenCreateStudent] = useState(false)
     const [openActions, setOpenActions] = useState(false)
     const [enableCourse, setEnableCourse] = useState(false)
     const [enableExercise, setEnableExercise] = useState(true)
     const [enableModule, setEnableModule] = useState(false)
-
+    const [enableStudent, setEnableStudent] = useState(false)
+    const [courses, setCourses] = useState([])
+    const [students, setStudents] = useState([])
+    
     async function fetchExercises() {
         // const response = axios.get( ` ${process.env.API_URL}/exercises ` )
         try {
             const response = await axios.get(`/api/exercises `)
             const data = await response.data.data
-            console.log(data);
             setExercises(data)
         } catch (error) {
             console.error('Error');
@@ -36,23 +36,46 @@ export default function CrudLayout() {
         try {
             const response = await axios.get(`http://localhost:4001/api/modules`)
             const data = await response.data
-            console.log(data);
             setModules(data)
+        } catch (error) {
+            console.log(error);
+        }
+    }
+    async function fetchCourses() {
+        try {
+            const response = await axios.get(`http://localhost:4001/api/courses`)
+            const data = await response.data
+            setCourses(data)
+        } catch (error) {
+            console.log(error);
+        }
+    }
+    async function fetchStudents() {
+        try {
+            const response = await axios.get(`http://localhost:4001/api/students`)
+            const data = await response.data
+            setStudents(data)
         } catch (error) {
             console.log(error);
         }
     }
     useEffect(()=> {
         fetchModules()
-        // console.log('modu', modules);
-
     },[])
     useEffect(() => {
         fetchExercises()
     }, [])
+    useEffect(() => {
+        fetchCourses()
+    })
+    useEffect(() => {
+        fetchStudents()
+    })
 
     const handleRefresh = () => {
         fetchExercises()
+        fetchCourses()
+        fetchModules()
     }
 
     const handleOpenCreate = () => {
@@ -64,25 +87,37 @@ export default function CrudLayout() {
     const handleOpenCreateCourse = () => {
         setOpenCreateCourse(!openCreateCourse)
     }
+    const handleOpenCreateStudent = () => {
+        setOpenCreateStudent(!openCreateStudent)
+    }
 
     const handleEnableCourse = () => {
         setEnableCourse(true)
         setEnableExercise(false)
         setEnableModule(false)
+        setEnableStudent(false)
     }
     const handleEnableExercise = () => {
         setEnableExercise(true)
         setEnableCourse(false)
         setEnableModule(false)
+        setEnableStudent(false)
     }
     const handleEnableModule = () => {
         setEnableModule(true)
         setEnableCourse(false)
         setEnableExercise(false)
+        setEnableStudent(false)
+    }
+    const handleEnableStudent = () => {
+        setEnableStudent(true)
+        setEnableCourse(false)
+        setEnableExercise(false)
+        setEnableModule(false)
     }
 
     return (
-        <main classNameName="w-full">
+        <main className="w-full">
             <div className="mx-auto max-w-screen-xl px-4 lg:p-12">
                 <div className="bg-white  relative shadow-md sm:rounded-lg overflow-hidden">
                     <div className="flex flex-col md:flex-row items-center justify-between space-y-3 md:space-y-0 md:space-x-4 p-4">
@@ -95,7 +130,7 @@ export default function CrudLayout() {
                                             <path fillRule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clipRule="evenodd" />
                                         </svg>
                                     </div>
-                                    <input type="text" id="simple-search" className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full pl-10 p-2   dark:border-gray-600 dark:placeholder-gray-400   dark:focus:ring-primary-500 dark:focus:border-primary-500" placeholder="Search" required="" />
+                                    <input type="text" id="simple-search" className="bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full pl-10 p-2   dark:border-gray-600 dark:placeholder-gray-400   dark:focus:ring-primary-500 dark:focus:border-primary-500" placeholder="Buscar" required="" />
                                 </div>
                             </form>
                         </div>
@@ -103,7 +138,7 @@ export default function CrudLayout() {
 
                             {
                                 enableExercise ? <button type="button" id="createProductModalButton" data-modal-target="createProductModal" data-modal-toggle="createProductModal"
-                                    className="flex items-center justify-center text-white bg-primary-700 hover:bg-primary-800 focus:ring-4 focus:ring-primary-300 font-medium rounded-lg text-sm px-4 py-2 dark:bg-primary-600 dark:hover:bg-primary-700 focus:outline-none dark:focus:ring-primary-800"
+                                    className="flex items-center justify-center text-white bg-primary-700 hover:bg-primary-800 focus:ring-4 focus:ring-primary-300 font-medium rounded-lg px-4 py-2 dark:bg-primary-600 dark:hover:bg-primary-700 focus:outline-none dark:focus:ring-primary-800"
                                     onClick={handleOpenCreate}>
                                     <svg className="h-3.5 w-3.5 mr-2" fill="currentColor" viewbox="0 0 20 20" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
                                         <path clipRule="evenodd" fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" />
@@ -113,7 +148,7 @@ export default function CrudLayout() {
                             }
                             {
                                 enableModule ? <button type="button" id="createProductModalButton" data-modal-target="createProductModal" data-modal-toggle="createProductModal"
-                                    className="flex items-center justify-center text-white bg-primary-700 hover:bg-primary-800 focus:ring-4 focus:ring-primary-300 font-medium rounded-lg text-sm px-4 py-2 dark:bg-primary-600 dark:hover:bg-primary-700 focus:outline-none dark:focus:ring-primary-800"
+                                    className="flex items-center justify-center text-white bg-primary-700 hover:bg-primary-800 focus:ring-4 focus:ring-primary-300 font-medium rounded-lg px-4 py-2 dark:bg-primary-600 dark:hover:bg-primary-700 focus:outline-none dark:focus:ring-primary-800"
                                     onClick={handleOpenCreateModule}>
                                     <svg className="h-3.5 w-3.5 mr-2" fill="currentColor" viewbox="0 0 20 20" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
                                         <path clipRule="evenodd" fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" />
@@ -123,7 +158,7 @@ export default function CrudLayout() {
                             }
                             {
                                 enableCourse ? <button type="button" id="createProductModalButton" data-modal-target="createProductModal" data-modal-toggle="createProductModal"
-                                    className="flex items-center justify-center text-white bg-primary-700 hover:bg-primary-800 focus:ring-4 focus:ring-primary-300 font-medium rounded-lg text-sm px-4 py-2 dark:bg-primary-600 dark:hover:bg-primary-700 focus:outline-none dark:focus:ring-primary-800"
+                                    className="flex items-center justify-center text-white bg-primary-700 hover:bg-primary-800 focus:ring-4 focus:ring-primary-300 font-medium rounded-lg px-4 py-2 dark:bg-primary-600 dark:hover:bg-primary-700 focus:outline-none dark:focus:ring-primary-800"
                                     onClick={handleOpenCreateCourse}>
                                     <svg className="h-3.5 w-3.5 mr-2" fill="currentColor" viewbox="0 0 20 20" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
                                         <path clipRule="evenodd" fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" />
@@ -131,12 +166,22 @@ export default function CrudLayout() {
                                     Agregar curso
                                 </button> : null
                             }
-                            <div className="flex items-center space-x-3 w-full md:w-auto">
+                            {
+                                enableStudent ? <button type="button" id="createProductModalButton" data-modal-target="createProductModal" data-modal-toggle="createProductModal"
+                                className="flex items-center justify-center text-white bg-primary-700 hover:bg-primary-800 focus:ring-4 focus:ring-primary-300 font-medium rounded-lg px-4 py-2 dark:bg-primary-600 dark:hover:bg-primary-700 focus:outline-none dark:focus:ring-primary-800"
+                                onClick={handleOpenCreateStudent}>
+                                <svg className="h-3.5 w-3.5 mr-2" fill="currentColor" viewbox="0 0 20 20" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                                    <path clipRule="evenodd" fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" />
+                                </svg>
+                                Inscribir estudiante
+                            </button> : null
+                            }
+                            <div className="flex items-center space-x-3 w-full md:w-auto relative">
 
                                 <button
                                     id="actionsDropdownButton"
                                     data-dropdown-toggle="actionsDropdown"
-                                    className="w-full md:w-auto flex items-center justify-center py-2 px-4 text-sm font-medium text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-primary-700 focus:z-10 focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-700   dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700"
+                                    className="w-full md:w-auto flex items-center justify-center py-2 px-4 font-medium text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-primary-700 focus:z-10 focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-700   dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700"
                                     type="button"
                                     onClick={() => setOpenActions(!openActions)}
                                 >
@@ -158,7 +203,7 @@ export default function CrudLayout() {
 
                                 <div id="actionsDropdown"
                                     className={`${openActions ? "block" : "hidden"
-                                        } z-10 absolute sm:left-0 right-1/2 bottom-[35%] md:left-3/4  mt-2 w-44 bg-white rounded divide-y divide-gray-100 shadow dark:divide-gray-600`}>
+                                        } z-10 absolute top-8  mt-2 w-44 bg-white rounded divide-y divide-gray-100 shadow dark:divide-gray-600`}>
                                     <ul className="py-1 text-sm text-gray-700 " aria-labelledby="actionsDropdownButton">
                                         <li>
                                             <button onClick={handleEnableCourse} className="block w-full text-left py-2 px-4 hover:bg-gray-600 hover:text-white">Cursos</button>
@@ -175,11 +220,15 @@ export default function CrudLayout() {
                                         <li>
                                             <button onClick={handleEnableExercise} className="block w-full text-left py-2 px-4 hover:bg-gray-600 hover:text-white">Ejercicios</button>
                                         </li>
-
+                                    </ul>
+                                    <ul className="py-1 text-sm text-gray-700 " aria-labelledby="actionsDropdownButton">
+                                        <li>
+                                            <button onClick={handleEnableStudent} className="block w-full text-left py-2 px-4 hover:bg-gray-600 hover:text-white">Estudiantes</button>
+                                        </li>
                                     </ul>
 
                                 </div>
-                                <button id="filterDropdownButton" data-dropdown-toggle="filterDropdown" className="w-full md:w-auto flex items-center justify-center py-2 px-4 text-sm font-medium text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-primary-700 focus:z-10 focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-700   dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700" type="button">
+                                <button id="filterDropdownButton" data-dropdown-toggle="filterDropdown" className="w-full md:w-auto flex items-center justify-center py-2 px-4 font-medium text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-primary-700 focus:z-10 focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-700   dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700" type="button">
                                     <svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" className="h-4 w-4 mr-2 text-gray-400" viewbox="0 0 20 20" fill="currentColor">
                                         <path fill-rule="evenodd" d="M3 3a1 1 0 011-1h12a1 1 0 011 1v3a1 1 0 01-.293.707L12 11.414V15a1 1 0 01-.293.707l-2 2A1 1 0 018 17v-5.586L3.293 6.707A1 1 0 013 6V3z" clipRule="evenodd" />
                                     </svg>
@@ -214,16 +263,23 @@ export default function CrudLayout() {
                             /> : null
                         }
                         {
-                            enableCourse ? <CourseTable exercises={exercises}
+                            enableCourse ? <CourseTable courses={courses}
                                 openCreate={openCreateCourse}
                                 handleOpenCreateCourse={handleOpenCreateCourse}
                                 handleRefresh={handleRefresh}
                             /> : null
                         }
                         {
-                            enableModule ? <ModuleTable exercises={exercises}
-                                openCreate={openCreate}
-                                handleOpenCreate={handleOpenCreate}
+                            enableModule ? <ModuleTable modules={modules}
+                                openCreate={openCreateModule}
+                                handleOpenCreate={handleOpenCreateModule}
+                                handleRefresh={handleRefresh}
+                            /> : null
+                        }
+                        {
+                            enableStudent ? <StudentTable students={students}
+                                openCreate={openCreateStudent}
+                                handleOpenCreate={handleOpenCreateStudent}
                                 handleRefresh={handleRefresh}
                             /> : null
                         }
