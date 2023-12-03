@@ -2,15 +2,11 @@
 import axios from "axios"
 import { useEffect, useState } from "react"
 
-const baseURL = "http://localhost:4001/api/modules";
+const baseURL = "http://localhost:4001/api/students";
 export default function CreateStudentModal({ isOpen, onClose, handleRefresh }) {
     const [courses, setCourses] = useState([])
     const [users, setUsers] = useState([])
     const [studentData, setStudentData] = useState({
-        // name: "",
-        // surname: "",
-        // email: "",
-        // dni: ""
         id_user: 0,
         id_course: 0
     })
@@ -37,52 +33,39 @@ export default function CreateStudentModal({ isOpen, onClose, handleRefresh }) {
             try {
                 const response = await axios.get('http://localhost:4001/api/users')
                 const data = await response.data
-                console.log(data);
                 setUsers(data)
             } catch (error) {
                 console.log(error);
             }
         }
-        fetchCourses()
         fetchUsers()
+        fetchCourses()
     }, [])
 
     const handleSubmit = async (e) => {
         e.preventDefault()
         try {
             const createCourseResponse = await axios.post(baseURL, studentData);
-            console.log(createCourseResponse);
             if (createCourseResponse.status === 200) {
                 handleRefresh()
+                onClose()
             }
 
         } catch (error) {
             console.error("Error al inscribir el estudiante: ", error);
         }
     }
-
-    const handleSearch = async(event) => {
+    const handleSearch = async (event) => {
         const { value } = event.target;
-        setUser({ dni: value });
-      
-        // Filtrar los usuarios según el DNI
+
         const filtered = users.filter((usuario) => {
-          // Asegúrate de convertir el DNI a cadena antes de realizar la comparación
-          const dniAsString = String(usuario.dni);
-          
-          // Convertir a minúsculas para búsqueda insensible a mayúsculas y minúsculas
-          const lowercasedValue = value.toLowerCase();
-          
-          return dniAsString.includes(lowercasedValue);
+            const dniAsString = String(usuario.dni);
+            const lowercasedValue = value.toLowerCase();
+            return dniAsString.includes(lowercasedValue);
         });
-      
-        // Mostrar el resultado en la consola
-        console.log(filtered);
-        setFilteredUsers(filtered)
-        // const response = await axios.get(`http://localhost:4001/api/user/${user.dni}`)
-        // console.log(response.data);
-      };
-      
+
+        setFilteredUsers(filtered);
+    };
 
     return (
         <div className={`${isOpen ? '' : 'hidden'} overflow-y-auto overflow-x-hidden fixed inset-0 flex  z-50 justify-center items-center w-full md:inset-0 h-[calc(100%-1rem)] max-h-full`}
@@ -100,41 +83,40 @@ export default function CreateStudentModal({ isOpen, onClose, handleRefresh }) {
                             <button className="sr-only">Cerrar modal</button>
                         </button>
                     </div>
-
                     <form onSubmit={handleSubmit} aria-labelledby="modal-title">
                         <div className="grid gap-4 mb-4 sm:grid-cols-2">
                             <div>
                                 <label for="name" className="block mb-2 text-sm font-medium text-gray-900 ">DNI</label>
                                 <input type="text" name="name" id="name"
                                     className="bg-gray-50 border text-gray-900 text-sm rounded-lg block w-full p-2.5  border-gray-600 dark:placeholder-gray-400  focus:ring-primary-500 focus:border-primary-500"
-                                    placeholder="Buscar..." value={user.dni} onChange={handleSearch} />
+                                    placeholder="Buscar..." onChange={handleSearch} />
                             </div>
                             <div>
-                                <label for="name" className="block mb-2 text-sm font-medium text-gray-900 ">Nombre</label>
-                                <input type="text" name="name" id="name"
-                                    className="bg-gray-50 border text-gray-900 text-sm rounded-lg block w-full p-2.5  border-gray-600 dark:placeholder-gray-400  focus:ring-primary-500 focus:border-primary-500"
-                                    placeholder="Buscar..." value={filteredUsers ? filteredUsers[0].name : ""}  />
-                            </div>
-                            <div>
-                                <label for="name" className="block mb-2 text-sm font-medium text-gray-900 ">Apellido</label>
-                                <input type="text" name="name" id="name"
-                                    className="bg-gray-50 border text-gray-900 text-sm rounded-lg block w-full p-2.5  border-gray-600 dark:placeholder-gray-400  focus:ring-primary-500 focus:border-primary-500"
-                                    placeholder="Buscar..." value={filteredUsers ? filteredUsers[0].surname : ""}   />
-                            </div>
-                            <div>
-                                <label for="course" className="block mb-2 text-sm font-medium text-gray-900  ">Usuarios</label>
-                                <select id="course" onChange={(e) => setStudentData({ ...studentData, id_user: e.target.value })} className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5   dark:border-gray-600 dark:placeholder-gray-400   dark:focus:ring-primary-500 dark:focus:border-primary-500">
-                                    <option selected="">Seleccione un usuario</option>
-                                    {
-                                        users.length > 0 ? users.map((user) => (
-                                            <option value={user.id_user} key={user.id_user}>{user.name} {user.surname}</option>
-                                        )) : null
-                                    }
+                                <label for="course" className="block mb-2 text-sm font-medium text-gray-900  ">Coincidentes</label>
+                                <select
+                                    id="userSelect"
+                                    onChange={(e) => {
+                                        const selectedUserId = e.target.value;
+                                        const selectedUser = filteredUsers.find((user) => user.id_user === parseInt(selectedUserId, 10));
+                                        setUser(selectedUser || { name: "", surname: "", email: "", dni: "" });
+                                        setStudentData({...studentData, id_user: parseInt(selectedUserId)})
+                                    }}
+                                    className="bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:border-gray-600 dark:placeholder-gray-400 dark:focus:ring-primary-500 dark:focus:border-primary-500"
+                                    value={user.id_user}
+                                >
+                                    <option value="" disabled hidden>
+                                        Seleccione un usuario
+                                    </option>
+                                    {filteredUsers ? filteredUsers.map((user) => (
+                                        <option key={user.id_user} value={user.id_user}>
+                                            {user.name} {user.surname}
+                                        </option>
+                                    )) : null}
                                 </select>
                             </div>
                             <div>
                                 <label for="course" className="block mb-2 text-sm font-medium text-gray-900  ">Curso</label>
-                                <select id="course" onChange={(e) => setStudentData({ ...studentData, id_course: e.target.value })} className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5   dark:border-gray-600 dark:placeholder-gray-400   dark:focus:ring-primary-500 dark:focus:border-primary-500">
+                                <select id="course" onChange={(e) => setStudentData({ ...studentData, id_course: parseInt(e.target.value) })} className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5   dark:border-gray-600 dark:placeholder-gray-400   dark:focus:ring-primary-500 dark:focus:border-primary-500">
                                     <option selected="">Seleccione un curso</option>
                                     {
                                         courses.length > 0 ? courses.map((course) => (
@@ -146,7 +128,7 @@ export default function CreateStudentModal({ isOpen, onClose, handleRefresh }) {
 
                         </div>
                         <div className="flex items-center space-x-4">
-                            <button type="submit" className="text-white bg-primary-700 hover:bg-primary-800 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800">Agregar módulo</button>
+                            <button type="submit" className="text-white bg-primary-700 hover:bg-primary-800 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800">Inscribir</button>
                         </div>
                     </form>
                 </div>
