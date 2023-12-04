@@ -34,7 +34,7 @@ export default function StudentTable({inscriptions, openCreate, handleOpenCreate
         //     fetchUsers()
 
         // }
-    },[inscriptions])
+    },[])
     return (
         <table className="w-full text-left text-gray-500 dark:text-gray-400">
             <thead className="text-gray-700 uppercase bg-gray-50   dark:text-gray-400">

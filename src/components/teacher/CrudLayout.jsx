@@ -6,6 +6,7 @@ import ExerciseTable from "../ExerciseTable"
 import CourseTable from "../CourseTable"
 import ModuleTable from "../ModuleTable"
 import StudentTable from "../StudentTable"
+import TeacherTable from "../TeacherTable"
 
 export default function CrudLayout() {
     const [exercises, setExercises] = useState([])
@@ -14,14 +15,17 @@ export default function CrudLayout() {
     const [openCreateModule, setOpenCreateModule] = useState(false)
     const [openCreateCourse, setOpenCreateCourse] = useState(false)
     const [openCreateStudent, setOpenCreateStudent] = useState(false)
+    const [openCreateTeacher, setOpenCreateTeacher] = useState(false)
     const [openActions, setOpenActions] = useState(false)
     const [enableCourse, setEnableCourse] = useState(false)
     const [enableExercise, setEnableExercise] = useState(true)
     const [enableModule, setEnableModule] = useState(false)
     const [enableStudent, setEnableStudent] = useState(false)
+    const [enableTeacher, setEnableTeacher] = useState(false)
     const [courses, setCourses] = useState([])
     const [users, setUsers] = useState([])
     const [students, setStudents] = useState([])
+    const [teachers, setTeachers] = useState([])
     const [user, setUser] = useState({
         name: "",
         surname: "",
@@ -29,7 +33,13 @@ export default function CrudLayout() {
         dni: "",
     })
     const [inscriptions, setInscriptions] = useState([])
-    const [filteredUsers, setFilteredUsers] = useState()
+    const [filteredData, setFilteredData] = useState({
+        users: [],
+        modules: [],
+        courses: [],
+        exercises: [],
+        teachers: []
+    });
     async function fetchExercises() {
         // const response = axios.get( ` ${process.env.API_URL}/exercises ` )
         try {
@@ -78,7 +88,7 @@ export default function CrudLayout() {
         }
     }
 
-    async function fetchInscriptions(){
+    async function fetchInscriptions() {
         try {
             const response = await axios.get('http://localhost:4001/api/inscriptions')
             const data = await response.data
@@ -88,7 +98,20 @@ export default function CrudLayout() {
             console.log(error);
         }
     }
-    useEffect(()=> {
+
+    async function fetchTeachers() {
+        try {
+            const response = await axios.get('http://localhost:4001/api/teachers')
+            const data = await response.data
+            setTeachers(data)
+        } catch (error) {
+            console.log(error);
+        }
+    }
+    useEffect(() => {
+        fetchTeachers()
+    }, [])
+    useEffect(() => {
         fetchInscriptions()
     }, [])
     useEffect(() => {
@@ -102,10 +125,10 @@ export default function CrudLayout() {
     }, [])
     useEffect(() => {
         fetchCourses()
-    })
+    },[])
     useEffect(() => {
         fetchStudents()
-    })
+    },[])
 
     const handleRefresh = () => {
         fetchExercises()
@@ -126,27 +149,40 @@ export default function CrudLayout() {
     const handleOpenCreateStudent = () => {
         setOpenCreateStudent(!openCreateStudent)
     }
-
+    const handleOpenCreateTeacher = () => {
+        setOpenCreateTeacher(!openCreateTeacher)
+    }
     const handleEnableCourse = () => {
         setEnableCourse(true)
         setEnableExercise(false)
         setEnableModule(false)
         setEnableStudent(false)
+        setEnableTeacher(false)
     }
     const handleEnableExercise = () => {
         setEnableExercise(true)
         setEnableCourse(false)
         setEnableModule(false)
         setEnableStudent(false)
+        setEnableTeacher(false)
     }
     const handleEnableModule = () => {
         setEnableModule(true)
         setEnableCourse(false)
         setEnableExercise(false)
         setEnableStudent(false)
+        setEnableTeacher(false)
     }
     const handleEnableStudent = () => {
         setEnableStudent(true)
+        setEnableCourse(false)
+        setEnableExercise(false)
+        setEnableModule(false)
+        setEnableTeacher(false)
+    }
+    const handleEnableTeacher = () => {
+        setEnableTeacher(true)
+        setEnableStudent(false)
         setEnableCourse(false)
         setEnableExercise(false)
         setEnableModule(false)
@@ -154,39 +190,88 @@ export default function CrudLayout() {
 
     const handleSearch = async (event) => {
         const { value } = event.target;
-    
-        if (!value || value.trim() === "") {
-            setFilteredUsers(users);
+
+        if (!value || value.trim() === "" || value === null || value === undefined) {
+            setFilteredData({
+                users: users,
+                modules: modules,
+                courses: courses,
+                exercises: exercises,
+                teachers: teachers
+            });
         } else {
-            setUser({ dni: value });
-    
-            const filtered = users.filter((usuario) => {
+            const lowercasedValue = value.toLowerCase();
+
+            const filteredUsers = users.filter((usuario) => {
                 const dniAsString = String(usuario.dni);
                 const name = String(usuario.name).toLowerCase();
                 const surname = String(usuario.surname).toLowerCase();
                 const email = String(usuario.email).toLowerCase();
                 const idRol = String(usuario.id_rol);
-    
+
                 const lowercasedValue = value.toLowerCase();
-    
+
                 const basicFilter =
                     dniAsString.includes(lowercasedValue) ||
                     name.includes(lowercasedValue) ||
                     surname.includes(lowercasedValue) ||
                     email.includes(lowercasedValue);
-    
+
                 const roleFilter =
                     (lowercasedValue === "profesor" && idRol.includes("2")) ||
                     (lowercasedValue === "estudiante" && idRol.includes("1"));
-    
+
                 return basicFilter || roleFilter;
             });
-    
-            console.log(filtered);
-            setFilteredUsers(filtered);
+
+            const filteredTeachers = users.filter((usuario) => {
+                const dniAsString = String(usuario.dni);
+                const name = String(usuario.name).toLowerCase();
+                const surname = String(usuario.surname).toLowerCase();
+                const email = String(usuario.email).toLowerCase();
+                const idRol = String(usuario.id_rol);
+
+                const lowercasedValue = value.toLowerCase();
+
+                const basicFilter =
+                    dniAsString.includes(lowercasedValue) ||
+                    name.includes(lowercasedValue) ||
+                    surname.includes(lowercasedValue) ||
+                    email.includes(lowercasedValue);
+
+                const roleFilter =
+                    (lowercasedValue === "profesor" && idRol.includes("2")) ||
+                    (lowercasedValue === "estudiante" && idRol.includes("1"));
+
+                return basicFilter || roleFilter;
+            });
+
+            const filteredModules = modules.filter((module) => {
+                const moduleName = module.name.toLowerCase();
+                return moduleName.includes(lowercasedValue);
+            });
+
+            const filteredCourses = courses.filter((course) => {
+                const courseName = course.name.toLowerCase();
+                return courseName.includes(lowercasedValue);
+            });
+
+            const filteredExercises = exercises.filter((exercise) => {
+                const exerciseName = exercise.name.toLowerCase();
+                return exerciseName.includes(lowercasedValue);
+            });
+
+            setFilteredData({
+                users: filteredUsers,
+                modules: filteredModules,
+                courses: filteredCourses,
+                exercises: filteredExercises,
+                teachers: filteredTeachers
+            });
         }
     };
-    
+
+
 
     return (
         <main className="w-full">
@@ -203,7 +288,7 @@ export default function CrudLayout() {
                                         </svg>
                                     </div>
                                     <input type="text" id="simple-search" className="bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full pl-10 p-2   dark:border-gray-600 dark:placeholder-gray-400   dark:focus:ring-primary-500 dark:focus:border-primary-500"
-                                        placeholder="Buscar" onChange={handleSearch} required="" />
+                                        placeholder="Buscar" onChange={handleSearch} defaultValue="" required="" />
                                 </div>
                             </form>
                         </div>
@@ -247,6 +332,16 @@ export default function CrudLayout() {
                                         <path clipRule="evenodd" fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" />
                                     </svg>
                                     Inscribir estudiante
+                                </button> : null
+                            }
+                            {
+                                enableTeacher ? <button type="button" id="createProductModalButton" data-modal-target="createProductModal" data-modal-toggle="createProductModal"
+                                    className="flex items-center justify-center text-white bg-primary-700 hover:bg-primary-800 focus:ring-4 focus:ring-primary-300 font-medium rounded-lg px-4 py-2 dark:bg-primary-600 dark:hover:bg-primary-700 focus:outline-none dark:focus:ring-primary-800"
+                                    onClick={handleOpenCreateTeacher}>
+                                    <svg className="h-3.5 w-3.5 mr-2" fill="currentColor" viewbox="0 0 20 20" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                                        <path clipRule="evenodd" fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" />
+                                    </svg>
+                                    Asignar como profesor
                                 </button> : null
                             }
                             <div className="flex items-center space-x-3 w-full md:w-auto relative">
@@ -299,6 +394,11 @@ export default function CrudLayout() {
                                             <button onClick={handleEnableStudent} className="block w-full text-left py-2 px-4 hover:bg-gray-600 hover:text-white">Estudiantes</button>
                                         </li>
                                     </ul>
+                                    <ul className="py-1 text-sm text-gray-700 " aria-labelledby="actionsDropdownButton">
+                                        <li>
+                                            <button onClick={handleEnableTeacher} className="block w-full text-left py-2 px-4 hover:bg-gray-600 hover:text-white">Profesores</button>
+                                        </li>
+                                    </ul>
 
                                 </div>
                                 <button id="filterDropdownButton" data-dropdown-toggle="filterDropdown" className="w-full md:w-auto flex items-center justify-center py-2 px-4 font-medium text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-primary-700 focus:z-10 focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-700   dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700" type="button">
@@ -329,21 +429,21 @@ export default function CrudLayout() {
                     </div>
                     <div className="overflow-x-auto">
                         {
-                            enableExercise ? <ExerciseTable exercises={exercises}
+                            enableExercise ? <ExerciseTable exercises={filteredData.exercises}
                                 openCreate={openCreate}
                                 handleOpenCreate={handleOpenCreate}
                                 handleRefresh={handleRefresh}
                             /> : null
                         }
                         {
-                            enableCourse ? <CourseTable courses={courses}
+                            enableCourse ? <CourseTable courses={filteredData.courses}
                                 openCreate={openCreateCourse}
                                 handleOpenCreateCourse={handleOpenCreateCourse}
                                 handleRefresh={handleRefresh}
                             /> : null
                         }
                         {
-                            enableModule ? <ModuleTable modules={modules}
+                            enableModule ? <ModuleTable modules={filteredData.modules}
                                 openCreate={openCreateModule}
                                 handleOpenCreate={handleOpenCreateModule}
                                 handleRefresh={handleRefresh}
@@ -356,10 +456,15 @@ export default function CrudLayout() {
                                 handleRefresh={handleRefresh}
                             /> : null
                         }
-
-
+                        {
+                            enableTeacher ? <TeacherTable teachers={filteredData.teachers}
+                                openCreate={openCreateTeacher}
+                                handleOpenCreate={handleOpenCreateTeacher}
+                                handleRefresh={handleRefresh}
+                            /> : null
+                        }
                     </div>
-                    <nav className="flex flex-col md:flex-row justify-between items-start md:items-center space-y-3 md:space-y-0 p-4" aria-label="Table navigation">
+                    {/* <nav className="flex flex-col md:flex-row justify-between items-start md:items-center space-y-3 md:space-y-0 p-4" aria-label="Table navigation">
                         <span className="text-sm font-normal text-gray-500 dark:text-gray-400">
                             Mostrando
                             <span className="font-semibold text-gray-900  "> 1-10 </span>
@@ -399,7 +504,7 @@ export default function CrudLayout() {
                                 </a>
                             </li>
                         </ul>
-                    </nav>
+                    </nav> */}
                 </div>
             </div>
         </main>
