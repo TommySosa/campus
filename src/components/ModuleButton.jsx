@@ -39,7 +39,7 @@ export default function ModuleButton({ module }) {
                 </button>
 
                 {isOpen && (
-                    <div className="bg-gray-200 p-3">
+                    <div className=" p-1">
                         {
                             modules_exercises.length > 0 ? (
                                 modules_exercises.map(exercise =>

@@ -47,6 +47,7 @@ export default function CourseTable({ courses, openCreate, handleOpenCreateCours
                 <tbody>
                     {
                         courses.length > 0 ? courses.map((course) => (
+                            <>
                             <tr className="border-b border-gray-700" key={course.id_course}>
                                 <th scope="row" className="px-4 py-3 font-medium text-gray-900 whitespace-nowrap ">{course.name}</th>
                                 <td className="px-4 py-3 max-w-[12rem] truncate">{course.description}</td>
@@ -69,19 +70,6 @@ export default function CourseTable({ courses, openCreate, handleOpenCreateCours
 
                                     <button
                                         type="button"
-                                        data-modal-target="readProductModal"
-                                        data-modal-toggle="readProductModal"
-                                        className="flex w-full items-center py-2 px-4 hover:bg-gray-100 text-gray-700"
-                                    >
-                                        <svg className="w-4 h-4 mr-2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-                                            <path d="M10 12a2 2 0 100-4 2 2 0 000 4z" />
-                                            <path fillRule="evenodd" clipRule="evenodd" d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" />
-                                        </svg>
-                                        Ver
-                                    </button>
-
-                                    <button
-                                        type="button"
                                         data-modal-target="deleteModal"
                                         data-modal-toggle="deleteModal"
                                         className="flex w-full items-center py-2 px-4 hover:bg-gray-100 text-red-500 hover:text-red-400"
@@ -94,7 +82,7 @@ export default function CourseTable({ courses, openCreate, handleOpenCreateCours
                                     </button>
 
                                 </td>
-                            </tr>
+                            </tr></>
                         )) : noFiltrados.length > 0 ? noFiltrados.map((course) => (
                             <>
                                 <tr className="border-b border-gray-700" key={course.id_course}>
@@ -115,19 +103,6 @@ export default function CourseTable({ courses, openCreate, handleOpenCreateCours
                                                 <path fillRule="evenodd" clipRule="evenodd" d="M2 6a2 2 0 012-2h4a1 1 0 010 2H4v10h10v-4a1 1 0 112 0v4a2 2 0 01-2 2H4a2 2 0 01-2-2V6z" />
                                             </svg>
                                             Editar
-                                        </button>
-
-                                        <button
-                                            type="button"
-                                            data-modal-target="readProductModal"
-                                            data-modal-toggle="readProductModal"
-                                            className="flex w-full items-center py-2 px-4 hover:bg-gray-100 text-gray-700"
-                                        >
-                                            <svg className="w-4 h-4 mr-2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-                                                <path d="M10 12a2 2 0 100-4 2 2 0 000 4z" />
-                                                <path fillRule="evenodd" clipRule="evenodd" d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" />
-                                            </svg>
-                                            Ver
                                         </button>
 
                                         <button

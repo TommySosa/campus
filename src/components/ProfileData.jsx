@@ -67,22 +67,6 @@ export default function ProfileData() {
                         <p className="font-light text-gray-600 mt-3">{session ? session.user.email : <Spinner />}</p>
                     </>) : null
                 }
-
-                <div className="grid grid-cols-3 text-center order-last md:order-first mt-10">
-                    <div>
-                        <p className="font-bold text-gray-700 ">22</p>
-                        <p className="text-gray-400 ">Courses</p>
-                    </div>
-
-                    <div>
-                        <p className="font-bold text-gray-700 ">10</p>
-                        <p className="text-gray-400 ">Teachers</p>
-                    </div>
-                    <div>
-                        <p className="font-bold text-gray-700 ">89%</p>
-                        <p className="text-gray-400 ">Progress</p>
-                    </div>
-                </div>
             </div>
             <div>
                 <p className="mt-8 text-center text-gray-500">Aqui podras observar tu progreso en tus cursos</p>
@@ -121,28 +105,9 @@ export default function ProfileData() {
                             </div>
                         </div>
                     </div>
-                )) : <p>No estás inscripto en ningún curso!</p>
+                )) : <p className="text-center">No estás inscripto en ningún curso!</p>
             }
 
         </>
     )
 }
-
-{/* <div className="grid grid-cols-2 gap-5 text-center order-last md:order-first mt-10">
-                    <div>
-                        <p className="font-bold text-gray-700 text-xl">{corrects + incorrects}</p>
-                        <p className="text-gray-400">Ejercicios</p>
-                    </div>
-                    <div>
-                        <p className="font-bold text-gray-700 text-xl">{corrects}</p>
-                        <p className="text-gray-400">Correctos</p>
-                    </div>
-                    <div>
-                        <p className="font-bold text-gray-700 text-xl">{incorrects}</p>
-                        <p className="text-gray-400">incorrectos</p>
-                    </div>
-                    <div>
-                        <p className="font-bold text-gray-700 text-xl">89%</p>
-                        <p className="text-gray-400">Progress</p>
-                    </div>
-                </div> */}

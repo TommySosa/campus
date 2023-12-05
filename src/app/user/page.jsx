@@ -12,7 +12,6 @@ export default function Home() {
             <section className="p-8 bg-white shadow ">
                 <div className="flex justify-center">
                     <img className="w-48 h-48 rounded-full flex items-center justify-center " src={session.user.profile_url ? session.user.profile_url : image} />
-                    {/* <ProfileImage /> */}
                 </div>
                 <ProfileData />
             </section>

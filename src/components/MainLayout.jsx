@@ -48,14 +48,14 @@ export default function MainLayout() {
 
 
   return (
-    <Disclosure as="nav" className="bg-elf-green-600">
+    <Disclosure as="nav" className="bg-elf-green-600 text-white">
       {({ open }) => (
         <>
           <div className="mx-auto max-w-7xl px-2 sm:px-6 lg:px-8">
             <div className="relative flex h-16 items-center justify-between">
               <div className="absolute inset-y-0 left-0 flex items-center sm:hidden">
                 {/* Mobile menu button*/}
-                <Disclosure.Button className="relative inline-flex items-center justify-center rounded-md p-2 text-gray-400 hover:bg-gray-700 hover:text-white focus:outline-none focus:ring-2 focus:ring-inset focus:ring-white">
+                <Disclosure.Button className="relative inline-flex items-center justify-center rounded-md p-2 text-white hover:bg-gray-700 hover:text-gray-400 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-white">
                   <span className="absolute -inset-0.5" />
                   <span className="sr-only">Open main menu</span>
                   {open ? (
@@ -76,7 +76,7 @@ export default function MainLayout() {
                 <div className="hidden sm:ml-6 sm:block">
                   <div className="flex space-x-4">
                     <Link href={'/home'} className={classNames(
-                      homeRoute ? 'bg-elf-green-800 text-white' : 'text-gray-300 hover:bg-elf-green-700 hover:text-white',
+                      homeRoute ? 'bg-elf-green-800 text-white' : 'text-white hover:bg-elf-green-700 hover:text-gray-300',
                       'block rounded-md px-3 py-2 text-base font-medium'
                     )}>
                       Inicio
@@ -88,19 +88,19 @@ export default function MainLayout() {
                             session.user.id_rol === 2 ? (
                               <>
                                 <Link href={'/courses'} className={classNames(
-                                  courseRoute ? 'bg-elf-green-800 text-white' : 'text-gray-300 hover:bg-elf-green-700 hover:text-white',
+                                  courseRoute ? 'bg-elf-green-800 text-white' : 'text-white hover:bg-elf-green-700 hover:text-gray-300',
                                   'block rounded-md px-3 py-2 text-base font-medium'
                                 )}>
                                   Cursos
                                 </Link>
                                 <Link href={'/teacher'} className={classNames(
-                                  teacherRoute ? 'bg-elf-green-800 text-white' : 'text-gray-300 hover:bg-elf-green-700 hover:text-white',
+                                  teacherRoute ? 'bg-elf-green-800 text-white' : 'text-white hover:bg-elf-green-700 hover:text-gray-300',
                                   'block rounded-md px-3 py-2 text-base font-medium'
                                 )}>
                                   Profesor
                                 </Link>
                                 <Link href={'/attendance'} className={classNames(
-                                  attendanceRoute ? 'bg-elf-green-800 text-white' : 'text-gray-300 hover:bg-elf-green-700 hover:text-white',
+                                  attendanceRoute ? 'bg-elf-green-800 text-white' : 'text-white hover:bg-elf-green-700 hover:text-gray-300',
                                   'block rounded-md px-3 py-2 text-base font-medium'
                                 )}>
                                   Asistencia
@@ -109,19 +109,25 @@ export default function MainLayout() {
                             ) : null
                           }
                           {
-                            session.user ? (
+                            session.user ? (<>
+                              <Link href={'/courses'} className={classNames(
+                                courseRoute ? 'bg-elf-green-800 text-white' : 'text-white hover:bg-elf-green-700 hover:text-gray-300',
+                                'block rounded-md px-3 py-2 text-base font-medium'
+                              )}>
+                                Cursos
+                              </Link>
                               <Link href={'/forum'} className={classNames(
-                                forumRoute ? 'bg-elf-green-800 text-white' : 'text-gray-300 hover:bg-elf-green-700 hover:text-white',
+                                forumRoute ? 'bg-elf-green-800 text-white' : 'text-white hover:bg-elf-green-700 hover:text-gray-300',
                                 'block rounded-md px-3 py-2 text-base font-medium'
                               )}>
                                 Foro
-                              </Link>
+                              </Link></>
                             ) : null
                           }
                           {
                             session.user.id_rol === 1 ? (
                               <Link href={'/courses'} className={classNames(
-                                courseRoute ? 'bg-elf-green-800 text-white' : 'text-gray-300 hover:bg-elf-green-700 hover:text-white',
+                                courseRoute ? 'bg-elf-green-800 text-white' : 'text-white hover:bg-elf-green-700 hover:text-white',
                                 'block rounded-md px-3 py-2 text-base font-medium'
                               )}>
                                 Cursos
@@ -134,13 +140,13 @@ export default function MainLayout() {
                       !session ? (
                         <>
                           <Link href={'/auth/login'} className={classNames(
-                            loginRoute ? 'bg-elf-green-800 text-white' : 'text-gray-300 hover:bg-elf-green-700 hover:text-white',
+                            loginRoute ? 'bg-elf-green-800 text-white' : 'text-white hover:bg-elf-green-700 hover:text-gray-300',
                             'block rounded-md px-3 py-2 text-sm font-medium'
                           )}>
                             Iniciar sesión
                           </Link>
                           <Link href={'/auth/register'} className={classNames(
-                            registerRoute ? 'bg-elf-green-800 text-white' : 'text-gray-300 hover:bg-elf-green-700 hover:text-white',
+                            registerRoute ? 'bg-elf-green-800 text-white' : 'text-white hover:bg-elf-green-700 hover:text-gray-300',
                             'block rounded-md px-3 py-2 text-sm font-medium'
                           )}>
                             Registrarse
@@ -160,15 +166,6 @@ export default function MainLayout() {
                     {
                       disabled !== true ? <AccesibilityButtons sizes={sizes} /> : null
                     }
-                    <button
-                      type="button"
-                      className="relative rounded-full bg-elf-green-800 p-1 text-gray-400 hover:text-white focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800"
-                    >
-                      <span className="absolute -inset-1.5" />
-                      <span className="sr-only">View notifications</span>
-                      <BellIcon className="h-6 w-6" aria-hidden="true" />
-                    </button>
-
                     <Menu as="div" className="relative ml-3">
                       <div>
                         <Menu.Button className="relative flex rounded-full bg-gray-800 text-sm focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800">
@@ -269,12 +266,17 @@ export default function MainLayout() {
                       session.user.id_rol === 2 ? (
                         <>
                           <Link href={'/teacher'} className={classNames(
-                            teacherRoute ? 'bg-elf-green-800 text-white' : 'text-gray-300 hover:bg-elf-green-700 hover:text-white',
+                            teacherRoute ? 'bg-elf-green-800 text-white' : 'text-white hover:bg-elf-green-700 hover:text-gray-300',
                             'block rounded-md px-3 py-2 text-base font-medium'
                           )}>
                             Profesor
                           </Link>
-
+                          <Link href={'/attendance'} className={classNames(
+                            attendanceRoute ? 'bg-elf-green-800 text-white' : 'text-white hover:bg-elf-green-700 hover:text-gray-300',
+                            'block rounded-md px-3 py-2 text-base font-medium'
+                          )}>
+                            Asistencia
+                          </Link>
                         </>
                       ) : null
                     }
@@ -284,10 +286,10 @@ export default function MainLayout() {
                 session ? (
                   <>
                     {
-                      session.user.id_rol === 1 ? (
+                      session.user ? (
                         <>
-                          <Link href={'/teacher'} className={classNames(
-                            courseRoute ? 'bg-elf-green-800 text-white' : 'text-gray-300 hover:bg-elf-green-700 hover:text-white',
+                          <Link href={'/courses'} className={classNames(
+                            courseRoute ? 'bg-elf-green-800 text-white' : 'text-white hover:bg-elf-green-700 hover:text-gray-300',
                             'block rounded-md px-3 py-2 text-base font-medium'
                           )}>
                             Cursos
@@ -298,11 +300,17 @@ export default function MainLayout() {
                   </>
                 ) : null
               }
+              {/* <Link href={'/attendance'} className={classNames(
+                attendanceRoute ? 'bg-elf-green-800 text-white' : 'text-white hover:bg-elf-green-700 hover:text-gray-300',
+                'block rounded-md px-3 py-2 text-base font-medium'
+              )}>
+                Asistencia
+              </Link> */}
               {
                 session ? (
                   <>
                     <Link href={'/forum'} className={classNames(
-                            courseRoute ? 'bg-elf-green-800 text-white' : 'text-gray-300 hover:bg-elf-green-700 hover:text-white',
+                            forumRoute ? 'bg-elf-green-800 text-white' : 'text-white hover:bg-elf-green-700 hover:text-gray-300',
                             'block rounded-md px-3 py-2 text-base font-medium'
                           )}>
                         Foro
@@ -314,13 +322,13 @@ export default function MainLayout() {
                 !session ? (
                   <>
                     <Link href={'/auth/login'} className={classNames(
-                      loginRoute ? 'bg-elf-green-800 text-white' : 'text-gray-300 hover:bg-elf-green-700 hover:text-white',
+                      loginRoute ? 'bg-elf-green-800 text-white' : 'text-white hover:bg-elf-green-700 hover:text-gray-300',
                       'block rounded-md px-3 py-2 text-base font-medium'
                     )}>
                       Iniciar sesión
                     </Link>
                     <Link href={'/auth/register'} className={classNames(
-                      registerRoute ? 'bg-elf-green-800 text-white' : 'text-gray-300 hover:bg-elf-green-700 hover:text-white',
+                      registerRoute ? 'bg-elf-green-800 text-white' : 'text-white hover:bg-elf-green-700 hover:text-gray-300',
                       'block rounded-md px-3 py-2 text-base font-medium'
                     )}>
                       Registrarse
