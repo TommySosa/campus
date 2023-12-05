@@ -27,6 +27,7 @@ export default function MainLayout() {
   const attendanceRoute = pathname === '/attendance'
   const courseRoute = pathname === '/courses'
   const homeRoute = pathname === '/home'
+  const forumRoute = pathname === '/forum'
   const [enableAccesibility, setEnableAccesibility] = useState(false)
   const [disabled, setDisabled] = useState(false);
   const [sizes, setSizes] = useState(false)
@@ -105,6 +106,16 @@ export default function MainLayout() {
                                   Asistencia
                                 </Link>
                               </>
+                            ) : null
+                          }
+                          {
+                            session.user ? (
+                              <Link href={'/forum'} className={classNames(
+                                forumRoute ? 'bg-elf-green-800 text-white' : 'text-gray-300 hover:bg-elf-green-700 hover:text-white',
+                                'block rounded-md px-3 py-2 text-base font-medium'
+                              )}>
+                                Foro
+                              </Link>
                             ) : null
                           }
                           {
@@ -285,6 +296,18 @@ export default function MainLayout() {
                       ) : null
                     }
                   </>
+                ) : null
+              }
+              {
+                session ? (
+                  <>
+                    <Link href={'/forum'} className={classNames(
+                            courseRoute ? 'bg-elf-green-800 text-white' : 'text-gray-300 hover:bg-elf-green-700 hover:text-white',
+                            'block rounded-md px-3 py-2 text-base font-medium'
+                          )}>
+                        Foro
+                    </Link>
+                </>
                 ) : null
               }
               {
