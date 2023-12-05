@@ -110,12 +110,12 @@ export default function MainLayout() {
                           }
                           {
                             session.user ? (<>
-                              <Link href={'/courses'} className={classNames(
+                              {/* <Link href={'/courses'} className={classNames(
                                 courseRoute ? 'bg-elf-green-800 text-white' : 'text-white hover:bg-elf-green-700 hover:text-gray-300',
                                 'block rounded-md px-3 py-2 text-base font-medium'
                               )}>
                                 Cursos
-                              </Link>
+                              </Link> */}
                               <Link href={'/forum'} className={classNames(
                                 forumRoute ? 'bg-elf-green-800 text-white' : 'text-white hover:bg-elf-green-700 hover:text-gray-300',
                                 'block rounded-md px-3 py-2 text-base font-medium'
@@ -127,7 +127,7 @@ export default function MainLayout() {
                           {
                             session.user.id_rol === 1 ? (
                               <Link href={'/courses'} className={classNames(
-                                courseRoute ? 'bg-elf-green-800 text-white' : 'text-white hover:bg-elf-green-700 hover:text-white',
+                                courseRoute ? 'bg-elf-green-800 text-white' : 'text-white hover:bg-elf-green-700 hover:text-gray-300',
                                 'block rounded-md px-3 py-2 text-base font-medium'
                               )}>
                                 Cursos
@@ -249,7 +249,7 @@ export default function MainLayout() {
                       as="a"
                       href={item.href}
                       className={classNames(
-                        isActive ? 'bg-elf-green-800 text-white' : 'text-gray-300 hover:bg-elf-green-700 hover:text-white',
+                        isActive ? 'bg-elf-green-800 text-white' : 'text-white hover:bg-elf-green-700 hover:text-gray-300',
                         'block rounded-md px-3 py-2 text-base font-medium'
                       )}
                       aria-current={item.current ? 'page' : undefined}
