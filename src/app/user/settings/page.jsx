@@ -67,11 +67,6 @@ export default function Settings() {
     }
   };
 
-  const handleDeleteClick = () => {
-    setProfileImageUrl(null);
-    console.log('Eliminar imagen');
-  };
-
   const handleDescriptionChange = (event) => {
     // Limitar la descripción a 255 caracteres
     const limitedDescription = event.target.value.slice(0, 255);

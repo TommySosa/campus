@@ -1,7 +1,7 @@
 "use client"
 import UpdateModal from "./UpdateTeacherModal"
 import CreateModal from "./CreateStudentModal"
-import DeleteModal from "./DeleteStudentModal"
+import DeleteModal from "./DeleteTeacherModal"
 import { useEffect, useState } from "react"
 import axios from "axios"
 export default function TeacherTable({ teachers, openCreate, handleOpenCreate, handleRefresh }) {
