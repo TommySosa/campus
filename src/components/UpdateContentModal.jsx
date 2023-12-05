@@ -5,7 +5,7 @@ import "firebase/storage";
 import { storage } from "@/firebase";
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage'
 
-export default function UpdateContentModal({ isOpen, onClose, id_content }) {
+export default function UpdateContentModal({ isOpen, onClose, id_content, handleRefresh }) {
     const [selectedFile, setSelectedFile] = useState(null)
     const [feedBack, setFeedBack] = useState("")
     const [contentData, setContentData] = useState({
@@ -79,7 +79,10 @@ export default function UpdateContentModal({ isOpen, onClose, id_content }) {
         e.preventDefault()
         try {
             const createCourseResponse = await axios.patch(baseURL, contentData);
-            console.log(createCourseResponse);
+            if(createCourseResponse.status === 200){
+                handleRefresh()
+                onClose()
+            }
 
         } catch (error) {
             console.error("Error al agregar el ejercicio: ", error);
@@ -136,9 +139,9 @@ export default function UpdateContentModal({ isOpen, onClose, id_content }) {
                                             <p className="mb-2 text-sm text-gray-500 dark:text-gray-400 w-full">
                                                 <span class="font-semibold text-center">Click para subir </span>
                                             </p>
-                                            <p className="text-xs text-gray-500 dark:text-gray-400">SVG, PNG, JPG o GIF </p>
+                                            <p className="text-xs text-gray-500 dark:text-gray-400">PDF </p>
                                         </div>
-                                        <input id="dropzone-file" type="file" accept="image/*" className="hidden w-full" onChange={handleFileChange} />
+                                        <input id="dropzone-file" type="file" accept="application/pdf" className="hidden w-full" onChange={handleFileChange} />
                                     </label>
                                 </div>
                             </div>

@@ -24,7 +24,6 @@ export default function UpdateCourseModal({ isOpen, onClose, handleRefresh }) {
             try {
                 const response = await axios.get(`http://localhost:4001/api/category`)
                 const data = await response.data
-                console.log(data);
                 setCategories(data)
             } catch (error) {
                 console.log(error);
@@ -47,7 +46,6 @@ export default function UpdateCourseModal({ isOpen, onClose, handleRefresh }) {
     const handleFileChange = (event) => {
         if (event.target.files[0]) {
             const imageRef = ref(storage, `/image-${Date.now()}`)
-            console.log(event.target.files[0]);
             uploadBytes(imageRef, event.target.files[0]).then(() => {
                 getDownloadURL(imageRef).then((url) => {
                     setCourseData({
@@ -76,6 +74,7 @@ export default function UpdateCourseModal({ isOpen, onClose, handleRefresh }) {
             console.log(createCourseResponse);
             if(createCourseResponse.status === 200){
                 handleRefresh()
+                onClose()
             }
 
         } catch (error) {

@@ -33,7 +33,6 @@ export default function UpdateModuleModal({ isOpen, onClose, handleRefresh, id_m
             try {
                 const response = await axios.get('http://localhost:4001/api/courses')
                 const data = await response.data
-                console.log(data);
                 setCourses(data)
             } catch (error) {
                 console.log(error);
@@ -46,9 +45,9 @@ export default function UpdateModuleModal({ isOpen, onClose, handleRefresh, id_m
         e.preventDefault()
         try {
             const createCourseResponse = await axios.patch(baseURL, moduleData);
-            console.log(createCourseResponse);
             if(createCourseResponse.status === 200){
                 handleRefresh()
+                onClose()
             }
 
         } catch (error) {

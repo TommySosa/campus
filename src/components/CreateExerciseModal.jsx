@@ -102,6 +102,7 @@ export default function UpdateModal({ isOpen, onClose, handleRefresh }) {
                         alert('Ejercicio multiple choise agregado correctamente')
                         console.log('Multiple response', multipleResponse.data);
                         handleRefresh()
+                        onClose()
                     } catch (error) {
                         console.log('MULTIPLE ERROR', error);
                     }

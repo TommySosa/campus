@@ -15,7 +15,7 @@ import {
 import { useEffect, useState } from "react";
 import axios from "axios";
 
-const TABLE_HEAD = ["Usuario", "Rol", "DNI", "Fecha de ingreso", "Acciones"];
+const TABLE_HEAD = ["Usuario", "Rol", "DNI", "Fecha de ingreso"];
 
 
 export default function AttendanceTable() {
@@ -72,7 +72,7 @@ export default function AttendanceTable() {
                 <div className="flex flex-col items-center justify-center gap-4 md:flex-row">
                     <div className=" w-72 mb-6 ">
                         <label >Buscar: </label>
-                        <input placeholder="Ej. Tomás Sosa" className="border-black-200 border-2" value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} />
+                        <input placeholder="Ej. Tomás Sosa" className="border-black-200 border-2 rounded-md" value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} />
                     </div>
                 </div>
             </CardHeader>

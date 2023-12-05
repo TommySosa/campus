@@ -38,8 +38,6 @@ export default function ModuleTable({ modules, openCreate, handleOpenCreate, han
                     <tr>
                         <th scope="col" className="px-4 py-4">Nombre</th>
                         <th scope="col" className="px-4 py-3">Curso</th>
-                        {/* <th scope="col" className="px-4 py-3"> asd</th> */}
-                        {/* <th scope="col" className="px-4 py-3"> asd</th> */}
                         <th scope="col" className="px-4 py-3">
                             <span className="sr-only">Acciones</span>
                         </th>
@@ -52,8 +50,6 @@ export default function ModuleTable({ modules, openCreate, handleOpenCreate, han
                                 <tr className="border-b border-gray-700" key={module.id_module}>
                                     <th scope="row" className="px-8 py-3 font-medium text-gray-900 whitespace-nowrap ">{module.name}</th>
                                     <td className="px-8 py-3">{module.course_name}</td>
-                                    {/* <td className="px-4 py-3 max-w-[12rem] truncate"></td> */}
-                                    {/* <td className="px-4 py-3"></td> */}
                                     <td className="px-4 py-3 flex items-center justify-end">
                                         <button
                                             type="button"
@@ -67,19 +63,6 @@ export default function ModuleTable({ modules, openCreate, handleOpenCreate, han
                                                 <path fillRule="evenodd" clipRule="evenodd" d="M2 6a2 2 0 012-2h4a1 1 0 010 2H4v10h10v-4a1 1 0 112 0v4a2 2 0 01-2 2H4a2 2 0 01-2-2V6z" />
                                             </svg>
                                             Editar
-                                        </button>
-
-                                        <button
-                                            type="button"
-                                            data-modal-target="readProductModal"
-                                            data-modal-toggle="readProductModal"
-                                            className="flex w-full items-center py-2 px-4 hover:bg-gray-100 text-gray-700"
-                                        >
-                                            <svg className="w-4 h-4 mr-2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-                                                <path d="M10 12a2 2 0 100-4 2 2 0 000 4z" />
-                                                <path fillRule="evenodd" clipRule="evenodd" d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" />
-                                            </svg>
-                                            Ver
                                         </button>
 
                                         <button
@@ -118,19 +101,6 @@ export default function ModuleTable({ modules, openCreate, handleOpenCreate, han
                                                 <path fillRule="evenodd" clipRule="evenodd" d="M2 6a2 2 0 012-2h4a1 1 0 010 2H4v10h10v-4a1 1 0 112 0v4a2 2 0 01-2 2H4a2 2 0 01-2-2V6z" />
                                             </svg>
                                             Editar
-                                        </button>
-
-                                        <button
-                                            type="button"
-                                            data-modal-target="readProductModal"
-                                            data-modal-toggle="readProductModal"
-                                            className="flex w-full items-center py-2 px-4 hover:bg-gray-100 text-gray-700"
-                                        >
-                                            <svg className="w-4 h-4 mr-2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-                                                <path d="M10 12a2 2 0 100-4 2 2 0 000 4z" />
-                                                <path fillRule="evenodd" clipRule="evenodd" d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" />
-                                            </svg>
-                                            Ver
                                         </button>
 
                                         <button

@@ -66,14 +66,20 @@ export default function CreateStudentModal({ isOpen, onClose, handleRefresh }) {
     
     const handleSearch = async (event) => {
         const { value } = event.target;
-
+    
         const filtered = users.filter((usuario) => {
             const dniAsString = String(usuario.dni);
             const lowercasedValue = value.toLowerCase();
             return dniAsString.includes(lowercasedValue);
         });
-
+    
         setFilteredUsers(filtered);
+    
+        // If there is only one user in the filtered list, automatically select that user
+        if (filtered.length === 1) {
+            setUser(filtered[0]);
+            setStudentData({ ...studentData, id_user: filtered[0].id_user });
+        }
     };
 
     useEffect(()=> {
@@ -117,7 +123,7 @@ export default function CreateStudentModal({ isOpen, onClose, handleRefresh }) {
                                     className="bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:border-gray-600 dark:placeholder-gray-400 dark:focus:ring-primary-500 dark:focus:border-primary-500"
                                     value={user.id_user}
                                 >
-                                    <option value="" disabled hidden>
+                                    <option value="" disabled>
                                         Seleccione un usuario
                                     </option>
                                     {filteredUsers ? filteredUsers.map((user) => (

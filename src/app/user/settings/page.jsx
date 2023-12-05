@@ -34,15 +34,7 @@ export default function Settings() {
     console.log('userData', userData);
     const response = await axios.patch(`http://localhost:4001/api/user/${session.user.id_user}`,userData)
     console.log(response);
-    // const formData = new FormData(event.currentTarget);
-    // const res = await UserConfig("credentials", {
-    //   email: formData.get("email"),
-    //   password: formData.get("password"),
-    //   redirect: false,
-    // });
 
-    // if (res?.error) setError(res.error)
-    // else { return alert("Contraseña correcta") }
   };
 
   const handleChangeClick = () => {
@@ -118,12 +110,12 @@ export default function Settings() {
           />
 
           <div className="flex justify-around mb-8">
-            <button
+            {/* <button
               className="text-white py-2 px-3 uppercase rounded bg-red-500 hover:bg-red-600 font-medium transition transform hover:-translate-y-0.5"
               onClick={handleDeleteClick}
             >
               Eliminar
-            </button>
+            </button> */}
             <button
               className="text-white py-2 px-3 uppercase rounded bg-blue-500 hover:bg-blue-600 font-medium transition transform hover:-translate-y-0.5"
               onClick={handleChangeClick}
