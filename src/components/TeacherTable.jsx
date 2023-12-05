@@ -6,7 +6,6 @@ import { useEffect, useState } from "react"
 import axios from "axios"
 export default function TeacherTable({ teachers, openCreate, handleOpenCreate, handleRefresh }) {
     const [selectedUpdateCourseId, setSelectedUpdateCourseId] = useState(null);
-    const [users, setUsers] = useState([])
     const [noFiltrados, setNoFiltrados] = useState([])
 
     const handleOpenUpdate = (courseId) => {
@@ -31,6 +30,7 @@ export default function TeacherTable({ teachers, openCreate, handleOpenCreate, h
         fetchUsers()
     }, [])
     return (
+        <>
         <table className="w-full text-left text-gray-500 dark:text-gray-400">
             <thead className="text-gray-700 uppercase bg-gray-50   dark:text-gray-400">
                 <tr>
@@ -142,7 +142,7 @@ export default function TeacherTable({ teachers, openCreate, handleOpenCreate, h
 
                             </td>
                         </tr>
-                    )) : <p>No se pudo obtener los usuarios</p>
+                    )) : <p className="text-center">No se pudo obtener los usuarios</p>
                 }
 
                 {
@@ -183,5 +183,15 @@ export default function TeacherTable({ teachers, openCreate, handleOpenCreate, h
 
             </tbody>
         </table>
+        <nav className="flex flex-col md:flex-row justify-between items-start md:items-center py-8  space-y-3 md:space-y-0 p-4" aria-label="Table navigation">
+                <span className="text-sm font-normal text-gray-500 dark:text-gray-400">
+                    Mostrando
+                    <span className="font-semibold text-gray-900  "> {teachers.length > 0 ? teachers.length : noFiltrados.length} </span>
+                    de
+                    <span className="font-semibold text-gray-900  "> {noFiltrados ? noFiltrados.length : teachers.length} </span>
+                </span>
+
+            </nav>
+        </>
     )
 }

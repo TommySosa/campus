@@ -35,16 +35,16 @@ export default function ProfileData() {
 
             const progressResponse = await axios.get(`http://localhost:4001/api/progress/${session.user.id_user}`)
             const dataProgress = await progressResponse.data
-            console.log('progress',dataProgress);
+            console.log('progress', dataProgress);
             setInscriptions(dataProgress)
 
         }
         fetchData()
     }, [session.user.id_user])
 
-    useEffect(()=> {
-        console.log('CORRECTS BY COURSE',correctsByCourse);
-        console.log(asd);
+    useEffect(() => {
+        console.log('CORRECTS BY COURSE', correctsByCourse);
+        console.log(inscriptions);
     })
 
     const data = {
@@ -86,15 +86,18 @@ export default function ProfileData() {
             </div>
             <div>
                 <p className="mt-8 text-center text-gray-500">Aqui podras observar tu progreso en tus cursos</p>
-                <h2 className="mt-8 text-center text-gray-500">Total de ejercicios realizados</h2>
-                <div className="flex justify-center">
+                {
+                    corrects.length > 0 && incorrects.length > 0 ? <>
+                        <h2 className="mt-8 text-center text-gray-500">Total de ejercicios realizados</h2>
+                        <div className="flex justify-center">
 
-                    <div className="flex justify-center w-40">
-                        {
-                            <Pie data={data} />
-                        }
-                    </div>
-                </div>
+                            <div className="flex justify-center w-40">
+                                <Pie data={data} />
+                            </div>
+                        </div>
+                    </> : null
+                }
+
             </div>
             {
                 inscriptions && inscriptions.length > 0 ? inscriptions.map((course) => (

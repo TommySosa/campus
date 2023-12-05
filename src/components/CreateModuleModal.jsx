@@ -31,6 +31,7 @@ export default function CreateModuleModal({ isOpen, onClose, handleRefresh }) {
             console.log(createCourseResponse);
             if(createCourseResponse.status === 200){
                 handleRefresh()
+                onClose()
             }
 
         } catch (error) {

@@ -7,7 +7,7 @@ import { NextResponse } from "next/server";
 
 export async function POST(request) {
   try {
-    const { name, surname, email, password, id_rol, dni } =
+    const { name, surname, email, password, id_rol, dni, genre } =
       await request.json();
 
     if (password.length < 6) {
@@ -40,6 +40,7 @@ export async function POST(request) {
         password: hashedPassword,
         id_rol: 1,
         dni: parseInt(dni),
+        genre: genre
       },
     });
 
@@ -50,6 +51,7 @@ export async function POST(request) {
         email: newUser.email,
         id_rol: newUser.id_rol,
         dni: parseInt(newUser.dni),
+        genre: newUser.genre
       },
       { status: 201 }
     );

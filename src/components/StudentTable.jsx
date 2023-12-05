@@ -36,6 +36,7 @@ export default function StudentTable({inscriptions, openCreate, handleOpenCreate
         // }
     },[])
     return (
+        <>
         <table className="w-full text-left text-gray-500 dark:text-gray-400">
             <thead className="text-gray-700 uppercase bg-gray-50   dark:text-gray-400">
                 <tr>
@@ -152,7 +153,7 @@ export default function StudentTable({inscriptions, openCreate, handleOpenCreate
                     //                 </td>
                     //             </tr>
                             // </>
-                        )) : null
+                        )) : <p className="text-center">No se pudo obtener los usuarios</p>
                     
                 }
 
@@ -194,5 +195,15 @@ export default function StudentTable({inscriptions, openCreate, handleOpenCreate
 
             </tbody>
         </table>
+        <nav className="flex flex-col md:flex-row justify-between items-start md:items-center py-8  space-y-3 md:space-y-0 p-4" aria-label="Table navigation">
+        <span className="text-sm font-normal text-gray-500 dark:text-gray-400">
+            Mostrando
+            <span className="font-semibold text-gray-900  "> {users.length} </span>
+            de
+            <span className="font-semibold text-gray-900  "> {users.length} </span>
+        </span>
+
+    </nav>
+</>
     )
 }

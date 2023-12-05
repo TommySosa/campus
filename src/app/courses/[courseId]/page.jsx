@@ -1,7 +1,8 @@
 import CourseContentPreview from "@/components/Content";
+import axios from "axios";
 
 export default async function Home({ params }) {
-    const responseContent = await fetch(`http://localhost:4001/api/contents/${params.courseId}`)
+    const responseContent = await axios.get(`http://localhost:4001/api/contents/${params.courseId}`)
     const response = await fetch(`http://localhost:4000/api/courses/${params.courseId}`);
     
     if (!response.ok) {
@@ -12,7 +13,7 @@ export default async function Home({ params }) {
         </div>
       );
     }
-    const dataContent = await responseContent.json()
+    const dataContent = await responseContent.data
     const data = await response.json();
   
     if (!data.data) {

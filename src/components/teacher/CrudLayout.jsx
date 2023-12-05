@@ -7,6 +7,7 @@ import CourseTable from "../CourseTable"
 import ModuleTable from "../ModuleTable"
 import StudentTable from "../StudentTable"
 import TeacherTable from "../TeacherTable"
+import ContentTable from "../ContentTable"
 
 export default function CrudLayout() {
     const [exercises, setExercises] = useState([])
@@ -16,16 +17,19 @@ export default function CrudLayout() {
     const [openCreateCourse, setOpenCreateCourse] = useState(false)
     const [openCreateStudent, setOpenCreateStudent] = useState(false)
     const [openCreateTeacher, setOpenCreateTeacher] = useState(false)
+    const [openCreateContent, setOpenCreateContent] = useState(false)
     const [openActions, setOpenActions] = useState(false)
     const [enableCourse, setEnableCourse] = useState(false)
     const [enableExercise, setEnableExercise] = useState(true)
     const [enableModule, setEnableModule] = useState(false)
     const [enableStudent, setEnableStudent] = useState(false)
     const [enableTeacher, setEnableTeacher] = useState(false)
+    const [enableContent, setEnableContent] = useState(false)
     const [courses, setCourses] = useState([])
     const [users, setUsers] = useState([])
     const [students, setStudents] = useState([])
     const [teachers, setTeachers] = useState([])
+    const [contents, setContents] = useState([])
     const [user, setUser] = useState({
         name: "",
         surname: "",
@@ -38,7 +42,8 @@ export default function CrudLayout() {
         modules: [],
         courses: [],
         exercises: [],
-        teachers: []
+        teachers: [],
+        contents: []
     });
     async function fetchExercises() {
         // const response = axios.get( ` ${process.env.API_URL}/exercises ` )
@@ -46,6 +51,7 @@ export default function CrudLayout() {
             const response = await axios.get(`/api/exercises `)
             const data = await response.data.data
             setExercises(data)
+            console.log(data);
         } catch (error) {
             console.error('Error');
         }
@@ -55,6 +61,7 @@ export default function CrudLayout() {
             const response = await axios.get(`http://localhost:4001/api/modules`)
             const data = await response.data
             setModules(data)
+
         } catch (error) {
             console.log(error);
         }
@@ -108,6 +115,18 @@ export default function CrudLayout() {
             console.log(error);
         }
     }
+    async function fetchContents(){
+        try {
+            const response = await axios.get('http://localhost:4001/api/contents')
+            const data = await response.data
+            setContents(data)
+        } catch (error) {
+            console.log(error);
+        }
+    }
+    useEffect(() => {
+        fetchContents()
+    }, [])
     useEffect(() => {
         fetchTeachers()
     }, [])
@@ -125,16 +144,27 @@ export default function CrudLayout() {
     }, [])
     useEffect(() => {
         fetchCourses()
-    },[])
+    }, [])
     useEffect(() => {
         fetchStudents()
-    },[])
+    }, [])
 
     const handleRefresh = () => {
         fetchExercises()
         fetchCourses()
         fetchModules()
         fetchInscriptions()
+        fetchTeachers()
+        fetchUsers()
+        fetchContents()
+        setFilteredData({
+            users: users,
+            modules: modules,
+            courses: courses,
+            exercises: exercises,
+            teachers: teachers,
+            contents: contents
+        });
     }
 
     const handleOpenCreate = () => {
@@ -152,12 +182,16 @@ export default function CrudLayout() {
     const handleOpenCreateTeacher = () => {
         setOpenCreateTeacher(!openCreateTeacher)
     }
+    const handleOpenCreateContent = () => {
+        setOpenCreateContent(!openCreateContent)
+    }
     const handleEnableCourse = () => {
         setEnableCourse(true)
         setEnableExercise(false)
         setEnableModule(false)
         setEnableStudent(false)
         setEnableTeacher(false)
+        setEnableContent(false)
     }
     const handleEnableExercise = () => {
         setEnableExercise(true)
@@ -165,6 +199,7 @@ export default function CrudLayout() {
         setEnableModule(false)
         setEnableStudent(false)
         setEnableTeacher(false)
+        setEnableContent(false)
     }
     const handleEnableModule = () => {
         setEnableModule(true)
@@ -172,6 +207,7 @@ export default function CrudLayout() {
         setEnableExercise(false)
         setEnableStudent(false)
         setEnableTeacher(false)
+        setEnableContent(false)
     }
     const handleEnableStudent = () => {
         setEnableStudent(true)
@@ -179,9 +215,19 @@ export default function CrudLayout() {
         setEnableExercise(false)
         setEnableModule(false)
         setEnableTeacher(false)
+        setEnableContent(false)
     }
     const handleEnableTeacher = () => {
         setEnableTeacher(true)
+        setEnableStudent(false)
+        setEnableCourse(false)
+        setEnableExercise(false)
+        setEnableModule(false)
+        setEnableContent(false)
+    }
+    const handleEnableContent = () => {
+        setEnableContent(true)
+        setEnableTeacher(false)
         setEnableStudent(false)
         setEnableCourse(false)
         setEnableExercise(false)
@@ -197,7 +243,8 @@ export default function CrudLayout() {
                 modules: modules,
                 courses: courses,
                 exercises: exercises,
-                teachers: teachers
+                teachers: teachers,
+                contents: contents
             });
         } else {
             const lowercasedValue = value.toLowerCase();
@@ -261,17 +308,21 @@ export default function CrudLayout() {
                 return exerciseName.includes(lowercasedValue);
             });
 
+            const filteredContents = contents.filter((content) => {
+                const contentName = content.title.toLowerCase();
+                return contentName.includes(lowercasedValue)
+            })
+
             setFilteredData({
                 users: filteredUsers,
                 modules: filteredModules,
                 courses: filteredCourses,
                 exercises: filteredExercises,
-                teachers: filteredTeachers
+                teachers: filteredTeachers,
+                contents: filteredContents
             });
         }
     };
-
-
 
     return (
         <main className="w-full">
@@ -344,6 +395,16 @@ export default function CrudLayout() {
                                     Asignar como profesor
                                 </button> : null
                             }
+                            {
+                                enableContent ? <button type="button" id="createProductModalButton" data-modal-target="createProductModal" data-modal-toggle="createProductModal"
+                                    className="flex items-center justify-center text-white bg-primary-700 hover:bg-primary-800 focus:ring-4 focus:ring-primary-300 font-medium rounded-lg px-4 py-2 dark:bg-primary-600 dark:hover:bg-primary-700 focus:outline-none dark:focus:ring-primary-800"
+                                    onClick={handleOpenCreateContent}>
+                                    <svg className="h-3.5 w-3.5 mr-2" fill="currentColor" viewbox="0 0 20 20" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                                        <path clipRule="evenodd" fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" />
+                                    </svg>
+                                    Agregar contenido
+                                </button> : null
+                            }
                             <div className="flex items-center space-x-3 w-full md:w-auto relative">
 
                                 <button
@@ -372,31 +433,36 @@ export default function CrudLayout() {
                                 <div id="actionsDropdown"
                                     className={`${openActions ? "block" : "hidden"
                                         } z-10 absolute top-8  mt-2 w-44 bg-white rounded divide-y divide-gray-100 shadow dark:divide-gray-600`}>
-                                    <ul className="py-1 text-sm text-gray-700 " aria-labelledby="actionsDropdownButton">
+                                    <ul className=" text-sm text-gray-700 " aria-labelledby="actionsDropdownButton">
                                         <li>
-                                            <button onClick={handleEnableCourse} className="block w-full text-left py-2 px-4 hover:bg-gray-600 hover:text-white">Cursos</button>
+                                            <button onClick={handleEnableCourse} className="block w-full text-left py-1 px-4 hover:bg-gray-600 hover:text-white">Cursos</button>
                                         </li>
 
                                     </ul>
-                                    <ul className="py-1 text-sm text-gray-700 " aria-labelledby="actionsDropdownButton">
+                                    <ul className=" text-sm text-gray-700 " aria-labelledby="actionsDropdownButton">
                                         <li>
-                                            <button onClick={handleEnableModule} className="block w-full text-left py-2 px-4 hover:bg-gray-600 hover:text-white">Módulos</button>
+                                            <button onClick={handleEnableModule} className="block w-full text-left py-1 px-4 hover:bg-gray-600 hover:text-white">Módulos</button>
                                         </li>
 
                                     </ul>
-                                    <ul className="py-1 text-sm text-gray-700 " aria-labelledby="actionsDropdownButton">
+                                    <ul className=" text-sm text-gray-700 " aria-labelledby="actionsDropdownButton">
                                         <li>
-                                            <button onClick={handleEnableExercise} className="block w-full text-left py-2 px-4 hover:bg-gray-600 hover:text-white">Ejercicios</button>
+                                            <button onClick={handleEnableExercise} className="block w-full text-left py-1 px-4 hover:bg-gray-600 hover:text-white">Ejercicios</button>
                                         </li>
                                     </ul>
-                                    <ul className="py-1 text-sm text-gray-700 " aria-labelledby="actionsDropdownButton">
+                                    <ul className=" text-sm text-gray-700 " aria-labelledby="actionsDropdownButton">
                                         <li>
-                                            <button onClick={handleEnableStudent} className="block w-full text-left py-2 px-4 hover:bg-gray-600 hover:text-white">Estudiantes</button>
+                                            <button onClick={handleEnableStudent} className="block w-full text-left py-1 px-4 hover:bg-gray-600 hover:text-white">Estudiantes</button>
                                         </li>
                                     </ul>
-                                    <ul className="py-1 text-sm text-gray-700 " aria-labelledby="actionsDropdownButton">
+                                    <ul className=" text-sm text-gray-700 " aria-labelledby="actionsDropdownButton">
                                         <li>
-                                            <button onClick={handleEnableTeacher} className="block w-full text-left py-2 px-4 hover:bg-gray-600 hover:text-white">Profesores</button>
+                                            <button onClick={handleEnableTeacher} className="block w-full text-left py-1 px-4 hover:bg-gray-600 hover:text-white">Profesores</button>
+                                        </li>
+                                    </ul>
+                                    <ul className=" text-sm text-gray-700 " aria-labelledby="actionsDropdownButton">
+                                        <li>
+                                            <button onClick={handleEnableContent} className="block w-full text-left py-1 px-4 hover:bg-gray-600 hover:text-white">Contenidos</button>
                                         </li>
                                     </ul>
 
@@ -463,48 +529,14 @@ export default function CrudLayout() {
                                 handleRefresh={handleRefresh}
                             /> : null
                         }
+                        {
+                            enableContent ? <ContentTable contents={filteredData.contents}
+                                openCreate={openCreateContent}
+                                handleOpenCreate={handleOpenCreateContent}
+                                handleRefresh={handleRefresh}
+                            /> : null
+                        } 
                     </div>
-                    {/* <nav className="flex flex-col md:flex-row justify-between items-start md:items-center space-y-3 md:space-y-0 p-4" aria-label="Table navigation">
-                        <span className="text-sm font-normal text-gray-500 dark:text-gray-400">
-                            Mostrando
-                            <span className="font-semibold text-gray-900  "> 1-10 </span>
-                            de
-                            <span className="font-semibold text-gray-900  "> 1000 </span>
-                        </span>
-                        <ul className="inline-flex items-stretch -space-x-px">
-                            <li>
-                                <a href="#" className="flex items-center justify-center h-full py-1.5 px-3 ml-0 text-gray-500 bg-white rounded-l-lg border border-gray-300 hover:bg-gray-100 hover:text-gray-700   dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">
-                                    <span className="sr-only">Previos</span>
-                                    <svg className="w-5 h-5" aria-hidden="true" fill="currentColor" viewbox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-                                        <path fill-rule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clipRule="evenodd" />
-                                    </svg>
-                                </a>
-                            </li>
-                            <li>
-                                <a href="#" className="flex items-center justify-center text-sm py-2 px-3 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700   dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">1</a>
-                            </li>
-                            <li>
-                                <a href="#" className="flex items-center justify-center text-sm py-2 px-3 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700   dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">2</a>
-                            </li>
-                            <li>
-                                <a href="#" aria-current="page" className="flex items-center justify-center text-sm z-10 py-2 px-3 leading-tight text-primary-600 bg-primary-50 border border-primary-300 hover:bg-primary-100 hover:text-primary-700 dark:border-gray-700    ">3</a>
-                            </li>
-                            <li>
-                                <a href="#" className="flex items-center justify-center text-sm py-2 px-3 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700   dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">...</a>
-                            </li>
-                            <li>
-                                <a href="#" className="flex items-center justify-center text-sm py-2 px-3 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700   dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">100</a>
-                            </li>
-                            <li>
-                                <a href="#" className="flex items-center justify-center h-full py-1.5 px-3 leading-tight text-gray-500 bg-white rounded-r-lg border border-gray-300 hover:bg-gray-100 hover:text-gray-700   dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">
-                                    <span className="sr-only">Siguientes</span>
-                                    <svg className="w-5 h-5" aria-hidden="true" fill="currentColor" viewbox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-                                        <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clipRule="evenodd" />
-                                    </svg>
-                                </a>
-                            </li>
-                        </ul>
-                    </nav> */}
                 </div>
             </div>
         </main>

@@ -31,6 +31,7 @@ model User {
   password           String
   profile_url        String?
   description        String?
+  genre              String?
   dni                Int                 @unique
   id_rol             Int
   role               Role                @relation(fields: [id_rol], references: [id_rol])
