@@ -40,6 +40,30 @@ model User {
   correctExercises   CorrectExercise[]
   incorrectExercises IncorrectExercise[]
   attendances        Attendance[]
+  discussions        Discussion[]
+  comments           Comment[]
+}
+
+model Discussion {
+  id_discussion Int      @id @default(autoincrement())
+  title         String
+  content       String
+  author        String
+  created_at    DateTime @default(now())
+  comments      Comment[]
+  user_id       Int
+  user          User     @relation(fields: [user_id], references: [id_user])
+}
+
+model Comment {
+  id_comment     Int      @id @default(autoincrement())
+  content        String
+  author         String
+  created_at     DateTime @default(now())
+  id_discussion  Int
+  id_user        Int
+  discussion     Discussion @relation(fields: [id_discussion], references: [id_discussion])
+  user           User @relation(fields: [id_user], references: [id_user])
 }
 
 model Course {
