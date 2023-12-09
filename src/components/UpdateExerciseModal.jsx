@@ -1,12 +1,12 @@
 "use client"
 import axios from "axios"
 import { useEffect, useState } from "react"
+import Swal from 'sweetalert2'
 
-export default function UpdateModal({ isOpen, onClose, id_exercise }) {
+export default function UpdateModal({ isOpen, onClose, id_exercise, handleRefresh }) {
     const baseURL = `http://localhost:4001/api/exercises/${id_exercise}`;
     const multipleURL = `http://localhost:4001/api/multiple/${id_exercise}`
     const trueOrFalseURL = `http://localhost:4001/api/true_false/${id_exercise}`
-    const [modules, setModules] = useState([])
     const [exerciseType, setExerciseType] = useState([])
     const [courses, setCourses] = useState([])
     const [exercise, setExercise] = useState({})
@@ -17,7 +17,7 @@ export default function UpdateModal({ isOpen, onClose, id_exercise }) {
             { text: '', correct: false },
             { text: '', correct: false },
             { text: '', correct: false }
-          ]
+        ]
     })
     const [formData, setFormData] = useState({
         option1: multiple.options[0].text,
@@ -27,7 +27,6 @@ export default function UpdateModal({ isOpen, onClose, id_exercise }) {
         correctOption1: multiple.options[0].correct,
         correctOption2: multiple.options[1].correct,
     });
-    const [enableModules, setEnableModules] = useState(false)
     const [exerciseData, setExerciseData] = useState({
         name: exercise.name,
         instruction: exercise.instruction,
@@ -38,7 +37,6 @@ export default function UpdateModal({ isOpen, onClose, id_exercise }) {
         true_option: "",
         false_option: ""
     })
-    const [idType, setIdType] = useState(null)
 
     useEffect(() => {
         async function fetchTypes() {
@@ -81,12 +79,26 @@ export default function UpdateModal({ isOpen, onClose, id_exercise }) {
                 console.log(error);
             }
         }
+        async function fetchTrueOrFalse() {
+            try {
+                const response = await axios.get(`/api/trueFalse/${id_exercise}`)
+                const data = await response.data.data
+                console.log(data);
+                setFormData2({
+                    true_option: data.true_option,
+                    false_option: data.false_option
+                })
+            } catch (error) {
+                console.log(error);
+            }
+        }
         fetchCourses()
         fetchTypes()
         fetchExercise()
         fetchMultiple()
+        fetchTrueOrFalse()
     }, [id_exercise])
-    
+
     useEffect(() => {
         setFormData({
             option1: multiple.options[0].text,
@@ -102,27 +114,9 @@ export default function UpdateModal({ isOpen, onClose, id_exercise }) {
         setExerciseData({
             name: exercise.name,
             instruction: exercise.instruction,
+            id_type: exercise.id_type
         });
     }, [exercise]);
-
-    const handleChangeCourse = (e) => {
-        const id = e.target.value
-        if (id > 0) {
-            async function fetchModules() {
-                try {
-                    const response = await axios.get(`/api/modules/${id}`)
-                    const data = response.data.data
-                    setModules(data)
-                } catch (error) {
-                    console.log(error);
-                }
-            }
-            fetchModules()
-        }
-    }
-    const handleChangeType = (e) => {
-        setIdType(e.target.value)
-    }
 
     const handleInputChange = (event, optionType) => {
         const isChecked = event.target.checked;
@@ -137,47 +131,123 @@ export default function UpdateModal({ isOpen, onClose, id_exercise }) {
         e.preventDefault()
 
         try {
-                const multipleBody = {
-                    options: [
-                        { text: formData.option1, correct: formData.correctOption1 },
-                        { text: formData.option2, correct: formData.correctOption2 },
-                        { text: formData.option3, correct: false },
-                        { text: formData.option4, correct: false },
-                    ],
-                };
-                console.log(formData);
-                const updateExerciseResponse = await axios.put(baseURL, exerciseData);
-                console.log('response', updateExerciseResponse);
-                if (updateExerciseResponse.status === 200) {
-                    if (exercise.id_type === 1) {
-                        try {
-                            const multipleResponse = await axios.put(multipleURL, {
-                                id_exercise: await updateExerciseResponse.data.id_exercise,
-                                options: multipleBody.options
-                            })
-                            alert('Ejercicio multiple choise agregado correctamente')
-                            console.log('Multiple response', multipleResponse.data);
-                        } catch (error) {
-                            console.log('MULTIPLE ERROR', error);
+            const multipleBody = {
+                options: [
+                    { text: formData.option1, correct: formData.correctOption1 },
+                    { text: formData.option2, correct: formData.correctOption2 },
+                    { text: formData.option3, correct: false },
+                    { text: formData.option4, correct: false },
+                ],
+            };
+            console.log(formData);
+            console.log(exerciseData);
+            if (exerciseData.id_type !== 0 && exerciseData.id_type !== undefined && exerciseData.instruction.trim() !== "" && exerciseData.name.trim() !== "") {
+                if (exercise.id_type === 1) {
+                    if (formData.option1.trim() !== "" && formData.option2.trim() !== "" && formData.option3.trim() !== "" && formData.option4.trim() !== "") {
+                        const updateExerciseResponse = await axios.put(baseURL, exerciseData);
+                        if (updateExerciseResponse.status === 200) {
+                            try {
+                                const multipleResponse = await axios.put(multipleURL, {
+                                    id_exercise: await updateExerciseResponse.data.id_exercise,
+                                    options: multipleBody.options
+                                })
+                                alert('Ejercicio multiple choise agregado correctamente')
+                                console.log('Multiple response', multipleResponse.data);
+                                onClose()
+                                handleRefresh()
+                            } catch (error) {
+                                console.log('MULTIPLE ERROR', error);
+                            }
+                        } else {
+                            alert('Error')
                         }
+                    } else {
+                        const Toast = Swal.mixin({
+                            toast: true,
+                            position: "bottom-end",
+                            showConfirmButton: false,
+                            timer: 3000,
+                            timerProgressBar: true,
+                            didOpen: (toast) => {
+                                toast.onmouseenter = Swal.stopTimer;
+                                toast.onmouseleave = Swal.resumeTimer;
+                            }
+                        });
+                        Toast.fire({
+                            icon: "error",
+                            title: "Llena todos los campos!"
+                        });
                     }
-                    else if (updateExerciseResponse.data.id_type === 2) {
-                        try {
-                            const trueOrFalseResponse = await axios.put(trueOrFalseURL, {
-                                id_exercise: await updateExerciseResponse.data.id_exercise,
-                                true_option: formData2.true_option,
-                                false_option: formData2.false_option
-                            })
-                            alert('Ejercicio verdadero o falso agregado correctamente')
-                            console.log('Verdadero o falso response', trueOrFalseResponse.data);
-                        } catch (error) {
-                            console.log('TRUE OR FALSE', error);
+                } else if (exercise.id_type === 2) {
+                    if (formData2.true_option.trim() !== "" && formData2.false_option.trim() !== "") {
+                        const updateExerciseResponse = await axios.put(baseURL, exerciseData);
+                        if (updateExerciseResponse.status === 200) {
+                            try {
+                                const trueOrFalseResponse = await axios.put(trueOrFalseURL, {
+                                    id_exercise: await updateExerciseResponse.data.id_exercise,
+                                    true_option: formData2.true_option,
+                                    false_option: formData2.false_option
+                                })
+                                onClose()
+                                handleRefresh()
+                                console.log('Verdadero o falso response', trueOrFalseResponse.data);
+                            } catch (error) {
+                                console.log('TRUE OR FALSE', error);
+                            }
+                        } else {
+                            alert('Error')
                         }
+                    } else {
+                        const Toast = Swal.mixin({
+                            toast: true,
+                            position: "bottom-end",
+                            showConfirmButton: false,
+                            timer: 3000,
+                            timerProgressBar: true,
+                            didOpen: (toast) => {
+                                toast.onmouseenter = Swal.stopTimer;
+                                toast.onmouseleave = Swal.resumeTimer;
+                            }
+                        });
+                        Toast.fire({
+                            icon: "error",
+                            title: "Llena todos los campos!"
+                        });
                     }
-                    alert("Ejercicio agregado correctamente");
+                } else {
+                    const Toast = Swal.mixin({
+                        toast: true,
+                        position: "bottom-end",
+                        showConfirmButton: false,
+                        timer: 3000,
+                        timerProgressBar: true,
+                        didOpen: (toast) => {
+                            toast.onmouseenter = Swal.stopTimer;
+                            toast.onmouseleave = Swal.resumeTimer;
+                        }
+                    });
+                    Toast.fire({
+                        icon: "error",
+                        title: "Llena todos los campos!"
+                    });
+                }
                 // }
             } else {
-                alert("Por favor, complete todos los campos");
+                const Toast = Swal.mixin({
+                    toast: true,
+                    position: "bottom-end",
+                    showConfirmButton: false,
+                    timer: 3000,
+                    timerProgressBar: true,
+                    didOpen: (toast) => {
+                        toast.onmouseenter = Swal.stopTimer;
+                        toast.onmouseleave = Swal.resumeTimer;
+                    }
+                });
+                Toast.fire({
+                    icon: "error",
+                    title: "Llena todos los campos!"
+                });
             }
         } catch (error) {
             console.error("Error al agregar el ejercicio: ", error);
@@ -190,9 +260,7 @@ export default function UpdateModal({ isOpen, onClose, id_exercise }) {
             aria-labelledby="modal-title"
             aria-describedby="modal-description">
             <div className="relative p-4 w-full max-w-2xl max-h-full">
-
                 <div className="relative p-4 bg-white rounded-lg shadow sm:p-5">
-
                     <div className="flex justify-between items-center pb-4 mb-4 rounded-t border-b sm:mb-5 border-gray-600">
                         <h3 className="text-lg font-semibold text-gray-900 " id="modal-title">Actualizar ejercicio</h3>
                         <button onClick={onClose} type="button" className="text-gray-400 bg-transparent  rounded-lg text-sm p-1.5 ml-auto inline-flex items-center hover:bg-gray-600 hover:text-white">
@@ -202,23 +270,21 @@ export default function UpdateModal({ isOpen, onClose, id_exercise }) {
                             <button className="sr-only">Cerrar modal</button>
                         </button>
                     </div>
-
                     <form onSubmit={handleSubmit} aria-labelledby="modal-title">
                         <div className="grid gap-4 mb-4 sm:grid-cols-2">
                             <div>
                                 <label for="name" className="block mb-2 text-sm font-medium text-gray-900 ">Nombre</label>
-                                <input type="text" name="name" id="name" 
-                                className="bg-gray-50 border text-gray-900 text-sm rounded-lg block w-full p-2.5  border-gray-600 placeholder-gray-400  focus:ring-primary-500 focus:border-primary-500" 
-                                placeholder="Escribe el nombre..." value={exerciseData.name} onChange={(e) => setExerciseData({ ...exerciseData, name: e.target.value })}/>
+                                <input type="text" name="name" id="name"
+                                    className="bg-gray-50 border text-gray-900 text-sm rounded-lg block w-full p-2.5  border-gray-600 placeholder-gray-400  focus:ring-primary-500 focus:border-primary-500"
+                                    placeholder="Escribe el nombre..." value={exerciseData.name} onChange={(e) => setExerciseData({ ...exerciseData, name: e.target.value })} />
                             </div>
-                            
+
                             <div className="sm:col-span-2">
                                 <label for="instruction" className="block mb-2 text-sm font-medium text-gray-900">Consigna</label>
-                                <textarea id="instruction" aria-describedby="modal-description" rows="3" 
-                                className="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border   border-gray-600 placeholder-gray-400   focus:ring-primary-500 focus:border-primary-500" 
-                                placeholder="Escribe la consigna..." value={exerciseData.instruction} onChange={(e) => setExerciseData({ ...exerciseData, instruction: e.target.value })}></textarea>
+                                <textarea id="instruction" aria-describedby="modal-description" rows="3"
+                                    className="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border   border-gray-600 placeholder-gray-400   focus:ring-primary-500 focus:border-primary-500"
+                                    placeholder="Escribe la consigna..." value={exerciseData.instruction} onChange={(e) => setExerciseData({ ...exerciseData, instruction: e.target.value })}></textarea>
                             </div>
-                            
                             {
                                 exercise.id_type == 1 ?
                                     <>
@@ -253,17 +319,17 @@ export default function UpdateModal({ isOpen, onClose, id_exercise }) {
                                     </> : null
                             }
                             {
-                                idType == 2 ? <>
+                                exercise.id_type == 2 ? <>
                                     <div>
                                         <div >
                                             <label htmlFor="true_option" className="block mb-2 text-sm font-medium text-gray-900 ">Opción verdadera</label>
-                                            <textarea id="true_option" value={formData2.true_option} onChange={(e) => setFormData2({ ...formData, true_option: e.target.value })} rows="2" className="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-primary-500 focus:border-primary-500   dark:border-gray-600 dark:placeholder-gray-400   dark:focus:ring-primary-500 dark:focus:border-primary-500" placeholder="Escribe la opción verdadera..."></textarea>
+                                            <textarea id="true_option" value={formData2.true_option} onChange={(e) => setFormData2({ ...formData2, true_option: e.target.value })} rows="2" className="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-primary-500 focus:border-primary-500   dark:border-gray-600 dark:placeholder-gray-400   dark:focus:ring-primary-500 dark:focus:border-primary-500" placeholder="Escribe la opción verdadera..."></textarea>
                                         </div>
                                     </div>
                                     <div>
                                         <div >
                                             <label htmlFor="false_option" className="block mb-2 text-sm font-medium text-gray-900 ">Opción falsa</label>
-                                            <textarea id="false_option" value={formData2.false_option} onChange={(e) => setFormData2({ ...formData, false_option: e.target.value })} rows="2" className="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-primary-500 focus:border-primary-500   dark:border-gray-600 dark:placeholder-gray-400   dark:focus:ring-primary-500 dark:focus:border-primary-500" placeholder="Escribe la opción falsa..."></textarea>
+                                            <textarea id="false_option" value={formData2.false_option} onChange={(e) => setFormData2({ ...formData2, false_option: e.target.value })} rows="2" className="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-primary-500 focus:border-primary-500   dark:border-gray-600 dark:placeholder-gray-400   dark:focus:ring-primary-500 dark:focus:border-primary-500" placeholder="Escribe la opción falsa..."></textarea>
                                         </div>
                                     </div>
                                 </> : null
@@ -284,7 +350,5 @@ export default function UpdateModal({ isOpen, onClose, id_exercise }) {
                 </div>
             </div>
         </div>
-
-
     )
 }

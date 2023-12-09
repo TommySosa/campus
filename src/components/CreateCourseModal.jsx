@@ -4,6 +4,7 @@ import { useEffect, useState } from "react"
 import "firebase/storage";
 import { storage } from "@/firebase";
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage'
+import Swal from 'sweetalert2'
 
 const baseURL = "http://localhost:4001/api/courses";
 export default function UpdateCourseModal({ isOpen, onClose, handleRefresh }) {
@@ -70,13 +71,30 @@ export default function UpdateCourseModal({ isOpen, onClose, handleRefresh }) {
     const handleSubmit = async (e) => {
         e.preventDefault()
         try {
-            const createCourseResponse = await axios.post(baseURL, courseData);
-            console.log(createCourseResponse);
-            if(createCourseResponse.status === 200){
-                handleRefresh()
-                onClose()
+            if(courseData.description == undefined || courseData.description.trim() == "" || courseData.id_category == undefined 
+            || courseData.id_category == 0 || courseData.url_image == undefined || courseData.url_image.trim() == "" || courseData.id_user == 0 || courseData.id_user == undefined){
+                const Toast = Swal.mixin({
+                    toast: true,
+                    position: "bottom-end",
+                    showConfirmButton: false,
+                    timer: 3000,
+                    timerProgressBar: true,
+                    didOpen: (toast) => {
+                      toast.onmouseenter = Swal.stopTimer;
+                      toast.onmouseleave = Swal.resumeTimer;
+                    }
+                  });
+                  Toast.fire({
+                    icon: "error",
+                    title: "Llena todos los campos!"
+                  });
+            }else{
+                const createCourseResponse = await axios.post(baseURL, courseData);
+                if(createCourseResponse.status === 200){
+                    handleRefresh()
+                    onClose()
+                }
             }
-
         } catch (error) {
             console.error("Error al agregar el ejercicio: ", error);
         }

@@ -1,6 +1,7 @@
 "use client"
 import axios from "axios"
 import { useEffect, useState } from "react"
+import Swal from 'sweetalert2'
 
 const baseURL = "http://localhost:4001/api/exercises";
 const multipleURL = "http://localhost:4001/api/multiple"
@@ -81,19 +82,20 @@ export default function UpdateModal({ isOpen, onClose, handleRefresh }) {
     const handleSubmit = async (e) => {
         e.preventDefault()
         console.log(formData2);
-        try {
-            const multipleBody = {
-                options: [
-                    { text: formData.option1, correct: formData.correctOption1 },
-                    { text: formData.option2, correct: formData.correctOption2 },
-                    { text: formData.option3, correct: false },
-                    { text: formData.option4, correct: false },
-                ],
-            };
-            const createExerciseResponse = await axios.post(baseURL, exerciseData);
-
-            if (createExerciseResponse.status === 200) {
-                if (createExerciseResponse.data.id_type === 1) {
+        const multipleBody = {
+            options: [
+                { text: formData.option1, correct: true },
+                { text: formData.option2, correct: formData.correctOption2 },
+                { text: formData.option3, correct: false },
+                { text: formData.option4, correct: false },
+            ],
+        };
+        if (exerciseData.name !== undefined && exerciseData.name.trim() !== "" && exerciseData.id_module !== 0 && exerciseData.id_module !== undefined &&
+            exerciseData.id_type !== 0 && exerciseData.id_type !== undefined && exerciseData.instruction !== undefined && exerciseData.instruction.trim() !== "") {
+            if (exerciseData.id_type == 1 && formData.option1 !== undefined && formData.option1.trim() !== "" && formData.option2 !== undefined && formData.option2.trim() !== "" &&
+                formData.option3 !== undefined && formData.option3.trim() !== "" && formData.option4 !== undefined && formData.option4.trim() !== "") {
+                const createExerciseResponse = await axios.post(baseURL, exerciseData);
+                if (createExerciseResponse.status === 200) {
                     try {
                         const multipleResponse = await axios.post(multipleURL, {
                             id_exercise: await createExerciseResponse.data.id_exercise,
@@ -106,37 +108,87 @@ export default function UpdateModal({ isOpen, onClose, handleRefresh }) {
                     } catch (error) {
                         console.log('MULTIPLE ERROR', error);
                     }
+                } else {
+                    alert('error')
                 }
-
-            } 
-            else {
-                alert("Por favor, complete todos los campos");
-            }
-            if(createExerciseResponse.status === 200){
-                if (createExerciseResponse.data.id_type === 2) {
-                    try {
-                        const trueOrFalseResponse = await axios.post(trueOrFalseURL, {
-                            id_exercise: await createExerciseResponse.data.id_exercise,
-                            true_option: formData2.true_option,
-                            false_option: formData2.false_option
-                        })
-                        console.log(formData2);
-                        console.log(trueOrFalseResponse);
-                        if(trueOrFalseResponse.status === 200){
-                            alert('Ejercicio verdadero o falso agregado correctamente')
-                            handleRefresh()
-                            onClose()
+            } else if (exerciseData.id_type == 2 && formData2.true_option !== undefined && formData2.true_option.trim() !== "" && formData2.false_option !== undefined && formData2.false_option.trim() !== "") {
+                try {
+                    const createExerciseResponse = await axios.post(baseURL, exerciseData);
+                    if (createExerciseResponse.status === 200) {
+                        try {
+                            const trueOrFalseResponse = await axios.post(trueOrFalseURL, {
+                                id_exercise: await createExerciseResponse.data.id_exercise,
+                                true_option: formData2.true_option,
+                                false_option: formData2.false_option
+                            })
+                            console.log(formData2);
+                            console.log(trueOrFalseResponse);
+                            if (trueOrFalseResponse.status === 200) {
+                                alert('Ejercicio verdadero o falso agregado correctamente')
+                                handleRefresh()
+                                onClose()
+                            }
+                        } catch (error) {
+                            console.log('TRUE OR FALSE', error);
                         }
-                    } catch (error) {
-                        console.log('TRUE OR FALSE', error);
                     }
+                } catch (error) {
+                    console.log(error);
                 }
             }
-        } catch (error) {
-            console.error("Error al agregar el ejercicio: ", error);
+            else {
+                console.log('AQUI');
+                const Toast = Swal.mixin({
+                    toast: true,
+                    position: "bottom-end",
+                    showConfirmButton: false,
+                    timer: 3000,
+                    timerProgressBar: true,
+                    didOpen: (toast) => {
+                        toast.onmouseenter = Swal.stopTimer;
+                        toast.onmouseleave = Swal.resumeTimer;
+                    }
+                });
+                Toast.fire({
+                    icon: "error",
+                    title: "Llena todos los campos!"
+                });
+            }
+        } else {
+            console.log('AQYUS');
+            const Toast = Swal.mixin({
+                toast: true,
+                position: "bottom-end",
+                showConfirmButton: false,
+                timer: 3000,
+                timerProgressBar: true,
+                didOpen: (toast) => {
+                    toast.onmouseenter = Swal.stopTimer;
+                    toast.onmouseleave = Swal.resumeTimer;
+                }
+            });
+            Toast.fire({
+                icon: "error",
+                title: "Llena todos los campos!"
+            });
         }
 
     }
+    // const Toast = Swal.mixin({
+    //     toast: true,
+    //     position: "bottom-end",
+    //     showConfirmButton: false,
+    //     timer: 3000,
+    //     timerProgressBar: true,
+    //     didOpen: (toast) => {
+    //         toast.onmouseenter = Swal.stopTimer;
+    //         toast.onmouseleave = Swal.resumeTimer;
+    //     }
+    // });
+    // Toast.fire({
+    //     icon: "error",
+    //     title: "Llena todos los campos!"
+    // });
     return (
         <div className={`${isOpen ? '' : 'hidden'} overflow-y-auto overflow-x-hidden fixed inset-0 flex  z-50 justify-center items-center w-full md:inset-0 h-[calc(100%-1rem)] max-h-full`}
             role="dialog"
@@ -210,7 +262,7 @@ export default function UpdateModal({ isOpen, onClose, handleRefresh }) {
                                             <div >
                                                 <label htmlFor="option1" className="block mb-2 text-sm font-medium text-gray-900 ">Opción 1</label>
                                                 <label htmlFor="correct1" className=" mb-2 text-sm font-medium text-gray-900 ">Correcta: </label>
-                                                <input type="checkbox" checked={formData.correctOption1} onChange={(e) => handleInputChange(e, 'correctOption1')} />
+                                                <input type="checkbox" checked={true} onChange={(e) => handleInputChange(e, 'correctOption1')} />
                                                 <textarea id="correct1" value={formData.option1} onChange={(e) => setFormData({ ...formData, option1: e.target.value })} rows="2" className="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-primary-500 focus:border-primary-500   dark:border-gray-600 dark:placeholder-gray-400   dark:focus:ring-primary-500 dark:focus:border-primary-500" placeholder="Escribe la opción 1..."></textarea>
                                             </div>
                                         </div>
@@ -257,7 +309,7 @@ export default function UpdateModal({ isOpen, onClose, handleRefresh }) {
                         </div>
                         <div className="flex items-center space-x-4">
                             <button type="submit" className="text-white bg-primary-700 hover:bg-primary-800 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800">Agregar ejercicio</button>
-                            
+
                         </div>
                     </form>
                 </div>

@@ -143,13 +143,13 @@ create table attendance (
 
 -- alter table users add column dni int unique;
 
-insert into role(name) values ("student");
-insert into role(name) values ("teacher");
-insert into categories(name) values ('English');
+insert into role(name) values ("Estudiante");
+insert into role(name) values ("Profesor");
+insert into category(name) values ('English');
 insert into courses(name,description,id_category, id_user) values ('Curso 1','Descripcion del curso 1', 1, 1);
 insert into modules(name,id_course) values('Modulo del curso 1', 2);
-insert into exercise_types(name) values('Multiple Choise');
-insert into exercise_types(name) values('Verdadero o falso');
+insert into exercisetype(name) values('Multiple Choise');
+insert into exercisetype(name) values('Verdadero o falso');
 insert into exercises(name,instruction,id_module,id_type) values("Verb to be 1", "Realiza el sig. ejercicio", 4, 1);
 insert into exercises(name,instruction,id_module,id_type) values("He-She-It", "Como se dice él", 4, 2);
 INSERT INTO multiple_choise (id_exercise, options) VALUES (2, '[{"text": "Opción A", "correct": true}, {"text": "Opción B", "correct": false}, {"text": "Opción C", "correct": false}]');
@@ -159,6 +159,7 @@ insert into correct_exercises(id_exercise, id_user) values(2, 1);
 UPDATE users SET id_rol = (2) WHERE id_user = 1;
 
 
+use campus;
 DELIMITER //
 
 CREATE PROCEDURE DesactivarEjercicio(IN id_exercise INT)
@@ -194,6 +195,58 @@ BEGIN
 END //
 
 DELIMITER ;
+
+
+-- Supongamos que 'id_user' es el identificador del usuario actual y 'current_module' es el módulo actual del usuario
+SELECT COUNT(*) AS total_ejercicios_modulo_anterior
+FROM exercise e
+LEFT JOIN correctexercise ce ON e.id_exercise = ce.id_exercise AND ce.id_user = 2
+LEFT JOIN incorrectexercise ie ON e.id_exercise = ie.id_exercise AND ie.id_user = 2
+WHERE e.id_module = 2 - 1
+    AND (ce.id_correct IS NOT NULL OR ie.id_incorrect IS NOT NULL);
+
+-- Si el resultado de la consulta es igual al número total de ejercicios del módulo anterior, entonces el usuario ha completado todos los ejercicios.
+
+
+-- Supongamos que 'id_user' es el identificador del usuario actual y 'current_module' es el módulo actual del usuario
+SELECT COUNT( e.id_exercise) AS total_ejercicios_modulo_anterior
+FROM exercise e
+LEFT JOIN correctexercise ce ON e.id_exercise = ce.id_exercise AND ce.id_user = 2
+LEFT JOIN incorrectexercise ic on e.id_exercise = ic.id_exercise AND ic.id_user = 2
+WHERE e.id_module = (
+    SELECT MAX(id_module) FROM exercise WHERE id_module < 3
+)
+AND (ce.id_correct IS NOT NULL);
+
+
+-- Supongamos que 'id_user' es el identificador del usuario actual y 'id_module' es el módulo para el cual deseas contar los ejercicios
+SELECT
+    COUNT(DISTINCT ce.id_exercise) + COUNT(DISTINCT ic.id_exercise) AS total_ejercicios_realizados
+FROM exercise e
+LEFT JOIN correctexercise ce ON e.id_exercise = ce.id_exercise AND ce.id_user = 2
+LEFT JOIN incorrectexercise ic ON e.id_exercise = ic.id_exercise AND ic.id_user = 2
+WHERE e.id_module = (select MAX(id_module) from module where id_module < 4);
+
+select Count(id_exercise) as total_por_realizar from exercise where id_module = 3;
+
+select id_module from module where id_course = 2;
+
+
+-- Supongamos que 'id_user' es el identificador del usuario actual y 'id_module' es el módulo actual del usuario
+SELECT
+    (
+        SELECT COUNT(DISTINCT ce.id_exercise) + COUNT(DISTINCT ic.id_exercise)
+        FROM exercise e
+        LEFT JOIN correctexercise ce ON e.id_exercise = ce.id_exercise AND ce.id_user = 2 and active = 1
+        LEFT JOIN incorrectexercise ic ON e.id_exercise = ic.id_exercise AND ic.id_user = 2 and active = 1
+        WHERE e.id_module = 3
+    ) AS total_ejercicios_realizados,
+    (
+        SELECT COUNT(id_exercise)
+        FROM exercise
+        WHERE id_module = 3 and active = 1
+    ) AS total_ejercicios_modulo;
+
 
 
 

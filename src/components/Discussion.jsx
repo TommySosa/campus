@@ -3,6 +3,8 @@
 import axios from 'axios';
 import { useSession } from 'next-auth/react';
 import React, { useEffect, useState } from 'react';
+import Swal from 'sweetalert2'
+import withReactContent from 'sweetalert2-react-content'
 
 const Discussion = ({ title, content, author, id_discussion }) => {
     const { data: session, status } = useSession();
@@ -34,12 +36,31 @@ const Discussion = ({ title, content, author, id_discussion }) => {
 
     const handleCommentSubmit = async() => {
         try {
-            const response = await axios.post(`http://localhost:4001/api/discussion/comment/${id_discussion}`, newComment)
-            if(response.status === 200){
-                handleRefresh()
+            if(newComment.content == null || newComment.content == undefined || newComment.content.trim() == "")
+            {
+                const Toast = Swal.mixin({
+                    toast: true,
+                    position: "bottom-end",
+                    showConfirmButton: false,
+                    timer: 3000,
+                    timerProgressBar: true,
+                    didOpen: (toast) => {
+                      toast.onmouseenter = Swal.stopTimer;
+                      toast.onmouseleave = Swal.resumeTimer;
+                    }
+                  });
+                  Toast.fire({
+                    icon: "error",
+                    title: "Ingresa el contenido"
+                  });
+            }else{
+                const response = await axios.post(`http://localhost:4001/api/discussion/comment/${id_discussion}`, newComment)
+                if(response.status === 200){
+                    handleRefresh()
+                }
             }
         } catch (error) {
-            
+            console.log(error);
         }
     };
     const image = "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png"

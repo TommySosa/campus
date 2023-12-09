@@ -2,6 +2,7 @@
 import axios from "axios"
 import { useSession } from "next-auth/react";
 import { useEffect, useState } from "react"
+import Swal from 'sweetalert2'
 
 const baseURL = "http://localhost:4001/api/discussion";
 
@@ -18,13 +19,30 @@ export default function CreateDiscussionModal({ isOpen, onClose, handleRefresh }
     const handleSubmit = async (e) => {
         e.preventDefault()
         try {
-            const createCourseResponse = await axios.post(baseURL, discussionData);
-            console.log(createCourseResponse);
-            if (createCourseResponse.status === 200) {
-                handleRefresh()
-                onClose()
+            if(discussionData.author == undefined || discussionData.title == undefined || discussionData.title.trim() == "" || discussionData.content == undefined || discussionData.content.trim() == ""){
+                const Toast = Swal.mixin({
+                    toast: true,
+                    position: "bottom-end",
+                    showConfirmButton: false,
+                    timer: 3000,
+                    timerProgressBar: true,
+                    didOpen: (toast) => {
+                      toast.onmouseenter = Swal.stopTimer;
+                      toast.onmouseleave = Swal.resumeTimer;
+                    }
+                  });
+                  Toast.fire({
+                    icon: "error",
+                    title: "Llena todos los campos!"
+                  });
+            }else{
+                const createCourseResponse = await axios.post(baseURL, discussionData);
+                console.log(createCourseResponse);
+                if (createCourseResponse.status === 200) {
+                    handleRefresh()
+                    onClose()
+                }
             }
-
         } catch (error) {
             console.error("Error al agregar el ejercicio: ", error);
         }
