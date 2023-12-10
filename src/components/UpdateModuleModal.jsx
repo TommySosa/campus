@@ -1,22 +1,32 @@
 "use client"
 import axios from "axios"
 import { useEffect, useState } from "react"
+import Swal from "sweetalert2"
 
 export default function UpdateModuleModal({ isOpen, onClose, handleRefresh, id_module }) {
-    const [module, setModule] = useState([])
     const [courses, setCourses] = useState([])
     const [moduleData, setModuleData] = useState({
         name: "",
         id_course: 0,
     })
     const baseURL = `http://localhost:4001/api/modules/${id_module}`;
+    const Toast = Swal.mixin({
+        toast: true,
+        position: "bottom-end",
+        showConfirmButton: false,
+        timer: 3000,
+        timerProgressBar: true,
+        didOpen: (toast) => {
+            toast.onmouseenter = Swal.stopTimer;
+            toast.onmouseleave = Swal.resumeTimer;
+        }
+    });
 
     useEffect(() => {
         async function fetchModule() {
             try {
                 const response = await axios.get(`http://localhost:4001/api/modules/${id_module}`)
                 const data = await response.data
-                console.log(data);
                 setModuleData({
                     name: data.name,
                     id_course: data.id_course,
@@ -43,17 +53,31 @@ export default function UpdateModuleModal({ isOpen, onClose, handleRefresh, id_m
 
     const handleSubmit = async (e) => {
         e.preventDefault()
-        try {
-            const createCourseResponse = await axios.patch(baseURL, moduleData);
-            if(createCourseResponse.status === 200){
-                handleRefresh()
-                onClose()
+        if(moduleData.id_course !== 0 && moduleData.name !== "")
+        {
+            try {
+                const createCourseResponse = await axios.patch(baseURL, moduleData);
+                if(createCourseResponse.status === 200){
+                    Toast.fire({
+                        icon: "success",
+                        title: "Módulo actualizado correctamente."
+                    });
+                    handleRefresh()
+                    onClose()
+                }
+            } catch (error) {
+                console.error("Error al agregar el ejercicio: ", error);
+                Toast.fire({
+                    icon: "error",
+                    title: "Ocurrió un error."
+                });
             }
-
-        } catch (error) {
-            console.error("Error al agregar el ejercicio: ", error);
+        }else{
+            Toast.fire({
+                icon: "error",
+                title: "Llena todos los campos!"
+            });
         }
-
     }
     return (
         <div className={`${isOpen ? '' : 'hidden'} overflow-y-auto overflow-x-hidden fixed inset-0 flex  z-50 justify-center items-center w-full md:inset-0 h-[calc(100%-1rem)] max-h-full`}

@@ -4,6 +4,7 @@ import { useEffect, useState } from "react"
 import "firebase/storage";
 import { storage } from "@/firebase";
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage'
+import Swal from "sweetalert2";
 
 const baseURL = "http://localhost:4001/api/content";
 export default function CreateContentModal({ isOpen, onClose, handleRefresh }) {
@@ -16,7 +17,17 @@ export default function CreateContentModal({ isOpen, onClose, handleRefresh }) {
         pdf_url: "",
         course_id: 0,
     })
-
+    const Toast = Swal.mixin({
+        toast: true,
+        position: "bottom-end",
+        showConfirmButton: false,
+        timer: 3000,
+        timerProgressBar: true,
+        didOpen: (toast) => {
+            toast.onmouseenter = Swal.stopTimer;
+            toast.onmouseleave = Swal.resumeTimer;
+        }
+    });
     useEffect(() => {
         async function fetchCourses() {
             try {
@@ -51,22 +62,40 @@ export default function CreateContentModal({ isOpen, onClose, handleRefresh }) {
                 setFeedBack("Húbo un error al subir la imágen.")
             })
         } else {
+            Toast.fire({
+                icon: "error",
+                title: "Seleccione una foto"
+            })
             console.log('Seleccione la foto');
         }
     };
 
     const handleSubmit = async (e) => {
         e.preventDefault()
-        try {
-            const createCourseResponse = await axios.post(baseURL, contentData);
-            console.log(createCourseResponse);
-            if(createCourseResponse.status === 200){
-                handleRefresh()
-                onClose()
-            }
+        if (contentData.course_id == 0 || contentData.description == "" || contentData.pdf_url == "" || contentData.title == "") {
+            Toast.fire({
+                icon: "error",
+                title: "Llená todos los campos!"
+            })
+        } else {
+            try {
+                const createCourseResponse = await axios.post(baseURL, contentData);
+                if (createCourseResponse.status === 200) {
+                    Toast.fire({
+                        icon: "success",
+                        title: "Contenido agregado correctamente."
+                    });
+                    handleRefresh()
+                    onClose()
+                }
 
-        } catch (error) {
-            console.error("Error al agregar el ejercicio: ", error);
+            } catch (error) {
+                Toast.fire({
+                    icon: "error",
+                    title: "Ocurrió un error"
+                })
+                console.error("Error al agregar el contenido: ", error);
+            }
         }
     }
     return (
@@ -132,10 +161,10 @@ export default function CreateContentModal({ isOpen, onClose, handleRefresh }) {
                                 <textarea id="instruction" aria-describedby="modal-description" rows="3"
                                     className="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-600 placeholder-gray-400   focus:ring-primary-500 focus:border-primary-500"
                                     placeholder="Escribe la descripción..." value={contentData.description} onChange={(e) => setContentData({ ...contentData, description: e.target.value })}></textarea>
-                            </div>                  
+                            </div>
                         </div>
                         <div className="flex items-center space-x-4">
-                            <button type="submit" className="text-white bg-primary-700 hover:bg-primary-800 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800">Agregar contenido</button>    
+                            <button type="submit" className="text-white bg-primary-700 hover:bg-primary-800 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800">Agregar contenido</button>
                         </div>
                     </form>
                 </div>

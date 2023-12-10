@@ -131,6 +131,7 @@ export default function CourseTable({ courses, openCreate, handleOpenCreateCours
                                     isOpen={selectedUpdateCourseId !== null}
                                     onClose={() => setSelectedUpdateCourseId(null)}
                                     id_course={selectedUpdateCourseId}
+                                    handleRefresh={handleRefresh}
                                 />
                             </div>
                         )

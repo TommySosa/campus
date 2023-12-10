@@ -16,6 +16,12 @@ export default function UpdateModal({ isOpen, onClose, handleRefresh }) {
         id_type: 0,
         id_module: 0
     })
+    const [showAssistance, setShowAssistance] = useState(false)
+    const [textAreaContent, setTextareaContent] = useState("")
+    const [promptData, setPromptData] = useState({
+        content: "",
+        id_type: 0
+    })
     const [formData, setFormData] = useState({
         option1: "",
         option2: "",
@@ -78,6 +84,99 @@ export default function UpdateModal({ isOpen, onClose, handleRefresh }) {
             [optionType]: isChecked,
         });
     };
+    const Toast = Swal.mixin({
+        toast: true,
+        position: "bottom-end",
+        showConfirmButton: false,
+        timer: 3000,
+        timerProgressBar: true,
+        didOpen: (toast) => {
+            toast.onmouseenter = Swal.stopTimer;
+            toast.onmouseleave = Swal.resumeTimer;
+        }
+    });
+
+    const handleGenerate = async () => {
+        if (textAreaContent.trim() === "" || textAreaContent === undefined ) {
+            if(promptData.content !== "" && promptData.content !== undefined && exerciseData.id_type !== 0 && exerciseData.id_type !== undefined)
+            {
+                try {
+                    const response = await fetch("/api/chat", {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json",
+                        },
+                        body: JSON.stringify({ content: promptData.content, id_type: exerciseData.id_type  }),
+                    });
+    
+                    if (!response.ok) {
+                        throw new Error(`Error HTTP: ${response.status}`);
+                    }
+    
+                    let result = "";
+                    const reader = response.body.getReader();
+                    const decoder = new TextDecoder("utf-8");
+    
+                    let isDone = false;
+                    while (!isDone) {
+                        const { done, value } = await reader.read();
+                        isDone = done;
+    
+                        if (!done) {
+                            const partialResult = decoder.decode(value, { stream: true });
+                            result += partialResult;
+                            setTextareaContent((previous) => previous + partialResult);
+                        }
+                    }
+                    result += decoder.decode();
+                    const textElements = result.split('\n').filter(Boolean);
+                    const nombreEjercicio = textElements.find(text => text.includes('Nombre:')).split('Nombre:').filter(Boolean);
+                    const consigna = textElements.find(text => text.includes('Consigna:')).split('Consigna:').filter(Boolean);
+                    setExerciseData({
+                        ...exerciseData,
+                        name: nombreEjercicio,
+                        instruction: consigna,
+                    })
+                    if(exerciseData.id_type === 1){
+                        const opcionCorrecta = textElements.find(text => text.includes('a)')).split(' Correcta:').filter(Boolean);
+                        const opcionIncorrectaB = textElements.find(text => text.includes('b)')).split(' Incorrecta:').filter(Boolean);
+                        const opcionIncorrectaC = textElements.find(text => text.includes('c)')).split(' Incorrecta:').filter(Boolean);
+                        const opcionIncorrectaD = textElements.find(text => text.includes('d)')).split(' Incorrecta:').filter(Boolean);                      
+                        setFormData({
+                            option1: opcionCorrecta,
+                            option2: opcionIncorrectaB,
+                            option3: opcionIncorrectaC,
+                            option4: opcionIncorrectaD
+                        })
+                    }else{
+                        const opcionVerdadera = textElements.find(text => text.includes('a)')).split('Verdadera:')[1]?.trim();
+                        const opcionFalsa = textElements.find(text => text.includes('b)')).split('Falsa:')[1]?.trim();
+                        setFormData2({
+                            true_option: opcionVerdadera,
+                            false_option: opcionFalsa
+                        })
+                    }
+                } catch (error) {
+                    Toast.fire({
+                        icon: "error",
+                        title: "Ocurrió un error."
+                    });
+                    console.error("Error en la respuesta de la API:", error);
+                }
+            }
+            else{
+                Toast.fire({
+                    icon: "error",
+                    title: "Llená todos los campos!"
+                })
+            }
+        } else {
+            Toast.fire({
+                icon: "error",
+                title: "Ya generaste un ejercicio con IA!"
+            });
+        }
+    }
 
     const handleSubmit = async (e) => {
         e.preventDefault()
@@ -90,10 +189,10 @@ export default function UpdateModal({ isOpen, onClose, handleRefresh }) {
                 { text: formData.option4, correct: false },
             ],
         };
-        if (exerciseData.name !== undefined && exerciseData.name.trim() !== "" && exerciseData.id_module !== 0 && exerciseData.id_module !== undefined &&
-            exerciseData.id_type !== 0 && exerciseData.id_type !== undefined && exerciseData.instruction !== undefined && exerciseData.instruction.trim() !== "") {
-            if (exerciseData.id_type == 1 && formData.option1 !== undefined && formData.option1.trim() !== "" && formData.option2 !== undefined && formData.option2.trim() !== "" &&
-                formData.option3 !== undefined && formData.option3.trim() !== "" && formData.option4 !== undefined && formData.option4.trim() !== "") {
+        if (exerciseData.name !== undefined && exerciseData.name !== "" && exerciseData.id_module !== 0 && exerciseData.id_module !== undefined &&
+            exerciseData.id_type !== 0 && exerciseData.id_type !== undefined && exerciseData.instruction !== undefined && exerciseData.instruction !== "") {
+            if (exerciseData.id_type == 1 && formData.option1 !== undefined && formData.option1 !== "" && formData.option2 !== undefined && formData.option2 !== "" &&
+                formData.option3 !== undefined && formData.option3 !== "" && formData.option4 !== undefined && formData.option4 !== "") {
                 const createExerciseResponse = await axios.post(baseURL, exerciseData);
                 if (createExerciseResponse.status === 200) {
                     try {
@@ -101,17 +200,27 @@ export default function UpdateModal({ isOpen, onClose, handleRefresh }) {
                             id_exercise: await createExerciseResponse.data.id_exercise,
                             options: multipleBody.options
                         })
-                        alert('Ejercicio multiple choise agregado correctamente')
-                        console.log('Multiple response', multipleResponse.data);
+                        Toast.fire({
+                            icon: "success",
+                            title: "Ejercicio agregado correctamente."
+                        });
                         handleRefresh()
                         onClose()
                     } catch (error) {
+                        Toast.fire({
+                            icon: "error",
+                            title: "Ocurrió un error."
+                        });
                         console.log('MULTIPLE ERROR', error);
                     }
                 } else {
+                    Toast.fire({
+                        icon: "error",
+                        title: "Ocurrió un error."
+                    });
                     alert('error')
                 }
-            } else if (exerciseData.id_type == 2 && formData2.true_option !== undefined && formData2.true_option.trim() !== "" && formData2.false_option !== undefined && formData2.false_option.trim() !== "") {
+            } else if (exerciseData.id_type == 2 && formData2.true_option !== undefined && formData2.true_option !== "" && formData2.false_option !== undefined && formData2.false_option !== "") {
                 try {
                     const createExerciseResponse = await axios.post(baseURL, exerciseData);
                     if (createExerciseResponse.status === 200) {
@@ -124,71 +233,44 @@ export default function UpdateModal({ isOpen, onClose, handleRefresh }) {
                             console.log(formData2);
                             console.log(trueOrFalseResponse);
                             if (trueOrFalseResponse.status === 200) {
-                                alert('Ejercicio verdadero o falso agregado correctamente')
+                                Toast.fire({
+                                    icon: "success",
+                                    title: "Ejercicio agregado correctamente."
+                                });
                                 handleRefresh()
                                 onClose()
                             }
                         } catch (error) {
+                            Toast.fire({
+                                icon: "error",
+                                title: "Ocurrió un error."
+                            });
                             console.log('TRUE OR FALSE', error);
                         }
                     }
                 } catch (error) {
                     console.log(error);
+                    Toast.fire({
+                        icon: "error",
+                        title: "Ocurrió un error."
+                    });
                 }
             }
             else {
                 console.log('AQUI');
-                const Toast = Swal.mixin({
-                    toast: true,
-                    position: "bottom-end",
-                    showConfirmButton: false,
-                    timer: 3000,
-                    timerProgressBar: true,
-                    didOpen: (toast) => {
-                        toast.onmouseenter = Swal.stopTimer;
-                        toast.onmouseleave = Swal.resumeTimer;
-                    }
-                });
                 Toast.fire({
                     icon: "error",
                     title: "Llena todos los campos!"
                 });
             }
         } else {
-            console.log('AQYUS');
-            const Toast = Swal.mixin({
-                toast: true,
-                position: "bottom-end",
-                showConfirmButton: false,
-                timer: 3000,
-                timerProgressBar: true,
-                didOpen: (toast) => {
-                    toast.onmouseenter = Swal.stopTimer;
-                    toast.onmouseleave = Swal.resumeTimer;
-                }
-            });
             Toast.fire({
                 icon: "error",
                 title: "Llena todos los campos!"
             });
         }
-
     }
-    // const Toast = Swal.mixin({
-    //     toast: true,
-    //     position: "bottom-end",
-    //     showConfirmButton: false,
-    //     timer: 3000,
-    //     timerProgressBar: true,
-    //     didOpen: (toast) => {
-    //         toast.onmouseenter = Swal.stopTimer;
-    //         toast.onmouseleave = Swal.resumeTimer;
-    //     }
-    // });
-    // Toast.fire({
-    //     icon: "error",
-    //     title: "Llena todos los campos!"
-    // });
+
     return (
         <div className={`${isOpen ? '' : 'hidden'} overflow-y-auto overflow-x-hidden fixed inset-0 flex  z-50 justify-center items-center w-full md:inset-0 h-[calc(100%-1rem)] max-h-full`}
             role="dialog"
@@ -208,7 +290,44 @@ export default function UpdateModal({ isOpen, onClose, handleRefresh }) {
 
                     <form onSubmit={handleSubmit} aria-labelledby="modal-title">
                         <div className="grid gap-4 mb-4 sm:grid-cols-2">
-                            <div>
+                            <div className="sm:col-span-2">
+                                <div >
+                                    <label htmlFor="assistant" className="mb-2 text-sm font-medium text-gray-900">Activar asistente con IA</label>
+                                    <input type="checkbox" className="ml-4"
+                                        onChange={(e) => setShowAssistance(!showAssistance)} />
+                                </div>
+                            </div>
+                            {
+                                showAssistance ? <>
+                                    <div >
+                                        <label htmlFor="tema" className="block mb-2 text-sm font-medium text-gray-900">Tema</label>
+                                        <input id="tema" aria-describedby="form-content"
+                                            className="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-600 placeholder-gray-400 focus:ring-primary-500 focus:border-primary-500"
+                                            placeholder="Ejemplo: verbo to be, sumas, etc..." value={promptData.content} onChange={(e) => setPromptData({ ...promptData, content: e.target.value })}></input>
+                                    </div>
+                                    <div>
+                                        <label for="exercise_type" className="block mb-2 text-sm font-medium text-gray-900  ">Tipo de ejercicio</label>
+                                        <select id="exercise_type" onChange={(e) => setExerciseData({ ...exerciseData, id_type: parseInt(e.target.value) })} className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5   dark:border-gray-600 dark:placeholder-gray-400   dark:focus:ring-primary-500 dark:focus:border-primary-500">
+                                            <option selected="">Seleccione un tipo de ejercicio</option>
+                                            {
+                                                exerciseType.length > 0 ? exerciseType.map((type) => (
+                                                    <option value={type.id_type} key={type.id_type}>{type.name}</option>
+                                                )) : null
+                                            }
+                                        </select>
+                                    </div>
+                                    <div className="sm:col-span-2">
+                                        <label htmlFor="tema" className="block mb-2 text-sm font-medium text-gray-900">Resultado</label>
+                                        <textarea id="tema" aria-describedby="form-content" rows="6"
+                                            className="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-600 placeholder-gray-400 focus:ring-primary-500 focus:border-primary-500"
+                                            placeholder="Resultado..." value={textAreaContent}></textarea>
+                                    </div>
+                                    <div className="sm:col-span-2">
+                                        <button type="button" onClick={handleGenerate} className="text-white bg-slate-400 hover:bg-slate-600 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-4 py-2 text-center">Generar ejercicio</button>
+                                    </div>
+                                </> : null
+                            }
+                            <div className="sm:col-span-2">
                                 <label for="name" className="block mb-2 text-sm font-medium text-gray-900 ">Nombre</label>
                                 <input type="text" name="name" id="name"
                                     className="bg-gray-50 border text-gray-900 text-sm rounded-lg block w-full p-2.5  border-gray-600 dark:placeholder-gray-400  focus:ring-primary-500 focus:border-primary-500"
@@ -225,14 +344,6 @@ export default function UpdateModal({ isOpen, onClose, handleRefresh }) {
                                     }
                                 </select>
                             </div>
-
-                            <div className="sm:col-span-2">
-                                <label for="instruction" className="block mb-2 text-sm font-medium text-gray-900">Consigna</label>
-                                <textarea id="instruction" aria-describedby="modal-description" rows="3"
-                                    className="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border   border-gray-600 placeholder-gray-400   focus:ring-primary-500 focus:border-primary-500"
-                                    placeholder="Escribe la consigna..." value={exerciseData.instruction} onChange={(e) => setExerciseData({ ...exerciseData, instruction: e.target.value })}></textarea>
-                            </div>
-
                             <div>
                                 <label for="module" className="block mb-2 text-sm font-medium text-gray-900  ">Módulo</label>
                                 <select id="module" onChange={(e) => setExerciseData({ ...exerciseData, id_module: parseInt(e.target.value) })} aria-describedby="modal-module" className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5   dark:border-gray-600 dark:placeholder-gray-400   dark:focus:ring-primary-500 dark:focus:border-primary-500">
@@ -244,17 +355,26 @@ export default function UpdateModal({ isOpen, onClose, handleRefresh }) {
                                     }
                                 </select>
                             </div>
-                            <div>
-                                <label for="exercise_type" className="block mb-2 text-sm font-medium text-gray-900  ">Tipo de ejercicio</label>
-                                <select id="exercise_type" onChange={(e) => setExerciseData({ ...exerciseData, id_type: parseInt(e.target.value) })} className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5   dark:border-gray-600 dark:placeholder-gray-400   dark:focus:ring-primary-500 dark:focus:border-primary-500">
-                                    <option selected="">Seleccione un tipo de ejercicio</option>
-                                    {
-                                        exerciseType.length > 0 ? exerciseType.map((type) => (
-                                            <option value={type.id_type} key={type.id_type}>{type.name}</option>
-                                        )) : null
-                                    }
-                                </select>
+                            <div className="sm:col-span-2">
+                                <label for="instruction" className="block mb-2 text-sm font-medium text-gray-900">Consigna</label>
+                                <textarea id="instruction" aria-describedby="modal-description" rows="2"
+                                    className="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-600 placeholder-gray-400 focus:ring-primary-500 focus:border-primary-500"
+                                    placeholder="Escribe la consigna..." value={exerciseData.instruction} onChange={(e) => setExerciseData({ ...exerciseData, instruction: e.target.value })}></textarea>
                             </div>
+                            {
+                                !showAssistance ?
+                                    <div className="sm:col-span-2">
+                                        <label for="exercise_type" className="block mb-2 text-sm font-medium text-gray-900  ">Tipo de ejercicio</label>
+                                        <select id="exercise_type" onChange={(e) => setExerciseData({ ...exerciseData, id_type: parseInt(e.target.value) })} className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5   dark:border-gray-600 dark:placeholder-gray-400   dark:focus:ring-primary-500 dark:focus:border-primary-500">
+                                            <option selected="">Seleccione un tipo de ejercicio</option>
+                                            {
+                                                exerciseType.length > 0 ? exerciseType.map((type) => (
+                                                    <option value={type.id_type} key={type.id_type}>{type.name}</option>
+                                                )) : null
+                                            }
+                                        </select>
+                                    </div> : null
+                            }
                             {
                                 exerciseData.id_type == 1 ?
                                     <>

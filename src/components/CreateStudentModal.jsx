@@ -1,6 +1,7 @@
 "use client"
 import axios from "axios"
 import { useEffect, useState } from "react"
+import Swal from "sweetalert2";
 
 const baseURL = "http://localhost:4001/api/students";
 export default function CreateStudentModal({ isOpen, onClose, handleRefresh }) {
@@ -17,6 +18,17 @@ export default function CreateStudentModal({ isOpen, onClose, handleRefresh }) {
         dni: "",
     })
     const [filteredUsers, setFilteredUsers] = useState()
+    const Toast = Swal.mixin({
+        toast: true,
+        position: "bottom-end",
+        showConfirmButton: false,
+        timer: 3000,
+        timerProgressBar: true,
+        didOpen: (toast) => {
+            toast.onmouseenter = Swal.stopTimer;
+            toast.onmouseleave = Swal.resumeTimer;
+        }
+    });
 
     useEffect(() => {
         async function fetchCourses() {
@@ -44,23 +56,39 @@ export default function CreateStudentModal({ isOpen, onClose, handleRefresh }) {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        try {
-            let selectedUserId = 0;
-    
-            if (filteredUsers && filteredUsers.length > 0) {
-                selectedUserId = filteredUsers[0].id_user;
+        if(studentData.id_course == 0 || studentData.id_user == 0)
+        {
+            Toast.fire({
+                icon: "error",
+                title: "Llena todos los campos!"
+            });
+        }else{
+            try {
+                let selectedUserId = 0;
+        
+                if (filteredUsers && filteredUsers.length > 0) {
+                    selectedUserId = filteredUsers[0].id_user;
+                }
+        
+                setStudentData({ ...studentData, id_user: selectedUserId });
+        
+                const createCourseResponse = await axios.post(baseURL, studentData);
+        
+                if (createCourseResponse.status === 200) {
+                    handleRefresh();
+                    onClose();
+                    Toast.fire({
+                        icon: "success",
+                        title: "Estudiante inscripto correctamente."
+                    });
+                }
+            } catch (error) {
+                Toast.fire({
+                    icon: "error",
+                    title: "Ocurrió un error."
+                });
+                console.error("Error al inscribir el estudiante: ", error);
             }
-    
-            setStudentData({ ...studentData, id_user: selectedUserId });
-    
-            const createCourseResponse = await axios.post(baseURL, studentData);
-    
-            if (createCourseResponse.status === 200) {
-                handleRefresh();
-                onClose();
-            }
-        } catch (error) {
-            console.error("Error al inscribir el estudiante: ", error);
         }
     };
     
@@ -75,16 +103,11 @@ export default function CreateStudentModal({ isOpen, onClose, handleRefresh }) {
     
         setFilteredUsers(filtered);
     
-        // If there is only one user in the filtered list, automatically select that user
         if (filtered.length === 1) {
             setUser(filtered[0]);
             setStudentData({ ...studentData, id_user: filtered[0].id_user });
         }
     };
-
-    useEffect(()=> {
-        console.log(studentData);
-    },[studentData])
 
     return (
         <div className={`${isOpen ? '' : 'hidden'} overflow-y-auto overflow-x-hidden fixed inset-0 flex  z-50 justify-center items-center w-full md:inset-0 h-[calc(100%-1rem)] max-h-full`}

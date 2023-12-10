@@ -37,6 +37,17 @@ export default function UpdateModal({ isOpen, onClose, id_exercise, handleRefres
         true_option: "",
         false_option: ""
     })
+    const Toast = Swal.mixin({
+        toast: true,
+        position: "bottom-end",
+        showConfirmButton: false,
+        timer: 3000,
+        timerProgressBar: true,
+        didOpen: (toast) => {
+            toast.onmouseenter = Swal.stopTimer;
+            toast.onmouseleave = Swal.resumeTimer;
+        }
+    });
 
     useEffect(() => {
         async function fetchTypes() {
@@ -151,28 +162,27 @@ export default function UpdateModal({ isOpen, onClose, id_exercise, handleRefres
                                     id_exercise: await updateExerciseResponse.data.id_exercise,
                                     options: multipleBody.options
                                 })
-                                alert('Ejercicio multiple choise agregado correctamente')
-                                console.log('Multiple response', multipleResponse.data);
+                                Toast.fire({
+                                    icon: "success",
+                                    title: "Ejercicio actualizado correctamente."
+                                });
                                 onClose()
                                 handleRefresh()
                             } catch (error) {
                                 console.log('MULTIPLE ERROR', error);
+                                Toast.fire({
+                                    icon: "error",
+                                    title: "Ocurrió un error."
+                                });
                             }
                         } else {
                             alert('Error')
+                            Toast.fire({
+                                icon: "error",
+                                title: "Ocurrió un error."
+                            });
                         }
                     } else {
-                        const Toast = Swal.mixin({
-                            toast: true,
-                            position: "bottom-end",
-                            showConfirmButton: false,
-                            timer: 3000,
-                            timerProgressBar: true,
-                            didOpen: (toast) => {
-                                toast.onmouseenter = Swal.stopTimer;
-                                toast.onmouseleave = Swal.resumeTimer;
-                            }
-                        });
                         Toast.fire({
                             icon: "error",
                             title: "Llena todos los campos!"
@@ -198,34 +208,12 @@ export default function UpdateModal({ isOpen, onClose, id_exercise, handleRefres
                             alert('Error')
                         }
                     } else {
-                        const Toast = Swal.mixin({
-                            toast: true,
-                            position: "bottom-end",
-                            showConfirmButton: false,
-                            timer: 3000,
-                            timerProgressBar: true,
-                            didOpen: (toast) => {
-                                toast.onmouseenter = Swal.stopTimer;
-                                toast.onmouseleave = Swal.resumeTimer;
-                            }
-                        });
                         Toast.fire({
                             icon: "error",
                             title: "Llena todos los campos!"
                         });
                     }
                 } else {
-                    const Toast = Swal.mixin({
-                        toast: true,
-                        position: "bottom-end",
-                        showConfirmButton: false,
-                        timer: 3000,
-                        timerProgressBar: true,
-                        didOpen: (toast) => {
-                            toast.onmouseenter = Swal.stopTimer;
-                            toast.onmouseleave = Swal.resumeTimer;
-                        }
-                    });
                     Toast.fire({
                         icon: "error",
                         title: "Llena todos los campos!"
@@ -233,17 +221,6 @@ export default function UpdateModal({ isOpen, onClose, id_exercise, handleRefres
                 }
                 // }
             } else {
-                const Toast = Swal.mixin({
-                    toast: true,
-                    position: "bottom-end",
-                    showConfirmButton: false,
-                    timer: 3000,
-                    timerProgressBar: true,
-                    didOpen: (toast) => {
-                        toast.onmouseenter = Swal.stopTimer;
-                        toast.onmouseleave = Swal.resumeTimer;
-                    }
-                });
                 Toast.fire({
                     icon: "error",
                     title: "Llena todos los campos!"
@@ -251,6 +228,10 @@ export default function UpdateModal({ isOpen, onClose, id_exercise, handleRefres
             }
         } catch (error) {
             console.error("Error al agregar el ejercicio: ", error);
+            Toast.fire({
+                icon: "error",
+                title: "Ocurrió un error."
+            });
         }
 
     }

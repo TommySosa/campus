@@ -45,25 +45,25 @@ model User {
 }
 
 model Discussion {
-  id_discussion Int      @id @default(autoincrement())
+  id_discussion Int       @id @default(autoincrement())
   title         String
   content       String
   author        String
-  created_at    DateTime @default(now())
+  created_at    DateTime  @default(now())
   comments      Comment[]
   user_id       Int
-  user          User     @relation(fields: [user_id], references: [id_user])
+  user          User      @relation(fields: [user_id], references: [id_user])
 }
 
 model Comment {
-  id_comment     Int      @id @default(autoincrement())
-  content        String
-  author         String
-  created_at     DateTime @default(now())
-  id_discussion  Int
-  id_user        Int
-  discussion     Discussion @relation(fields: [id_discussion], references: [id_discussion])
-  user           User @relation(fields: [id_user], references: [id_user])
+  id_comment    Int        @id @default(autoincrement())
+  content       String
+  author        String
+  created_at    DateTime   @default(now())
+  id_discussion Int
+  id_user       Int
+  discussion    Discussion @relation(fields: [id_discussion], references: [id_discussion])
+  user          User       @relation(fields: [id_user], references: [id_user])
 }
 
 model Course {
@@ -77,18 +77,19 @@ model Course {
   user           User            @relation(fields: [id_user], references: [id_user])
   modules        Module[]
   studentCourses StudentCourse[]
+  deliverables   Deliverable[]
   active         Boolean         @default(true)
   contents       CourseContent[]
 }
 
 model CourseContent {
-  id_content     Int             @id @default(autoincrement())
-  title          String
-  description    String
-  pdf_url        String
-  course         Course          @relation(fields: [course_id], references: [id_course])
-  course_id      Int
-  active         Boolean         @default(true)
+  id_content  Int     @id @default(autoincrement())
+  title       String
+  description String
+  pdf_url     String
+  course      Course  @relation(fields: [course_id], references: [id_course])
+  course_id   Int
+  active      Boolean @default(true)
 }
 
 model Module {
@@ -116,7 +117,6 @@ model Exercise {
   type               ExerciseType        @relation(fields: [id_type], references: [id_type])
   multipleChoise     MultipleChoise?
   trueOrFalse        TrueOrFalse?
-  dragAndDrop        DragAndDrop?
   correctExercises   CorrectExercise[]
   incorrectExercises IncorrectExercise[]
   active             Boolean             @default(true)
@@ -135,22 +135,6 @@ model TrueOrFalse {
   false_option String
   exercise     Exercise @relation(fields: [id_exercise], references: [id_exercise])
   active       Boolean  @default(true)
-}
-
-model DragAndDrop {
-  id_exercise Int          @id
-  instruction String
-  exercise    Exercise     @relation(fields: [id_exercise], references: [id_exercise])
-  dragOptions DragOption[]
-  active      Boolean      @default(true)
-}
-
-model DragOption {
-  id_option   Int         @id @default(autoincrement())
-  id_exercise Int
-  text        String
-  dragAndDrop DragAndDrop @relation(fields: [id_exercise], references: [id_exercise])
-  active      Boolean     @default(true)
 }
 
 model StudentCourse {
@@ -182,4 +166,14 @@ model Attendance {
   id_user Int
   date    DateTime @default(now())
   user    User     @relation(fields: [id_user], references: [id_user])
+}
+
+model Deliverable {
+  id_deliverable Int      @id @default(autoincrement())
+  title          String
+  instruction    String
+  pdf_url        String?
+  id_course      Int
+  course         Course   @relation(fields: [id_course], references: [id_course])
+  created_at     DateTime @default(now())
 }

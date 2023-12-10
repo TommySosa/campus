@@ -4,6 +4,7 @@ import { useEffect, useState } from "react"
 import "firebase/storage";
 import { storage } from "@/firebase";
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage'
+import Swal from "sweetalert2";
 
 export default function UpdateContentModal({ isOpen, onClose, id_content, handleRefresh }) {
     const [selectedFile, setSelectedFile] = useState(null)
@@ -17,6 +18,17 @@ export default function UpdateContentModal({ isOpen, onClose, id_content, handle
     const [courses, setCourses] = useState([])
 
     const baseURL = `http://localhost:4001/api/content/${id_content}`;
+    const Toast = Swal.mixin({
+        toast: true,
+        position: "bottom-end",
+        showConfirmButton: false,
+        timer: 3000,
+        timerProgressBar: true,
+        didOpen: (toast) => {
+            toast.onmouseenter = Swal.stopTimer;
+            toast.onmouseleave = Swal.resumeTimer;
+        }
+    });
 
     useEffect(() => {
         async function fetchContent() {
@@ -69,25 +81,46 @@ export default function UpdateContentModal({ isOpen, onClose, id_content, handle
             }).catch(() => {
                 console.log('error obteniendo la imagen');
                 setFeedBack("Húbo un error al subir la imágen.")
+                
             })
         } else {
+            Toast.fire({
+                icon: "error",
+                title: "Seleccione una foto"
+            })
             console.log('Seleccione la foto');
         }
     };
 
     const handleSubmit = async (e) => {
         e.preventDefault()
-        try {
-            const createCourseResponse = await axios.patch(baseURL, contentData);
-            if(createCourseResponse.status === 200){
-                handleRefresh()
-                onClose()
-            }
-
-        } catch (error) {
-            console.error("Error al agregar el ejercicio: ", error);
+        if(contentData.course_id == 0 || contentData.description == "" || contentData.pdf_url == "" || contentData.title == "")
+        {
+            Toast.fire({
+                icon: "error",
+                title: "Llená todos los campos!"
+            })
         }
-
+        else{
+            try {
+                const createCourseResponse = await axios.patch(baseURL, contentData);
+                if(createCourseResponse.status === 200){
+                    Toast.fire({
+                        icon: "success",
+                        title: "Contenido actualizado correctamente."
+                    });
+                    handleRefresh()
+                    onClose()
+                }
+    
+            } catch (error) {
+                Toast.fire({
+                    icon: "error",
+                    title: "Ocurrió un error."
+                });
+                console.error("Error al agregar el ejercicio: ", error);
+            }
+        }
     }
     return (
         <div className={`${isOpen ? '' : 'hidden'} overflow-y-auto overflow-x-hidden fixed inset-0 flex  z-50 justify-center items-center w-full md:inset-0 h-[calc(100%-1rem)] max-h-full`}
