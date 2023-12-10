@@ -19,6 +19,17 @@ export default function UpdateCourseModal({ isOpen, onClose, handleRefresh }) {
         id_category: 0,
         id_user: 0
     })
+    const Toast = Swal.mixin({
+        toast: true,
+        position: "bottom-end",
+        showConfirmButton: false,
+        timer: 3000,
+        timerProgressBar: true,
+        didOpen: (toast) => {
+            toast.onmouseenter = Swal.stopTimer;
+            toast.onmouseleave = Swal.resumeTimer;
+        }
+    });
 
     useEffect(() => {
         async function fetchCategories() {
@@ -64,6 +75,10 @@ export default function UpdateCourseModal({ isOpen, onClose, handleRefresh }) {
                 setFeedBack("Húbo un error al subir la imágen.")
             })
         } else {
+            Toast.fire({
+                icon: "error",
+                title: "Seleccione una foto"
+            });
             console.log('Seleccione la foto');
         }
     };
@@ -71,31 +86,28 @@ export default function UpdateCourseModal({ isOpen, onClose, handleRefresh }) {
     const handleSubmit = async (e) => {
         e.preventDefault()
         try {
-            if(courseData.description == undefined || courseData.description.trim() == "" || courseData.id_category == undefined 
-            || courseData.id_category == 0 || courseData.url_image == undefined || courseData.url_image.trim() == "" || courseData.id_user == 0 || courseData.id_user == undefined){
-                const Toast = Swal.mixin({
-                    toast: true,
-                    position: "bottom-end",
-                    showConfirmButton: false,
-                    timer: 3000,
-                    timerProgressBar: true,
-                    didOpen: (toast) => {
-                      toast.onmouseenter = Swal.stopTimer;
-                      toast.onmouseleave = Swal.resumeTimer;
-                    }
-                  });
-                  Toast.fire({
+            if (courseData.description == undefined || courseData.description == "" || courseData.id_category == undefined
+                || courseData.id_category == 0 || courseData.url_image == undefined || courseData.url_image == "" || courseData.id_user == 0 || courseData.id_user == undefined) {
+                Toast.fire({
                     icon: "error",
                     title: "Llena todos los campos!"
-                  });
-            }else{
+                });
+            } else {
                 const createCourseResponse = await axios.post(baseURL, courseData);
-                if(createCourseResponse.status === 200){
+                if (createCourseResponse.status === 200) {
+                    Toast.fire({
+                        icon: "success",
+                        title: "Curso agregado correctamente."
+                    });
                     handleRefresh()
                     onClose()
                 }
             }
         } catch (error) {
+            Toast.fire({
+                icon: "error",
+                title: "Ocurrió un error."
+            });
             console.error("Error al agregar el ejercicio: ", error);
         }
 

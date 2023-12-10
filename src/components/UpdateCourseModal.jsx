@@ -4,8 +4,9 @@ import { useEffect, useState } from "react"
 import "firebase/storage";
 import { storage } from "@/firebase";
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage'
+import Swal from "sweetalert2";
 
-export default function UpdateCourseModal({ isOpen, onClose, id_course }) {
+export default function UpdateCourseModal({ isOpen, onClose, id_course, handleRefresh }) {
     const [categories, setCategories] = useState([])
     const [teachers, setTeachers] = useState([])
     const [selectedFile, setSelectedFile] = useState(null)
@@ -18,8 +19,19 @@ export default function UpdateCourseModal({ isOpen, onClose, id_course }) {
         id_user: 0
     })
     const baseURL = `http://localhost:4001/api/courses/${id_course}`;
+    const Toast = Swal.mixin({
+        toast: true,
+        position: "bottom-end",
+        showConfirmButton: false,
+        timer: 3000,
+        timerProgressBar: true,
+        didOpen: (toast) => {
+            toast.onmouseenter = Swal.stopTimer;
+            toast.onmouseleave = Swal.resumeTimer;
+        }
+    });
 
-    useEffect(()=> {
+    useEffect(() => {
         async function fetchCourse() {
             try {
                 const response = await axios.get(`http://localhost:4001/api/courses/${id_course}`)
@@ -37,14 +49,13 @@ export default function UpdateCourseModal({ isOpen, onClose, id_course }) {
             }
         }
         fetchCourse()
-    },[id_course])
+    }, [id_course])
 
     useEffect(() => {
         async function fetchCategories() {
             try {
                 const response = await axios.get(`http://localhost:4001/api/category`)
                 const data = await response.data
-                console.log(data);
                 setCategories(data)
             } catch (error) {
                 console.log(error);
@@ -62,8 +73,6 @@ export default function UpdateCourseModal({ isOpen, onClose, id_course }) {
         fetchCategories()
         fetchTeachers()
     }, [id_course])
-
-
 
     const handleFileChange = (event) => {
         if (event.target.files[0]) {
@@ -86,20 +95,48 @@ export default function UpdateCourseModal({ isOpen, onClose, id_course }) {
                 setFeedBack("Húbo un error al subir la imágen.")
             })
         } else {
+            Toast.fire({
+                icon: "error",
+                title: "Seleccione una foto"
+            });
             console.log('Seleccione la foto');
         }
     };
 
     const handleSubmit = async (e) => {
         e.preventDefault()
-        try {
-            const createCourseResponse = await axios.patch(baseURL, courseData);
-            console.log(createCourseResponse);
-
-        } catch (error) {
-            console.error("Error al agregar el ejercicio: ", error);
+        if (courseData.description == undefined || courseData.description == "" || courseData.id_category == undefined
+            || courseData.id_category == 0 || courseData.url_image == undefined || courseData.url_image == "" || courseData.id_user == 0 || courseData.id_user == undefined) {
+            Toast.fire({
+                icon: "error",
+                title: "Llena todos los campos!"
+            });
+        } else {
+            try {
+                const updateCourseResponse = await axios.patch(baseURL, courseData);
+                console.log(updateCourseResponse);
+                if (updateCourseResponse.status === 200) {
+                    Toast.fire({
+                        icon: "success",
+                        title: "Curso actualizado correctamente."
+                    });
+                    onClose()
+                    handleRefresh()
+                }
+                else {
+                    Toast.fire({
+                        icon: "error",
+                        title: "Ocurrió un error."
+                    });
+                }
+            } catch (error) {
+                Toast.fire({
+                    icon: "error",
+                    title: "Ocurrió un error."
+                });
+                console.error("Error al agregar el ejercicio: ", error);
+            }
         }
-
     }
     return (
         <div className={`${isOpen ? '' : 'hidden'} overflow-y-auto overflow-x-hidden fixed inset-0 flex  z-50 justify-center items-center w-full md:inset-0 h-[calc(100%-1rem)] max-h-full`}
@@ -128,7 +165,7 @@ export default function UpdateCourseModal({ isOpen, onClose, id_course }) {
                             </div>
                             <div>
                                 <label for="course" className="block mb-2 text-sm font-medium text-gray-900  ">Categoria</label>
-                                <select id="course"  onChange={(e) => setCourseData({ ...courseData, id_category: e.target.value })} className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5   dark:border-gray-600 dark:placeholder-gray-400   dark:focus:ring-primary-500 dark:focus:border-primary-500">
+                                <select id="course" onChange={(e) => setCourseData({ ...courseData, id_category: e.target.value })} className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5   dark:border-gray-600 dark:placeholder-gray-400   dark:focus:ring-primary-500 dark:focus:border-primary-500">
                                     <option selected="">Seleccione una categoria</option>
                                     {
                                         categories.length > 0 ? categories.map((category) => (

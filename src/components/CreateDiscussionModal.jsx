@@ -15,30 +15,34 @@ export default function CreateDiscussionModal({ isOpen, onClose, handleRefresh }
         author: "",
         user_id: session.user.id_user
     })
+    const Toast = Swal.mixin({
+        toast: true,
+        position: "bottom-end",
+        showConfirmButton: false,
+        timer: 3000,
+        timerProgressBar: true,
+        didOpen: (toast) => {
+            toast.onmouseenter = Swal.stopTimer;
+            toast.onmouseleave = Swal.resumeTimer;
+        }
+    });
 
     const handleSubmit = async (e) => {
         e.preventDefault()
         try {
-            if(discussionData.author == undefined || discussionData.title == undefined || discussionData.title.trim() == "" || discussionData.content == undefined || discussionData.content.trim() == ""){
-                const Toast = Swal.mixin({
-                    toast: true,
-                    position: "bottom-end",
-                    showConfirmButton: false,
-                    timer: 3000,
-                    timerProgressBar: true,
-                    didOpen: (toast) => {
-                      toast.onmouseenter = Swal.stopTimer;
-                      toast.onmouseleave = Swal.resumeTimer;
-                    }
-                  });
-                  Toast.fire({
+            if (discussionData.author == undefined || discussionData.title == undefined || discussionData.title.trim() == "" || discussionData.content == undefined || discussionData.content.trim() == "") {
+                Toast.fire({
                     icon: "error",
                     title: "Llena todos los campos!"
-                  });
-            }else{
+                });
+            } else {
                 const createCourseResponse = await axios.post(baseURL, discussionData);
                 console.log(createCourseResponse);
                 if (createCourseResponse.status === 200) {
+                    Toast.fire({
+                        icon: "success",
+                        title: "Discusión agregada correctamente."
+                    });
                     handleRefresh()
                     onClose()
                 }

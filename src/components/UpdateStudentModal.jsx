@@ -1,10 +1,22 @@
 "use client"
 import axios from "axios"
 import { useEffect, useState } from "react"
+import Swal from "sweetalert2"
 
 export default function UpdateStudentModal({ isOpen, onClose, handleRefresh, id_student_course }) {
     const [courses, setCourses] = useState([])
     const [studentData, setStudentData] = useState()
+    const Toast = Swal.mixin({
+        toast: true,
+        position: "bottom-end",
+        showConfirmButton: false,
+        timer: 3000,
+        timerProgressBar: true,
+        didOpen: (toast) => {
+            toast.onmouseenter = Swal.stopTimer;
+            toast.onmouseleave = Swal.resumeTimer;
+        }
+    });
 
     useEffect(() => {
         async function fetchCourses() {
@@ -36,19 +48,32 @@ export default function UpdateStudentModal({ isOpen, onClose, handleRefresh, id_
 
     const handleSubmit = async (e) => {
         e.preventDefault()
-        console.log(studentData.id_course);
-        try {
-            const createCourseResponse = await axios.put(`http://localhost:4001/api/students/${id_student_course}`,{
-                id_user: studentData.id_user,
-                id_course: studentData.id_course
+        if(studentData.id_user == 0 || studentData.id_course == 0 || studentData.id_course == NaN || studentData.id_course == undefined){
+            Toast.fire({
+                icon: "error",
+                title: "Llena todos los campos!"
             });
-            if (createCourseResponse.status === 200) {
-                handleRefresh()
-                onClose()
+        }else{
+            try {
+                const createCourseResponse = await axios.put(`http://localhost:4001/api/students/${id_student_course}`,{
+                    id_user: studentData.id_user,
+                    id_course: studentData.id_course
+                });
+                if (createCourseResponse.status === 200) {
+                    handleRefresh()
+                    onClose()
+                    Toast.fire({
+                        icon: "success",
+                        title: "Inscripción actualizada correctamente."
+                    });
+                }
+            } catch (error) {
+                Toast.fire({
+                    icon: "error",
+                    title: "Ocurrió un error."
+                });
+                console.error("Error al inscribir el estudiante: ", error);
             }
-
-        } catch (error) {
-            console.error("Error al inscribir el estudiante: ", error);
         }
     }
 

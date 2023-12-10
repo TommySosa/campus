@@ -41,7 +41,7 @@ export default function Page() {
             </div>
             {
                 discussions && discussions.length > 0 ? discussions.map((discussion) => (
-                    <Discussion id_discussion={discussion.id_discussion} title={discussion.title} content={discussion.content} author={discussion.author} key={discussion.id_discussion} />
+                    <Discussion id_discussion={discussion.id_discussion} created_at={discussion.created_at} title={discussion.title} content={discussion.content} author={discussion.author} key={discussion.id_discussion} />
                 )) : null
             }
             {

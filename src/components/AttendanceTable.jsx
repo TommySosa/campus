@@ -156,13 +156,6 @@ export default function AttendanceTable() {
                                                 {/* {date} */}
                                             </Typography>
                                         </td>
-                                        <td className={classes}>
-                                            <Tooltip content="Edit User">
-                                                <IconButton variant="text">
-                                                    <PencilIcon className="h-4 w-4" />
-                                                </IconButton>
-                                            </Tooltip>
-                                        </td>
                                     </tr>
                                 );
                             },

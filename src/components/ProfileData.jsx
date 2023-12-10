@@ -69,7 +69,7 @@ export default function ProfileData() {
                 }
             </div>
             <div>
-                <p className="mt-8 text-center text-gray-500">Aqui podras observar tu progreso en tus cursos</p>
+                <h2 className="mt-8 text-center text-gray-500">Aqui podras observar tu progreso en tus cursos</h2>
                 {
                     corrects.length > 0 && incorrects.length > 0 ? <>
                         <h2 className="mt-8 text-center text-gray-500">Total de ejercicios realizados</h2>
@@ -86,11 +86,12 @@ export default function ProfileData() {
             {
                 inscriptions && inscriptions.length > 0 ? inscriptions.map((course) => (
                     <div key={course.id_course}>
-                        <h2 className="mt-8 text-center text-gray-500">Total de ejercicios realizados del curso {course.course_name}</h2>
+                        <h4 className="mt-8 text-center text-gray-500">Total de ejercicios realizados del curso {course.course_name}: {course.correct_count + course.incorrect_count}</h4>
                         <div className="flex justify-center">
 
                             <div className="flex justify-center w-40">
                                 {
+                                    course.correct_count + course.incorrect_count > 0 ?
                                     <Pie data={{
                                         labels: ['Correctos', 'Incorrectos'],
                                         datasets: [
@@ -100,7 +101,7 @@ export default function ProfileData() {
                                                 hoverBackgroundColor: ['#36A2EB', '#FF6384'],
                                             },
                                         ],
-                                    }} />
+                                    }} /> : null
                                 }
                             </div>
                         </div>

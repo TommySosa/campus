@@ -1,6 +1,7 @@
 "use client"
 import axios from "axios"
 import { useEffect, useState } from "react"
+import Swal from "sweetalert2";
 
 const baseURL = "http://localhost:4001/api/modules";
 export default function CreateModuleModal({ isOpen, onClose, handleRefresh }) {
@@ -9,6 +10,17 @@ export default function CreateModuleModal({ isOpen, onClose, handleRefresh }) {
         name: "",
         id_course: 0,
     })
+    const Toast = Swal.mixin({
+        toast: true,
+        position: "bottom-end",
+        showConfirmButton: false,
+        timer: 3000,
+        timerProgressBar: true,
+        didOpen: (toast) => {
+            toast.onmouseenter = Swal.stopTimer;
+            toast.onmouseleave = Swal.resumeTimer;
+        }
+    });
 
     useEffect(() => {
         async function fetchCourses() {
@@ -26,18 +38,31 @@ export default function CreateModuleModal({ isOpen, onClose, handleRefresh }) {
 
     const handleSubmit = async (e) => {
         e.preventDefault()
-        try {
-            const createCourseResponse = await axios.post(baseURL, moduleData);
-            console.log(createCourseResponse);
-            if(createCourseResponse.status === 200){
-                handleRefresh()
-                onClose()
+        if (moduleData.id_course !== 0 && moduleData.name !== "") {
+            try {
+                const createCourseResponse = await axios.post(baseURL, moduleData);
+                if (createCourseResponse.status === 200) {
+                    Toast.fire({
+                        icon: "success",
+                        title: "Módulo agregado correctamente."
+                    });
+                    handleRefresh()
+                    onClose()
+                }
+            } catch (error) {
+                Toast.fire({
+                    icon: "error",
+                    title: "Ocurrió un error."
+                });
+                console.error("Error al agregar el ejercicio: ", error);
             }
-
-        } catch (error) {
-            console.error("Error al agregar el ejercicio: ", error);
+        } else {
+            console.log('AQUI');
+            Toast.fire({
+                icon: "error",
+                title: "Llena todos los campos!"
+            });
         }
-
     }
     return (
         <div className={`${isOpen ? '' : 'hidden'} overflow-y-auto overflow-x-hidden fixed inset-0 flex  z-50 justify-center items-center w-full md:inset-0 h-[calc(100%-1rem)] max-h-full`}
