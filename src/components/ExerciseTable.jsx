@@ -127,7 +127,7 @@ export default function ExerciseTable({ exercises, openCreate, handleOpenCreate,
                                     </td>
                                 </tr>
                             </>
-                        )) : <p className="text-center">No se pudo obtener los ejercicios</p>
+                        )) : <p className="text-center my-4">No se pudo obtener los ejercicios</p>
                     }
 
                     {

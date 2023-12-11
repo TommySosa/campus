@@ -121,7 +121,7 @@ export default function CourseTable({ courses, openCreate, handleOpenCreateCours
                                     </td>
                                 </tr>
                             </>
-                        )) : <p className="text-center">No se pudo obtener los cursos</p>
+                        )) : <p className="text-center my-4">No se pudo obtener los cursos</p>
                     }
 
                     {

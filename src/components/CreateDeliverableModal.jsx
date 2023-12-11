@@ -6,16 +6,17 @@ import { storage } from "@/firebase";
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage'
 import Swal from "sweetalert2";
 
-const baseURL = "http://localhost:4001/api/content";
+const baseURL = "http://localhost:4001/api/deliverable";
 export default function CreateContentModal({ isOpen, onClose, handleRefresh }) {
     const [courses, setCourses] = useState([])
     const [selectedFile, setSelectedFile] = useState(null)
     const [feedBack, setFeedBack] = useState("")
-    const [contentData, setContentData] = useState({
+    const [deliverableData, setDeliverableData] = useState({
         title: "",
-        description: "",
+        instruction: "",
         pdf_url: "",
-        course_id: 0,
+        id_course: 0,
+        deadline: null
     })
     const Toast = Swal.mixin({
         toast: true,
@@ -43,12 +44,11 @@ export default function CreateContentModal({ isOpen, onClose, handleRefresh }) {
 
     const handleFileChange = (event) => {
         if (event.target.files[0]) {
-            const imageRef = ref(storage, `/content/pdf-${Date.now()}`)
-            console.log(event.target.files[0]);
+            const imageRef = ref(storage, `/deliverables/pdf-${Date.now()}`)
             uploadBytes(imageRef, event.target.files[0]).then(() => {
                 getDownloadURL(imageRef).then((url) => {
-                    setContentData({
-                        ...contentData,
+                    setDeliverableData({
+                        ...deliverableData,
                         pdf_url: url,
                     });
                     setFeedBack("PDF subido correctamente.")
@@ -72,29 +72,28 @@ export default function CreateContentModal({ isOpen, onClose, handleRefresh }) {
 
     const handleSubmit = async (e) => {
         e.preventDefault()
-        if (contentData.course_id == 0 || contentData.description == "" || contentData.pdf_url == "" || contentData.title == "") {
+        if (deliverableData.id_course == 0 || deliverableData.instruction == "" || deliverableData.pdf_url == "" || deliverableData.title == "") {
             Toast.fire({
                 icon: "error",
                 title: "Llená todos los campos!"
             })
         } else {
             try {
-                const createCourseResponse = await axios.post(baseURL, contentData);
-                if (createCourseResponse.status === 200) {
+                const createDeliverableResponse = await axios.post(baseURL, deliverableData);
+                if (createDeliverableResponse.status === 200) {
                     Toast.fire({
                         icon: "success",
-                        title: "Contenido agregado correctamente."
+                        title: "Entregable agregado correctamente."
                     });
                     handleRefresh()
                     onClose()
                 }
-
             } catch (error) {
                 Toast.fire({
                     icon: "error",
                     title: "Ocurrió un error"
                 })
-                console.error("Error al agregar el contenido: ", error);
+                console.error("Error al agregar el entregable: ", error);
             }
         }
     }
@@ -106,7 +105,7 @@ export default function CreateContentModal({ isOpen, onClose, handleRefresh }) {
             <div className="relative p-4 w-full max-w-2xl max-h-full">
                 <div className="relative p-4 bg-white rounded-lg shadow sm:p-5">
                     <div className="flex justify-between items-center pb-4 mb-4 rounded-t border-b sm:mb-5 border-gray-600">
-                        <h3 className="text-lg font-semibold text-gray-900 " id="modal-title">Crear contenido</h3>
+                        <h3 className="text-lg font-semibold text-gray-900 " id="modal-title">Crear entregable</h3>
                         <button onClick={onClose} type="button" className="text-gray-400 bg-transparent  rounded-lg text-sm p-1.5 ml-auto inline-flex items-center hover:bg-gray-600 hover:text-white">
                             <svg aria-hidden="true" className="w-5 h-5" fill="currentColor" viewbox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
                                 <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
@@ -118,14 +117,14 @@ export default function CreateContentModal({ isOpen, onClose, handleRefresh }) {
                     <form onSubmit={handleSubmit} aria-labelledby="modal-title">
                         <div className="grid gap-4 mb-4 sm:grid-cols-2">
                             <div>
-                                <label for="title" className="block mb-2 text-sm font-medium text-gray-900 ">Titulo</label>
+                                <label htmlFor="title" className="block mb-2 text-sm font-medium text-gray-900 ">Titulo</label>
                                 <input type="text" name="title" id="title"
                                     className="bg-gray-50 border text-gray-900 text-sm rounded-lg block w-full p-2.5  border-gray-600 dark:placeholder-gray-400  focus:ring-primary-500 focus:border-primary-500"
-                                    placeholder="Escribe el nombre..." value={contentData.title} onChange={(e) => setContentData({ ...contentData, title: e.target.value })} />
+                                    placeholder="Escribe el titulo..." value={deliverableData.title} onChange={(e) => setDeliverableData({ ...deliverableData, title: e.target.value })} />
                             </div>
                             <div>
-                                <label for="exercise_type" className="block mb-2 text-sm font-medium text-gray-900  ">Curso </label>
-                                <select id="exercise_type" onChange={(e) => setContentData({ ...contentData, course_id: parseInt(e.target.value) })} className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5   dark:border-gray-600 dark:placeholder-gray-400   dark:focus:ring-primary-500 dark:focus:border-primary-500">
+                                <label htmlFor="exercise_type" className="block mb-2 text-sm font-medium text-gray-900  ">Curso </label>
+                                <select id="exercise_type" onChange={(e) => setDeliverableData({ ...deliverableData, id_course: parseInt(e.target.value) })} className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5   dark:border-gray-600 dark:placeholder-gray-400   dark:focus:ring-primary-500 dark:focus:border-primary-500">
                                     <option selected="">Seleccione un curso</option>
                                     {
                                         courses.length > 0 ? courses.map((course) => (
@@ -134,8 +133,15 @@ export default function CreateContentModal({ isOpen, onClose, handleRefresh }) {
                                     }
                                 </select>
                             </div>
+                            <div className="sm:col-span-2">
+                                <label htmlFor="deadline" className="block mb-2 text-sm font-medium text-gray-900">Fecha límite</label>
+                                <input type="datetime-local" name="deadline" id="deadline" 
+                                className="bg-gray-50 border text-gray-900 text-sm rounded-lg block w-full p-2.5  border-gray-600 dark:placeholder-gray-400  focus:ring-primary-500 focus:border-primary-500"
+                                onChange={(e) => setDeliverableData({ ...deliverableData, deadline: e.target.value })}
+                                />
+                            </div>
 
-                            {/* IMAGEN */}
+                            {/* Documento */}
                             <div className="sm:col-span-2">
                                 <label htmlFor="url_image" className="block mb-2 text-sm font-medium text-gray-900 ">Documento</label>
                                 <div className="flex justify-center items-center w-full">
@@ -157,14 +163,14 @@ export default function CreateContentModal({ isOpen, onClose, handleRefresh }) {
 
                             <div className="sm:col-span-2">
                                 {feedBack}
-                                <label for="instruction" className="block mb-2 text-sm font-medium text-gray-900">Descripción</label>
+                                <label for="instruction" className="block mb-2 text-sm font-medium text-gray-900">Consigna</label>
                                 <textarea id="instruction" aria-describedby="modal-description" rows="3"
                                     className="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-600 placeholder-gray-400   focus:ring-primary-500 focus:border-primary-500"
-                                    placeholder="Escribe la descripción..." value={contentData.description} onChange={(e) => setContentData({ ...contentData, description: e.target.value })}></textarea>
+                                    placeholder="Escribe la consigna..." value={deliverableData.instruction} onChange={(e) => setDeliverableData({ ...deliverableData, instruction: e.target.value })}></textarea>
                             </div>
                         </div>
                         <div className="flex items-center space-x-4">
-                            <button type="submit" className="text-white bg-primary-700 hover:bg-primary-800 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800">Agregar contenido</button>
+                            <button type="submit" className="text-white bg-primary-700 hover:bg-primary-800 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800">Agregar entregable</button>
                         </div>
                     </form>
                 </div>

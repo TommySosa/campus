@@ -28,6 +28,7 @@ export default function MainLayout() {
   const courseRoute = pathname === '/courses'
   const homeRoute = pathname === '/home'
   const forumRoute = pathname === '/forum'
+  const deliverableRoute = pathname === '/deliverables'
   const [enableAccesibility, setEnableAccesibility] = useState(false)
   const [disabled, setDisabled] = useState(false);
   const [sizes, setSizes] = useState(false)
@@ -85,6 +86,17 @@ export default function MainLayout() {
                       session ? (
                         <>
                           {
+                            session.user ? (<>
+                              <Link href={'/forum'} className={classNames(
+                                forumRoute ? 'bg-elf-green-800 text-white' : 'text-white hover:bg-elf-green-700 hover:text-gray-300',
+                                'block rounded-md px-3 py-2 text-base font-medium'
+                              )}>
+                                Foro
+                              </Link></>
+                            ) : null
+                          }
+                          {
+
                             session.user.id_rol === 2 ? (
                               <>
                                 <Link href={'/courses'} className={classNames(
@@ -105,25 +117,16 @@ export default function MainLayout() {
                                 )}>
                                   Asistencia
                                 </Link>
+                                <Link href={'/deliverables'} className={classNames(
+                                  deliverableRoute ? 'bg-elf-green-800 text-white' : 'text-white hover:bg-elf-green-700 hover:text-gray-300',
+                                  'block rounded-md px-3 py-2 text-base font-medium'
+                                )}>
+                                  Corregir entregables
+                                </Link>
                               </>
                             ) : null
                           }
-                          {
-                            session.user ? (<>
-                              {/* <Link href={'/courses'} className={classNames(
-                                courseRoute ? 'bg-elf-green-800 text-white' : 'text-white hover:bg-elf-green-700 hover:text-gray-300',
-                                'block rounded-md px-3 py-2 text-base font-medium'
-                              )}>
-                                Cursos
-                              </Link> */}
-                              <Link href={'/forum'} className={classNames(
-                                forumRoute ? 'bg-elf-green-800 text-white' : 'text-white hover:bg-elf-green-700 hover:text-gray-300',
-                                'block rounded-md px-3 py-2 text-base font-medium'
-                              )}>
-                                Foro
-                              </Link></>
-                            ) : null
-                          }
+
                           {
                             session.user.id_rol === 1 ? (
                               <Link href={'/courses'} className={classNames(
@@ -212,6 +215,16 @@ export default function MainLayout() {
                         <Menu.Item>
                           {({ active }) => (
                             <Link
+                              href="/user/tasks"
+                              className={classNames(active ? 'bg-gray-100' : '', 'block px-4 py-2 text-sm text-gray-700')}
+                            >
+                              Mis tareas
+                            </Link>
+                          )}
+                        </Menu.Item>
+                        <Menu.Item>
+                          {({ active }) => (
+                            <Link
                               href="/user/settings"
                               className={classNames(active ? 'bg-gray-100' : '', 'block px-4 py-2 text-sm text-gray-700')}
                             >
@@ -259,6 +272,36 @@ export default function MainLayout() {
                   )
                 )
               })}
+                            {
+                session ? (
+                  <>
+                    {
+                      session.user ? (
+                        <>
+                          <Link href={'/courses'} className={classNames(
+                            courseRoute ? 'bg-elf-green-800 text-white' : 'text-white hover:bg-elf-green-700 hover:text-gray-300',
+                            'block rounded-md px-3 py-2 text-base font-medium'
+                          )}>
+                            Cursos
+                          </Link>
+                        </>
+                      ) : null
+                    }
+                  </>
+                ) : null
+              }
+              {
+                session ? (
+                  <>
+                    <Link href={'/forum'} className={classNames(
+                      forumRoute ? 'bg-elf-green-800 text-white' : 'text-white hover:bg-elf-green-700 hover:text-gray-300',
+                      'block rounded-md px-3 py-2 text-base font-medium'
+                    )}>
+                      Foro
+                    </Link>
+                  </>
+                ) : null
+              }
               {
                 session ? (
                   <>
@@ -277,47 +320,18 @@ export default function MainLayout() {
                           )}>
                             Asistencia
                           </Link>
+                          <Link href={'/deliverables'} className={classNames(
+                            deliverableRoute ? 'bg-elf-green-800 text-white' : 'text-white hover:bg-elf-green-700 hover:text-gray-300',
+                            'block rounded-md px-3 py-2 text-base font-medium'
+                          )}>
+                            Corregir entregables
+                          </Link>
                         </>
                       ) : null
                     }
                   </>) : null
               }
-              {
-                session ? (
-                  <>
-                    {
-                      session.user ? (
-                        <>
-                          <Link href={'/courses'} className={classNames(
-                            courseRoute ? 'bg-elf-green-800 text-white' : 'text-white hover:bg-elf-green-700 hover:text-gray-300',
-                            'block rounded-md px-3 py-2 text-base font-medium'
-                          )}>
-                            Cursos
-                          </Link>
-                        </>
-                      ) : null
-                    }
-                  </>
-                ) : null
-              }
-              {/* <Link href={'/attendance'} className={classNames(
-                attendanceRoute ? 'bg-elf-green-800 text-white' : 'text-white hover:bg-elf-green-700 hover:text-gray-300',
-                'block rounded-md px-3 py-2 text-base font-medium'
-              )}>
-                Asistencia
-              </Link> */}
-              {
-                session ? (
-                  <>
-                    <Link href={'/forum'} className={classNames(
-                            forumRoute ? 'bg-elf-green-800 text-white' : 'text-white hover:bg-elf-green-700 hover:text-gray-300',
-                            'block rounded-md px-3 py-2 text-base font-medium'
-                          )}>
-                        Foro
-                    </Link>
-                </>
-                ) : null
-              }
+
               {
                 !session ? (
                   <>
