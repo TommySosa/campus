@@ -42,6 +42,7 @@ model User {
   attendances        Attendance[]
   discussions        Discussion[]
   comments           Comment[]
+  assignedTasks      AssignedTask[]
 }
 
 model Discussion {
@@ -169,11 +170,28 @@ model Attendance {
 }
 
 model Deliverable {
-  id_deliverable Int      @id @default(autoincrement())
+  id_deliverable Int            @id @default(autoincrement())
   title          String
   instruction    String
   pdf_url        String?
   id_course      Int
-  course         Course   @relation(fields: [id_course], references: [id_course])
-  created_at     DateTime @default(now())
+  deadline       DateTime?
+  course         Course         @relation(fields: [id_course], references: [id_course])
+  assignedTask   AssignedTask[]
+  created_at     DateTime       @default(now())
 }
+
+model AssignedTask {
+  id_assigned    Int             @id @default(autoincrement())
+  id_deliverable Int
+  approved       Boolean         @default(false)
+  done           Boolean         @default(false)
+  corrected      Boolean?        @default(false)
+  document_url   String?
+  completed_at   DateTime?       
+  deliverable    Deliverable     @relation(fields: [id_deliverable], references: [id_deliverable])
+  id_user        Int
+  User           User            @relation(fields: [id_user], references: [id_user])
+}
+
+

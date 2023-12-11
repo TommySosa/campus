@@ -116,7 +116,7 @@ export default function TeacherTable({ teachers, openCreate, handleOpenCreate, h
 
                             </td>
                         </tr> </>
-                    )) : <p className="text-center">No se pudo obtener los usuarios</p>
+                    )) : <p className="text-center my-4">No se pudo obtener los usuarios</p>
                 }
 
                 {
