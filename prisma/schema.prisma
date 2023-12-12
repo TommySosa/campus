@@ -144,6 +144,15 @@ model StudentCourse {
   id_course         Int
   user              User   @relation(fields: [id_user], references: [id_user])
   course            Course @relation(fields: [id_course], references: [id_course])
+  grades            Grade[]
+}
+
+model Grade {
+  id_grade       Int            @id @default(autoincrement())
+  id_student_course Int
+  value          Float
+  exam_name      String
+  student_course StudentCourse @relation(fields: [id_student_course], references: [id_student_course])
 }
 
 model CorrectExercise {
@@ -182,16 +191,15 @@ model Deliverable {
 }
 
 model AssignedTask {
-  id_assigned    Int             @id @default(autoincrement())
+  id_assigned    Int         @id @default(autoincrement())
   id_deliverable Int
-  approved       Boolean         @default(false)
-  done           Boolean         @default(false)
-  corrected      Boolean?        @default(false)
+  approved       Boolean     @default(false)
+  done           Boolean     @default(false)
+  corrected      Boolean?    @default(false)
   document_url   String?
-  completed_at   DateTime?       
-  deliverable    Deliverable     @relation(fields: [id_deliverable], references: [id_deliverable])
+  completed_at   DateTime?
+  deliverable    Deliverable @relation(fields: [id_deliverable], references: [id_deliverable])
   id_user        Int
-  User           User            @relation(fields: [id_user], references: [id_user])
+  User           User        @relation(fields: [id_user], references: [id_user])
 }
-
 
