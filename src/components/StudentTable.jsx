@@ -6,15 +6,21 @@ import { useEffect, useState } from "react"
 import axios from "axios"
 import NoteSvg from "./NoteSvg"
 import UploadNoteModal from "./UploadNoteModal"
+import ReadModal from "./ReadGradeModal"
 export default function StudentTable({ inscriptions, openCreate, handleOpenCreate, handleRefresh, noFiltrados }) {
     const [selectedUpdateCourseId, setSelectedUpdateCourseId] = useState(null);
     const [selectedUploadNoteIdUser, setSelectedUploadNoteIdUser] = useState(null)
+    const [selectedReadIdUser, setSelectedReadIdUser] = useState(null)
 
     const handleOpenUpdate = (courseId) => {
         setSelectedUpdateCourseId(courseId);
     };
     const handleOpenUploadNote = (userId) => {
         setSelectedUploadNoteIdUser(userId)
+    }
+
+    const handleRead = (userId) => {
+        setSelectedReadIdUser(userId)
     }
 
     const [selectedDeleteCourseId, setSelectedDeleteCourseId] = useState(null);
@@ -58,7 +64,20 @@ export default function StudentTable({ inscriptions, openCreate, handleOpenCreat
                                             data-modal-target="updateProductModal"
                                             data-modal-toggle="updateProductModal"
                                             className="flex w-full items-center py-2 px-4 hover:bg-gray-100 text-gray-700"
-                                            onClick={() => handleOpenUpdate(inscription.id_student_course)}
+                                            onClick={() => handleRead(inscription.id_student_course)}
+                                        >
+                                            <svg class="w-4 h-4 mr-2" xmlns="http://www.w3.org/2000/svg" viewbox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                                                <path d="M10 12a2 2 0 100-4 2 2 0 000 4z" />
+                                                <path fill-rule="evenodd" clip-rule="evenodd" d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" />
+                                            </svg>
+                                            Ver notas
+                                        </button>
+                                        <button
+                                            type="button"
+                                            data-modal-target="updateProductModal"
+                                            data-modal-toggle="updateProductModal"
+                                            className="flex w-full items-center py-2 px-4 hover:bg-gray-100 text-gray-700"
+                                            onClick={() => handleOpenUploadNote(inscription.id_student_course)}
                                         >
                                             <svg className="w-4 h-4 mr-2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
                                                 <path d="M17.414 2.586a2 2 0 00-2.828 0L7 10.172V13h2.828l7.586-7.586a2 2 0 000-2.828z" />
@@ -103,6 +122,19 @@ export default function StudentTable({ inscriptions, openCreate, handleOpenCreat
                                             data-modal-target="updateProductModal"
                                             data-modal-toggle="updateProductModal"
                                             className="flex w-full items-center py-2 px-4 hover:bg-gray-100 text-gray-700"
+                                            onClick={() => handleRead(inscription.id_student_course)}
+                                        >
+                                            <svg class="w-4 h-4 mr-2" xmlns="http://www.w3.org/2000/svg" viewbox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                                                <path d="M10 12a2 2 0 100-4 2 2 0 000 4z" />
+                                                <path fill-rule="evenodd" clip-rule="evenodd" d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" />
+                                            </svg>
+                                            Ver notas
+                                        </button>
+                                        <button
+                                            type="button"
+                                            data-modal-target="updateProductModal"
+                                            data-modal-toggle="updateProductModal"
+                                            className="flex w-full items-center py-2 px-4 hover:bg-gray-100 text-gray-700"
                                             onClick={() => handleOpenUpdate(inscription.id_student_course)}
                                         >
                                             <svg className="w-4 h-4 mr-2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
@@ -126,62 +158,74 @@ export default function StudentTable({ inscriptions, openCreate, handleOpenCreat
                                         </button>
 
                                     </td>
-                                </tr> 
+                                </tr>
                             </>
-                )): <p className="text-center my-4">No se pudo obtener los usuarios</p>
-                    
-                }
+                        )) : <p className="text-center my-4">No se pudo obtener los usuarios</p>
 
-                {
-                    selectedUpdateCourseId !== null && (
-                        <div className="fixed inset-0 flex justify-center items-center bg-black bg-opacity-50">
-                            <UpdateModal
-                                isOpen={selectedUpdateCourseId !== null}
-                                onClose={() => setSelectedUpdateCourseId(null)}
-                                id_student_course={selectedUpdateCourseId}
+                    }
+
+                    {
+                        selectedUpdateCourseId !== null && (
+                            <div className="fixed inset-0 flex justify-center items-center bg-black bg-opacity-50">
+                                <UpdateModal
+                                    isOpen={selectedUpdateCourseId !== null}
+                                    onClose={() => setSelectedUpdateCourseId(null)}
+                                    id_student_course={selectedUpdateCourseId}
+                                    handleRefresh={handleRefresh}
+                                />
+                            </div>
+                        )
+                    }
+
+                    {
+                        openCreate ? <div className="fixed inset-0 flex justify-center items-center bg-black bg-opacity-50">
+                            <CreateModal
+                                isOpen={openCreate}
+                                onClose={handleOpenCreate}
                                 handleRefresh={handleRefresh}
                             />
-                        </div>
-                    )
-                }
+                        </div> : null
+                    }
 
-                {
-                    openCreate ? <div className="fixed inset-0 flex justify-center items-center bg-black bg-opacity-50">
-                        <CreateModal
-                            isOpen={openCreate}
-                            onClose={handleOpenCreate}
-                            handleRefresh={handleRefresh}
-                        />
-                    </div> : null
-                }
+                    {
+                        selectedDeleteCourseId !== null && (
+                            <div className="fixed inset-0 flex justify-center items-center bg-black bg-opacity-50">
+                                <DeleteModal
+                                    isOpen={selectedDeleteCourseId !== null}
+                                    onClose={() => setSelectedDeleteCourseId(null)}
+                                    id_student_course={selectedDeleteCourseId}
+                                    handleRefresh={handleRefresh}
+                                />
+                            </div>
+                        )
+                    }
+                    {
+                        selectedUploadNoteIdUser !== null && (
+                            <div className="fixed inset-0 flex justify-center items-center bg-black bg-opacity-50">
+                                <UploadNoteModal
+                                    isOpen={selectedUploadNoteIdUser !== null}
+                                    onClose={() => setSelectedUploadNoteIdUser(null)}
+                                    id_student_course={selectedUploadNoteIdUser}
+                                    handleRefresh={handleRefresh}
+                                />
+                            </div>
+                        )
+                    }
+                    {
+                        selectedReadIdUser !== null && (
+                            <div className="fixed inset-0 flex justify-center items-center bg-black bg-opacity-50">
+                                <ReadModal
+                                    isOpen={selectedReadIdUser !== null}
+                                    onClose={() => setSelectedReadIdUser(null)}
+                                    id_student_course={selectedReadIdUser}
+                                    handleRefresh={handleRefresh}
+                                />
+                            </div>
+                        )
+                    }
 
-                {
-                    selectedDeleteCourseId !== null && (
-                        <div className="fixed inset-0 flex justify-center items-center bg-black bg-opacity-50">
-                            <DeleteModal
-                                isOpen={selectedDeleteCourseId !== null}
-                                onClose={() => setSelectedDeleteCourseId(null)}
-                                id_student_course={selectedDeleteCourseId}
-                                handleRefresh={handleRefresh}
-                            />
-                        </div>
-                    )
-                }
-                {
-                    selectedUploadNoteIdUser !== null && (
-                        <div className="fixed inset-0 flex justify-center items-center bg-black bg-opacity-50">
-                            <UploadNoteModal
-                                isOpen={selectedUploadNoteIdUser !== null}
-                                onClose={() => setSelectedUploadNoteIdUser(null)}
-                                id_student_course={selectedUploadNoteIdUser}
-                                handleRefresh={handleRefresh}
-                            />
-                        </div>
-                    )
-                }
-
-            </tbody>
-        </table >
+                </tbody>
+            </table >
             <nav className="flex flex-col md:flex-row justify-between items-start md:items-center py-8  space-y-3 md:space-y-0 p-4" aria-label="Table navigation">
                 <span className="text-sm font-normal text-gray-500 dark:text-gray-400">
                     Mostrando
@@ -191,6 +235,6 @@ export default function StudentTable({ inscriptions, openCreate, handleOpenCreat
                 </span>
 
             </nav>
-</>
+        </>
     )
 }

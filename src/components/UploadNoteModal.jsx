@@ -47,8 +47,7 @@ export default function UploadNoteModal({ isOpen, onClose, handleRefresh, id_stu
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        console.log(gradeData);
-        if (gradeData.value == 0 || gradeData.exam_name == "" || gradeData.id_student_course == 0) {
+        if (gradeData.value < 0 || gradeData.value > 10 || gradeData.exam_name == "" || gradeData.id_student_course == 0) {
             Toast.fire({
                 icon: "error",
                 title: "Llena todos los campos!"
