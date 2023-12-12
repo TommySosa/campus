@@ -25,6 +25,7 @@ export default function ProfileData() {
         async function fetchData() {
             const responseCorrect = await axios.get(`http://localhost:4001/api/correct/${session.user.id_user}`)
             const data = await responseCorrect.data
+            console.log(data);
             setCorrects(data.length)
             console.log('data', data.length);
 
@@ -84,9 +85,10 @@ export default function ProfileData() {
 
             </div>
             {
-                inscriptions && inscriptions.length > 0 ? inscriptions.map((course) => (
+                inscriptions && inscriptions.length > 0 ? inscriptions.map((course) => (                    
                     <div key={course.id_course}>
-                        <h4 className="mt-8 text-center text-gray-500">Total de ejercicios realizados del curso {course.course_name}: {course.correct_count + course.incorrect_count}</h4>
+                        <p className=" mt-8 text-center text-gray-500">Progreso del curso {course.course_name}: {course.total_exercises != 0 ? (((course.correct_count + course.incorrect_count ) / course.total_exercises) * 100).toFixed(2): 0}% realizado</p>
+                        <h4 className="text-center text-gray-500">Total de ejercicios realizados: {course.correct_count + course.incorrect_count}</h4>
                         <div className="flex justify-center">
 
                             <div className="flex justify-center w-40">

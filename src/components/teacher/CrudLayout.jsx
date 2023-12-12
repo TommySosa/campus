@@ -21,6 +21,7 @@ export default function CrudLayout() {
     const [openCreateTeacher, setOpenCreateTeacher] = useState(false)
     const [openCreateContent, setOpenCreateContent] = useState(false)
     const [openCreateDeliverable, setOpenCreateDeliverable] = useState(false)
+    const [openCreateNote, setOpenCreateNote] = useState(false)
     const [openActions, setOpenActions] = useState(false)
     const [enableCourse, setEnableCourse] = useState(false)
     const [enableExercise, setEnableExercise] = useState(true)
@@ -29,6 +30,7 @@ export default function CrudLayout() {
     const [enableTeacher, setEnableTeacher] = useState(false)
     const [enableContent, setEnableContent] = useState(false)
     const [enableDeliverable, setEnableDeliverable] = useState(false)
+    const [enableNote, setEnableNote] = useState(false)
     const [courses, setCourses] = useState([])
     const [users, setUsers] = useState([])
     const [students, setStudents] = useState([])
@@ -43,7 +45,8 @@ export default function CrudLayout() {
         exercises: [],
         teachers: [],
         contents: [],
-        deliverables: []
+        deliverables: [],
+        inscriptions: []
     });
     async function fetchExercises() {
         try {
@@ -92,18 +95,15 @@ export default function CrudLayout() {
             console.log(error);
         }
     }
-
     async function fetchInscriptions() {
         try {
             const response = await axios.get('http://localhost:4001/api/inscriptions')
             const data = await response.data
             setInscriptions(data)
-            console.log('inscriptions', data);
         } catch (error) {
             console.log(error);
         }
     }
-
     async function fetchTeachers() {
         try {
             const response = await axios.get('http://localhost:4001/api/teachers')
@@ -131,6 +131,7 @@ export default function CrudLayout() {
             console.log(error);
         }
     }
+
     useEffect(()=> {
         fetchDeliverables()
     }, [])
@@ -168,6 +169,7 @@ export default function CrudLayout() {
         fetchUsers()
         fetchContents()
         fetchDeliverables()
+        fetchInscriptions()
         setFilteredData({
             users: users,
             modules: modules,
@@ -175,10 +177,13 @@ export default function CrudLayout() {
             exercises: exercises,
             teachers: teachers,
             contents: contents,
-            deliverables: deliverables
+            deliverables: deliverables,
+            inscriptions: inscriptions
         });
     }
-
+    const handleOpenCreateNote = () => {
+        setOpenCreateNote(!openCreateNote)
+    }
     const handleOpenCreate = () => {
         setOpenCreate(!openCreate)
     }
@@ -208,6 +213,7 @@ export default function CrudLayout() {
         setEnableTeacher(false)
         setEnableContent(false)
         setEnableDeliverable(false)
+        setEnableNote(false)
     }
     const handleEnableExercise = () => {
         setEnableExercise(true)
@@ -217,6 +223,7 @@ export default function CrudLayout() {
         setEnableTeacher(false)
         setEnableContent(false)
         setEnableDeliverable(false)
+        setEnableNote(false)
     }
     const handleEnableModule = () => {
         setEnableModule(true)
@@ -226,6 +233,7 @@ export default function CrudLayout() {
         setEnableTeacher(false)
         setEnableContent(false)
         setEnableDeliverable(false)
+        setEnableNote(false)
     }
     const handleEnableStudent = () => {
         setEnableStudent(true)
@@ -235,6 +243,7 @@ export default function CrudLayout() {
         setEnableTeacher(false)
         setEnableContent(false)
         setEnableDeliverable(false)
+        setEnableNote(false)
     }
     const handleEnableTeacher = () => {
         setEnableTeacher(true)
@@ -244,6 +253,7 @@ export default function CrudLayout() {
         setEnableModule(false)
         setEnableContent(false)
         setEnableDeliverable(false)
+        setEnableNote(false)
     }
     const handleEnableContent = () => {
         setEnableContent(true)
@@ -253,9 +263,21 @@ export default function CrudLayout() {
         setEnableExercise(false)
         setEnableModule(false)
         setEnableDeliverable(false)
+        setEnableNote(false)
     }
     const handleEnableDeliverable = () => {
         setEnableDeliverable(true)
+        setEnableContent(false)
+        setEnableTeacher(false)
+        setEnableStudent(false)
+        setEnableCourse(false)
+        setEnableExercise(false)
+        setEnableModule(false)
+        setEnableNote(false)
+    }
+    const handleEnableNote = () => {
+        setEnableNote(true)
+        setEnableDeliverable(false)
         setEnableContent(false)
         setEnableTeacher(false)
         setEnableStudent(false)
@@ -274,7 +296,9 @@ export default function CrudLayout() {
                 courses: courses,
                 exercises: exercises,
                 teachers: teachers,
-                contents: contents
+                contents: contents,
+                deliverables: deliverables,
+                inscriptions: inscriptions
             });
         } else {
             const lowercasedValue = value.toLowerCase();
@@ -347,7 +371,11 @@ export default function CrudLayout() {
                 const deliverableName = deliverable.title.toLowerCase();
                 return deliverableName.includes(lowercasedValue)
             })
-
+            const filteredInscriptions = inscriptions.filter((inscription) => {
+                const dni = parseInt(inscription.dni);
+                return dni === parseInt(value);
+            });
+            
             setFilteredData({
                 users: filteredUsers,
                 modules: filteredModules,
@@ -355,7 +383,8 @@ export default function CrudLayout() {
                 exercises: filteredExercises,
                 teachers: filteredTeachers,
                 contents: filteredContents,
-                deliverables: filteredDeliverables
+                deliverables: filteredDeliverables,
+                inscriptions: filteredInscriptions
             });
         }
     };
@@ -454,6 +483,16 @@ export default function CrudLayout() {
                                     Agregar entregable
                                 </button> : null
                             }
+                            {
+                                enableNote ? <button type="button" id="createProductModalButton" data-modal-target="createProductModal" data-modal-toggle="createProductModal"
+                                    className="flex items-center justify-center text-white bg-primary-700 hover:bg-primary-800 focus:ring-4 focus:ring-primary-300 font-medium rounded-lg px-4 py-2 dark:bg-primary-600 dark:hover:bg-primary-700 focus:outline-none dark:focus:ring-primary-800"
+                                    onClick={handleOpenCreateNote}>
+                                    <svg className="h-3.5 w-3.5 mr-2" fill="currentColor" viewbox="0 0 20 20" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                                        <path clipRule="evenodd" fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" />
+                                    </svg>
+                                    Cargar nota
+                                </button> : null
+                            }
                             <div className="flex items-center space-x-3 w-full md:w-auto relative">
 
                                 <button
@@ -519,22 +558,7 @@ export default function CrudLayout() {
                                             <button onClick={handleEnableDeliverable} className="block w-full text-left py-1 px-4 hover:bg-gray-600 hover:text-white">Entregables</button>
                                         </li>
                                     </ul>
-
                                 </div>
-                                {/* <div id="filterDropdown" className="z-10 hidden w-56 p-3 bg-white rounded-lg shadow  ">
-                                    <h6 className="mb-3 text-sm font-medium text-gray-900  ">Category</h6>
-                                    <ul className="space-y-2 text-sm" aria-labelledby="filterDropdownButton">
-                                        <li className="flex items-center">
-                                            <input id="apple" type="checkbox" value="" className="w-4 h-4 bg-gray-100 border-gray-300 rounded text-primary-600 focus:ring-primary-500 dark:focus:ring-primary-600 dark:ring-offset-gray-700 focus:ring-2 dark:bg-gray-600 dark:border-gray-500" />
-                                            <label for="apple" className="ml-2 text-sm font-medium text-gray-900 dark:text-gray-100">Apple (56)</label>
-                                        </li>
-                                        <li className="flex items-center">
-                                            <input id="fitbit" type="checkbox" value="" className="w-4 h-4 bg-gray-100 border-gray-300 rounded text-primary-600 focus:ring-primary-500 dark:focus:ring-primary-600 dark:ring-offset-gray-700 focus:ring-2 dark:bg-gray-600 dark:border-gray-500" />
-                                            <label for="fitbit" className="ml-2 text-sm font-medium text-gray-900 dark:text-gray-100">Fitbit (56)</label>
-                                        </li>
-
-                                    </ul>
-                                </div> */}
                             </div>
                         </div>
                     </div>
@@ -561,7 +585,8 @@ export default function CrudLayout() {
                             /> : null
                         }
                         {
-                            enableStudent ? <StudentTable inscriptions={inscriptions} //students={filteredUsers}
+                            enableStudent ? <StudentTable inscriptions={filteredData.inscriptions} //students={filteredUsers}
+                                noFiltrados={inscriptions}
                                 openCreate={openCreateStudent}
                                 handleOpenCreate={handleOpenCreateStudent}
                                 handleRefresh={handleRefresh}
