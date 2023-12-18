@@ -1,30 +1,39 @@
 "use client"
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 
-export default function ModuleButton({ module }) {
+export default function ModuleButton({ module, isModuleCompleted, previousModuleId }) {
     const [isOpen, setIsOpen] = useState(false);
-    const [modules_exercises, setModules_exercises] = useState([]);
-    const prevModuleId = useRef(null)
+    const [modulesExercises, setModulesExercises] = useState([]);
+    const [showWarning, setShowWarning] = useState(false);
 
     useEffect(() => {
         async function fetchData() {
             const response = await fetch(`http://localhost:4000/api/module_exercises/${module.id_module}`);
             const data = await response.json();
-            setModules_exercises(data.data);
+            setModulesExercises(data.data);
         }
 
-        // if (module.id_module !== prevModuleId.current) {
-        //     fetchData();
-        //     prevModuleId.current = module.id_module;
-        // }
-        fetchData()
+        fetchData();
     }, [module.id_module]);
 
-    const toggleCollapsible = () => {
-        setIsOpen(!isOpen);
+    const toggleCollapsible = async () => {
+        if (!previousModuleId) {
+            setIsOpen(!isOpen);
+            setShowWarning(false);
+        } else {
+            const completed = await isModuleCompleted(previousModuleId);
+
+            if (completed) {
+                setIsOpen(!isOpen);
+                setShowWarning(false);
+            } else {
+                setShowWarning(true);
+            }
+        }
     };
+
     return (
         <div>
             <div key={module.id_module}>
@@ -38,21 +47,34 @@ export default function ModuleButton({ module }) {
                     </div>
                 </button>
 
-                {isOpen && (
-                    <div className="bg-gray-200 p-3">
-                        {
-                            modules_exercises.length > 0 ? (
-                                modules_exercises.map(exercise =>
-                                    <button className="bg-elf-green-400 w-full px-2 py-1 rounded mb-1" key={exercise.id_exercise}>
-                                        <Link href={`/courses/${module.id_course}/exercises/${exercise.id_exercise}`}>
-                                            {exercise.name}
-                                        </Link>
-                                    </button>
-                                )) : <div>No hay ejercicios</div>
-                        }
+                {showWarning && (
+                    <div className="text-red-500 mb-2">
+                        Advertencia: Primero realice los ejercicios del módulo anterior antes de continuar.
+                    </div>
+                )}
+
+                {isOpen && !showWarning && (
+                    <div className="p-1">
+                        {modulesExercises.length > 0 ? (
+                            modulesExercises.map((exercise) => (
+                                <button
+                                    className="bg-elf-green-400 w-full px-2 py-1 rounded mb-1"
+                                    key={exercise.id_exercise}
+                                >
+                                    <Link
+                                        href={`/courses/${module.id_course}/exercises/${exercise.id_exercise}`}
+                                    >
+                                        {exercise.name}
+                                    </Link>
+                                </button>
+                            ))
+                        ) : (
+                            <div>No hay ejercicios</div>
+                        )}
                     </div>
                 )}
             </div>
         </div>
     );
 }
+

@@ -7,9 +7,11 @@ import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import Image from 'next/image'
 import { useSession } from 'next-auth/react'
+import { useState, useEffect } from 'react'
+import AccesibilityButtons from './AccesibilityButtons'
 const navigation = [
   { name: 'Inicio', href: '/home' },
-  { name: 'Cursos', href: '/courses' }
+  // { name: 'Cursos', href: '/courses' }
 ]
 
 function classNames(...classes) {
@@ -23,16 +25,38 @@ export default function MainLayout() {
   const registerRoute = pathname === '/auth/register'
   const teacherRoute = pathname === '/teacher'
   const attendanceRoute = pathname === '/attendance'
+  const courseRoute = pathname === '/courses'
+  const homeRoute = pathname === '/home'
+  const forumRoute = pathname === '/forum'
+  const deliverableRoute = pathname === '/deliverables'
+  const [enableAccesibility, setEnableAccesibility] = useState(false)
+  const [disabled, setDisabled] = useState(false);
+  const [sizes, setSizes] = useState(false)
+
+  const handleEnableAccesibility = () => {
+    setEnableAccesibility(!enableAccesibility)
+
+    localStorage.setItem("disabled", enableAccesibility)
+  }
+
+  useEffect(() => {
+    const disabledValue = localStorage.getItem("disabled");
+    const isDisabled = disabledValue === "true";
+    setDisabled(isDisabled);
+    const savedSizes = localStorage.getItem("tamaños");
+    setSizes(savedSizes)
+  }, [enableAccesibility]);
+
 
   return (
-    <Disclosure as="nav" className="bg-elf-green-600">
+    <Disclosure as="nav" className="bg-elf-green-600 text-white">
       {({ open }) => (
         <>
           <div className="mx-auto max-w-7xl px-2 sm:px-6 lg:px-8">
             <div className="relative flex h-16 items-center justify-between">
               <div className="absolute inset-y-0 left-0 flex items-center sm:hidden">
                 {/* Mobile menu button*/}
-                <Disclosure.Button className="relative inline-flex items-center justify-center rounded-md p-2 text-gray-400 hover:bg-gray-700 hover:text-white focus:outline-none focus:ring-2 focus:ring-inset focus:ring-white">
+                <Disclosure.Button className="relative inline-flex items-center justify-center rounded-md p-2 text-white hover:bg-gray-700 hover:text-gray-400 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-white">
                   <span className="absolute -inset-0.5" />
                   <span className="sr-only">Open main menu</span>
                   {open ? (
@@ -52,43 +76,65 @@ export default function MainLayout() {
                 </div>
                 <div className="hidden sm:ml-6 sm:block">
                   <div className="flex space-x-4">
-                    {navigation.map((item) => {
-                      const isActive = pathname === item.href
-                      return (
-                        <Link
-                          key={item.name}
-                          href={item.href}
-                          className={classNames(
-                            isActive ? 'bg-elf-green-800 text-white' : 'text-gray-300 hover:bg-elf-green-700 hover:text-white',
-                            'rounded-md px-3 py-2 text-sm font-medium'
-                          )}
-                          aria-current={item.current ? 'page' : undefined}
-                        >
-                          {item.name}
-                        </Link>
-                      )
-                    }
-                    )}
+                    <Link href={'/home'} className={classNames(
+                      homeRoute ? 'bg-elf-green-800 text-white' : 'text-white hover:bg-elf-green-700 hover:text-gray-300',
+                      'block rounded-md px-3 py-2 text-base font-medium'
+                    )}>
+                      Inicio
+                    </Link>
                     {
                       session ? (
                         <>
                           {
+                            session.user ? (<>
+                              <Link href={'/forum'} className={classNames(
+                                forumRoute ? 'bg-elf-green-800 text-white' : 'text-white hover:bg-elf-green-700 hover:text-gray-300',
+                                'block rounded-md px-3 py-2 text-base font-medium'
+                              )}>
+                                Foro
+                              </Link></>
+                            ) : null
+                          }
+                          {
+
                             session.user.id_rol === 2 ? (
                               <>
+                                <Link href={'/courses'} className={classNames(
+                                  courseRoute ? 'bg-elf-green-800 text-white' : 'text-white hover:bg-elf-green-700 hover:text-gray-300',
+                                  'block rounded-md px-3 py-2 text-base font-medium'
+                                )}>
+                                  Cursos
+                                </Link>
                                 <Link href={'/teacher'} className={classNames(
-                                  teacherRoute ? 'bg-elf-green-800 text-white' : 'text-gray-300 hover:bg-elf-green-700 hover:text-white',
+                                  teacherRoute ? 'bg-elf-green-800 text-white' : 'text-white hover:bg-elf-green-700 hover:text-gray-300',
                                   'block rounded-md px-3 py-2 text-base font-medium'
                                 )}>
                                   Profesor
                                 </Link>
                                 <Link href={'/attendance'} className={classNames(
-                                  attendanceRoute ? 'bg-elf-green-800 text-white' : 'text-gray-300 hover:bg-elf-green-700 hover:text-white',
+                                  attendanceRoute ? 'bg-elf-green-800 text-white' : 'text-white hover:bg-elf-green-700 hover:text-gray-300',
                                   'block rounded-md px-3 py-2 text-base font-medium'
                                 )}>
                                   Asistencia
                                 </Link>
-
+                                <Link href={'/deliverables'} className={classNames(
+                                  deliverableRoute ? 'bg-elf-green-800 text-white' : 'text-white hover:bg-elf-green-700 hover:text-gray-300',
+                                  'block rounded-md px-3 py-2 text-base font-medium'
+                                )}>
+                                  Corregir entregables
+                                </Link>
                               </>
+                            ) : null
+                          }
+
+                          {
+                            session.user.id_rol === 1 ? (
+                              <Link href={'/courses'} className={classNames(
+                                courseRoute ? 'bg-elf-green-800 text-white' : 'text-white hover:bg-elf-green-700 hover:text-gray-300',
+                                'block rounded-md px-3 py-2 text-base font-medium'
+                              )}>
+                                Cursos
+                              </Link>
                             ) : null
                           }
                         </>) : null
@@ -97,13 +143,13 @@ export default function MainLayout() {
                       !session ? (
                         <>
                           <Link href={'/auth/login'} className={classNames(
-                            loginRoute ? 'bg-elf-green-800 text-white' : 'text-gray-300 hover:bg-elf-green-700 hover:text-white',
+                            loginRoute ? 'bg-elf-green-800 text-white' : 'text-white hover:bg-elf-green-700 hover:text-gray-300',
                             'block rounded-md px-3 py-2 text-sm font-medium'
                           )}>
                             Iniciar sesión
                           </Link>
                           <Link href={'/auth/register'} className={classNames(
-                            registerRoute ? 'bg-elf-green-800 text-white' : 'text-gray-300 hover:bg-elf-green-700 hover:text-white',
+                            registerRoute ? 'bg-elf-green-800 text-white' : 'text-white hover:bg-elf-green-700 hover:text-gray-300',
                             'block rounded-md px-3 py-2 text-sm font-medium'
                           )}>
                             Registrarse
@@ -116,30 +162,33 @@ export default function MainLayout() {
                 </div>
               </div>
               <div className="absolute inset-y-0 right-0 flex items-center pr-2 sm:static sm:inset-auto sm:ml-6 sm:pr-0">
-
-
                 {/* Profile dropdown */}
 
                 {
                   session ? (<>
-                    <button
-                      type="button"
-                      className="relative rounded-full bg-elf-green-800 p-1 text-gray-400 hover:text-white focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800"
-                    >
-                      <span className="absolute -inset-1.5" />
-                      <span className="sr-only">View notifications</span>
-                      <BellIcon className="h-6 w-6" aria-hidden="true" />
-                    </button>
+                    {
+                      disabled !== true ? <AccesibilityButtons sizes={sizes} /> : null
+                    }
                     <Menu as="div" className="relative ml-3">
                       <div>
                         <Menu.Button className="relative flex rounded-full bg-gray-800 text-sm focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800">
                           <span className="absolute -inset-1.5" />
                           <span className="sr-only">Open user menu</span>
-                          <Image
-                            className="h-8 w-8 rounded-full"
-                            src={defaultImage}
-                            alt=""
-                          />
+                          <div className='w-8 h-8 rounded-full overflow-hidden'>
+                            {
+                              session.user.profile_url ? <Image
+                                className="h-full w-full object-cover"
+                                src={session.user.profile_url}
+                                width={100}
+                                height={100}
+                                alt=""
+                              /> : <Image
+                                className="h-full w-full object-cover"
+                                src={defaultImage}
+                                alt=""
+                              />
+                            }
+                          </div>
                         </Menu.Button>
                       </div>
                       <Menu.Items className="absolute right-0 z-10 mt-2 w-48 origin-top-right rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
@@ -150,6 +199,36 @@ export default function MainLayout() {
                               className={classNames(active ? 'bg-gray-100' : '', 'block px-4 py-2 text-sm text-gray-700')}
                             >
                               Mi perfil
+                            </Link>
+                          )}
+                        </Menu.Item>
+                        <Menu.Item>
+                          {({ active }) => (
+                            <button
+                              onClick={handleEnableAccesibility}
+                              className={classNames(active ? 'bg-gray-100' : '', 'block px-4 py-2 text-sm text-gray-700')}
+                            >
+                              Activar accesibilidad
+                            </button>
+                          )}
+                        </Menu.Item>
+                        <Menu.Item>
+                          {({ active }) => (
+                            <Link
+                              href="/user/tasks"
+                              className={classNames(active ? 'bg-gray-100' : '', 'block px-4 py-2 text-sm text-gray-700')}
+                            >
+                              Mis tareas
+                            </Link>
+                          )}
+                        </Menu.Item>
+                        <Menu.Item>
+                          {({ active }) => (
+                            <Link
+                              href="/user/grades"
+                              className={classNames(active ? 'bg-gray-100' : '', 'block px-4 py-2 text-sm text-gray-700')}
+                            >
+                              Mis notas
                             </Link>
                           )}
                         </Menu.Item>
@@ -193,7 +272,7 @@ export default function MainLayout() {
                       as="a"
                       href={item.href}
                       className={classNames(
-                        isActive ? 'bg-elf-green-800 text-white' : 'text-gray-300 hover:bg-elf-green-700 hover:text-white',
+                        isActive ? 'bg-elf-green-800 text-white' : 'text-white hover:bg-elf-green-700 hover:text-gray-300',
                         'block rounded-md px-3 py-2 text-base font-medium'
                       )}
                       aria-current={item.current ? 'page' : undefined}
@@ -203,6 +282,36 @@ export default function MainLayout() {
                   )
                 )
               })}
+                            {
+                session ? (
+                  <>
+                    {
+                      session.user ? (
+                        <>
+                          <Link href={'/courses'} className={classNames(
+                            courseRoute ? 'bg-elf-green-800 text-white' : 'text-white hover:bg-elf-green-700 hover:text-gray-300',
+                            'block rounded-md px-3 py-2 text-base font-medium'
+                          )}>
+                            Cursos
+                          </Link>
+                        </>
+                      ) : null
+                    }
+                  </>
+                ) : null
+              }
+              {
+                session ? (
+                  <>
+                    <Link href={'/forum'} className={classNames(
+                      forumRoute ? 'bg-elf-green-800 text-white' : 'text-white hover:bg-elf-green-700 hover:text-gray-300',
+                      'block rounded-md px-3 py-2 text-base font-medium'
+                    )}>
+                      Foro
+                    </Link>
+                  </>
+                ) : null
+              }
               {
                 session ? (
                   <>
@@ -210,28 +319,40 @@ export default function MainLayout() {
                       session.user.id_rol === 2 ? (
                         <>
                           <Link href={'/teacher'} className={classNames(
-                            teacherRoute ? 'bg-elf-green-800 text-white' : 'text-gray-300 hover:bg-elf-green-700 hover:text-white',
+                            teacherRoute ? 'bg-elf-green-800 text-white' : 'text-white hover:bg-elf-green-700 hover:text-gray-300',
                             'block rounded-md px-3 py-2 text-base font-medium'
                           )}>
                             Profesor
                           </Link>
-
+                          <Link href={'/attendance'} className={classNames(
+                            attendanceRoute ? 'bg-elf-green-800 text-white' : 'text-white hover:bg-elf-green-700 hover:text-gray-300',
+                            'block rounded-md px-3 py-2 text-base font-medium'
+                          )}>
+                            Asistencia
+                          </Link>
+                          <Link href={'/deliverables'} className={classNames(
+                            deliverableRoute ? 'bg-elf-green-800 text-white' : 'text-white hover:bg-elf-green-700 hover:text-gray-300',
+                            'block rounded-md px-3 py-2 text-base font-medium'
+                          )}>
+                            Corregir entregables
+                          </Link>
                         </>
                       ) : null
                     }
                   </>) : null
               }
+
               {
                 !session ? (
                   <>
                     <Link href={'/auth/login'} className={classNames(
-                      loginRoute ? 'bg-elf-green-800 text-white' : 'text-gray-300 hover:bg-elf-green-700 hover:text-white',
+                      loginRoute ? 'bg-elf-green-800 text-white' : 'text-white hover:bg-elf-green-700 hover:text-gray-300',
                       'block rounded-md px-3 py-2 text-base font-medium'
                     )}>
                       Iniciar sesión
                     </Link>
                     <Link href={'/auth/register'} className={classNames(
-                      registerRoute ? 'bg-elf-green-800 text-white' : 'text-gray-300 hover:bg-elf-green-700 hover:text-white',
+                      registerRoute ? 'bg-elf-green-800 text-white' : 'text-white hover:bg-elf-green-700 hover:text-gray-300',
                       'block rounded-md px-3 py-2 text-base font-medium'
                     )}>
                       Registrarse

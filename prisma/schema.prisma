@@ -1,0 +1,205 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model Role {
+  id_rol Int    @id @default(autoincrement())
+  name   String
+  users  User[]
+}
+
+model Category {
+  id_category Int      @id @default(autoincrement())
+  name        String
+  courses     Course[]
+  active      Boolean  @default(true)
+}
+
+model User {
+  id_user            Int                 @id @default(autoincrement())
+  name               String
+  surname            String
+  email              String              @unique
+  password           String
+  profile_url        String?
+  description        String?
+  genre              String?
+  dni                Int                 @unique
+  id_rol             Int
+  role               Role                @relation(fields: [id_rol], references: [id_rol])
+  courses            Course[]
+  studentCourses     StudentCourse[]
+  correctExercises   CorrectExercise[]
+  incorrectExercises IncorrectExercise[]
+  attendances        Attendance[]
+  discussions        Discussion[]
+  comments           Comment[]
+  assignedTasks      AssignedTask[]
+}
+
+model Discussion {
+  id_discussion Int       @id @default(autoincrement())
+  title         String
+  content       String
+  author        String
+  created_at    DateTime  @default(now())
+  comments      Comment[]
+  user_id       Int
+  user          User      @relation(fields: [user_id], references: [id_user])
+}
+
+model Comment {
+  id_comment    Int        @id @default(autoincrement())
+  content       String
+  author        String
+  created_at    DateTime   @default(now())
+  id_discussion Int
+  id_user       Int
+  discussion    Discussion @relation(fields: [id_discussion], references: [id_discussion])
+  user          User       @relation(fields: [id_user], references: [id_user])
+}
+
+model Course {
+  id_course      Int             @id @default(autoincrement())
+  name           String
+  description    String
+  url_image      String
+  id_category    Int
+  id_user        Int
+  category       Category        @relation(fields: [id_category], references: [id_category])
+  user           User            @relation(fields: [id_user], references: [id_user])
+  modules        Module[]
+  studentCourses StudentCourse[]
+  deliverables   Deliverable[]
+  active         Boolean         @default(true)
+  contents       CourseContent[]
+}
+
+model CourseContent {
+  id_content  Int     @id @default(autoincrement())
+  title       String
+  description String
+  pdf_url     String
+  course      Course  @relation(fields: [course_id], references: [id_course])
+  course_id   Int
+  active      Boolean @default(true)
+}
+
+model Module {
+  id_module Int        @id @default(autoincrement())
+  name      String
+  id_course Int
+  course    Course     @relation(fields: [id_course], references: [id_course])
+  exercises Exercise[]
+  active    Boolean    @default(true)
+}
+
+model ExerciseType {
+  id_type   Int        @id @default(autoincrement())
+  name      String
+  exercises Exercise[]
+}
+
+model Exercise {
+  id_exercise        Int                 @id @default(autoincrement())
+  name               String
+  instruction        String
+  id_module          Int
+  id_type            Int
+  module             Module              @relation(fields: [id_module], references: [id_module])
+  type               ExerciseType        @relation(fields: [id_type], references: [id_type])
+  multipleChoise     MultipleChoise?
+  trueOrFalse        TrueOrFalse?
+  correctExercises   CorrectExercise[]
+  incorrectExercises IncorrectExercise[]
+  active             Boolean             @default(true)
+}
+
+model MultipleChoise {
+  id_exercise Int      @id
+  options     Json
+  exercise    Exercise @relation(fields: [id_exercise], references: [id_exercise])
+  active      Boolean  @default(true)
+}
+
+model TrueOrFalse {
+  id_exercise  Int      @id
+  true_option  String
+  false_option String
+  exercise     Exercise @relation(fields: [id_exercise], references: [id_exercise])
+  active       Boolean  @default(true)
+}
+
+model StudentCourse {
+  id_student_course Int    @id @default(autoincrement())
+  id_user           Int
+  id_course         Int
+  user              User   @relation(fields: [id_user], references: [id_user])
+  course            Course @relation(fields: [id_course], references: [id_course])
+  grades            Grade[]
+}
+
+model Grade {
+  id_grade       Int            @id @default(autoincrement())
+  id_student_course Int
+  value          Float
+  exam_name      String
+  student_course StudentCourse @relation(fields: [id_student_course], references: [id_student_course])
+}
+
+model CorrectExercise {
+  id_correct  Int      @id @default(autoincrement())
+  id_exercise Int
+  id_user     Int
+  exercise    Exercise @relation(fields: [id_exercise], references: [id_exercise])
+  user        User     @relation(fields: [id_user], references: [id_user])
+}
+
+model IncorrectExercise {
+  id_incorrect Int      @id @default(autoincrement())
+  id_exercise  Int
+  id_user      Int
+  exercise     Exercise @relation(fields: [id_exercise], references: [id_exercise])
+  user         User     @relation(fields: [id_user], references: [id_user])
+}
+
+model Attendance {
+  id      Int      @id @default(autoincrement())
+  id_user Int
+  date    DateTime @default(now())
+  user    User     @relation(fields: [id_user], references: [id_user])
+}
+
+model Deliverable {
+  id_deliverable Int            @id @default(autoincrement())
+  title          String
+  instruction    String
+  pdf_url        String?
+  id_course      Int
+  deadline       DateTime?
+  course         Course         @relation(fields: [id_course], references: [id_course])
+  assignedTask   AssignedTask[]
+  created_at     DateTime       @default(now())
+}
+
+model AssignedTask {
+  id_assigned    Int         @id @default(autoincrement())
+  id_deliverable Int
+  approved       Boolean     @default(false)
+  done           Boolean     @default(false)
+  corrected      Boolean?    @default(false)
+  document_url   String?
+  completed_at   DateTime?
+  deliverable    Deliverable @relation(fields: [id_deliverable], references: [id_deliverable])
+  id_user        Int
+  User           User        @relation(fields: [id_user], references: [id_user])
+}
+
