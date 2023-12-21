@@ -1,5 +1,5 @@
 'use client'
-import { UserConfig, useSession } from "next-auth/react";
+import { useSession } from "next-auth/react";
 import { useState, useRef } from 'react';
 import ProfileImage from "@/components/ProfileImage";
 import "firebase/storage";
@@ -17,11 +17,9 @@ export default function Settings() {
   const fileInputRef = useRef(null);
   const [error, setError] = useState("");
   const [selectedFile, setSelectedFile] = useState(null)
-  // const router = useRouter();
   const [userData, setUserData] = useState({
     profile_url: null,
     description: null,
-    // id_genre: 0
   })
   const { data: session, status } = useSession();
 
@@ -30,11 +28,7 @@ export default function Settings() {
   }
   const handleSubmit = async (event) => {
     event.preventDefault();
-
-    console.log('userData', userData);
     const response = await axios.patch(`http://localhost:4001/api/user/${session.user.id_user}`,userData)
-    console.log(response);
-
   };
 
   const handleChangeClick = () => {
@@ -45,7 +39,6 @@ export default function Settings() {
   const handleFileChange = (event) => {
     if (event.target.files[0]) {
       const imageRef = ref(storage, `/profile_pictures/image-${Date.now()}`)
-      console.log(event.target.files[0]);
       uploadBytes(imageRef, event.target.files[0]).then(() => {
         getDownloadURL(imageRef).then((url) => {
           setUserData({
@@ -68,7 +61,6 @@ export default function Settings() {
   };
 
   const handleDescriptionChange = (event) => {
-    // Limitar la descripción a 255 caracteres
     const limitedDescription = event.target.value.slice(0, 255);
     setDescription(limitedDescription);
     setUserData({
@@ -105,12 +97,6 @@ export default function Settings() {
           />
 
           <div className="flex justify-around mb-8">
-            {/* <button
-              className="text-white py-2 px-3 uppercase rounded bg-red-500 hover:bg-red-600 font-medium transition transform hover:-translate-y-0.5"
-              onClick={handleDeleteClick}
-            >
-              Eliminar
-            </button> */}
             <button
               className="text-white py-2 px-3 uppercase rounded bg-blue-500 hover:bg-blue-600 font-medium transition transform hover:-translate-y-0.5"
               onClick={handleChangeClick}
@@ -138,6 +124,7 @@ export default function Settings() {
               onChange={handleDescriptionChange}
             ></textarea>
           </div>
+          <p className="text-gray-300">*Recuerda en cerrar sesión para ver los cambios</p>
 
 
           <div className="flex justify-center">

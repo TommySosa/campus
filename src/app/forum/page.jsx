@@ -3,16 +3,18 @@ import CreateDiscussionModal from "@/components/CreateDiscussionModal";
 import Discussion from "@/components/Discussion";
 import axios from "axios";
 import { useEffect, useState } from "react";
+import { useSession } from 'next-auth/react';
 
 export default function Page() {
     const [discussions, setDiscussions] = useState([])
     const [openCreateDiscussion, setOpenCreateDiscussion] = useState(false)
+    const { data: session, status } = useSession();
+    const author = session.user.name + ' ' + session.user.surname
 
     async function fetchDiscussions() {
         try {
             const response = await axios.get('http://localhost:4001/api/discussions')
             const data = await response.data
-            console.log(data);
             setDiscussions(data)
         } catch (error) {
             console.log(error);
@@ -41,7 +43,7 @@ export default function Page() {
             </div>
             {
                 discussions && discussions.length > 0 ? discussions.map((discussion) => (
-                    <Discussion id_discussion={discussion.id_discussion} created_at={discussion.created_at} title={discussion.title} content={discussion.content} author={discussion.author} key={discussion.id_discussion} />
+                    <Discussion id_discussion={discussion.id_discussion} created_at={discussion.created_at} title={discussion.title} content={discussion.content} author={author} key={discussion.id_discussion} />
                 )) : null
             }
             {
