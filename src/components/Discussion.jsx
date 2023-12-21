@@ -4,7 +4,6 @@ import axios from 'axios';
 import { useSession } from 'next-auth/react';
 import React, { useEffect, useState } from 'react';
 import Swal from 'sweetalert2'
-import withReactContent from 'sweetalert2-react-content'
 
 const Discussion = ({ title, content, author, id_discussion, created_at }) => {
     const { data: session, status } = useSession();
@@ -31,7 +30,6 @@ const Discussion = ({ title, content, author, id_discussion, created_at }) => {
         try {
             const response = await axios.get(`http://localhost:4001/api/discussion/comments/${id_discussion}`)
             const data = await response.data
-            console.log(data);
             setComments(data)
         } catch (error) {
             console.log(error);

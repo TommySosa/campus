@@ -14,8 +14,6 @@ export default function ProfileData() {
     const [incorrects, setIncorrects] = useState(0);
     const [idUser, setIdUser] = useState(0)
     const [inscriptions, setInscriptions] = useState(null)
-    const [correctsByCourse, setCorrectsByCourse] = useState([])
-    const [asd, setAsd] = useState()
 
     useEffect(() => {
         setIdUser(session.user.id_user)
@@ -25,28 +23,19 @@ export default function ProfileData() {
         async function fetchData() {
             const responseCorrect = await axios.get(`http://localhost:4001/api/correct/${session.user.id_user}`)
             const data = await responseCorrect.data
-            console.log(data);
             setCorrects(data.length)
-            console.log('data', data.length);
 
             const responseIncorrect = await axios.get(`http://localhost:4001/api/incorrect/${session.user.id_user}`)
             const dataInc = await responseIncorrect.data
-            console.log('INC', dataInc.length);
             setIncorrects(dataInc.length)
 
             const progressResponse = await axios.get(`http://localhost:4001/api/progress/${session.user.id_user}`)
             const dataProgress = await progressResponse.data
-            console.log('progress', dataProgress);
             setInscriptions(dataProgress)
-
         }
         fetchData()
     }, [session.user.id_user])
 
-    useEffect(() => {
-        console.log('CORRECTS BY COURSE', correctsByCourse);
-        console.log(inscriptions);
-    })
 
     const data = {
         labels: ['Correctos', 'Incorrectos'],
@@ -66,6 +55,7 @@ export default function ProfileData() {
                     session ? (<>
                         <h1 className="font-medium text-gray-700"><span className="font-light text-gray-500">Hola,</span> {session ? session.user.name : <Spinner />}</h1>
                         <p className="font-light text-gray-600 mt-3">{session ? session.user.email : <Spinner />}</p>
+                        <p className="font-light text-gray-600 mt-3">{session ? session.user.description : <Spinner />}</p>
                     </>) : null
                 }
             </div>

@@ -35,7 +35,6 @@ export default function CreateStudentModal({ isOpen, onClose, handleRefresh }) {
             try {
                 const response = await axios.get(`http://localhost:4001/api/courses`)
                 const data = await response.data
-                console.log(data);
                 setCourses(data)
             } catch (error) {
                 console.log(error);
